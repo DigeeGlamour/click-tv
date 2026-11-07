@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-07T09:04:25.198860+00:00",
+  "updated_at": "2026-11-07T09:24:45.265275+00:00",
   "count": 15,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -8,14 +8,15 @@
     {
       "id": "bangladesh-vs-west-indies",
       "name": "Bangladesh Vs West Indies",
-      "primary_stream_key": "b83032e11a1945249a0aa74ed5e4517871c0ecbed48ecd9d6c70a0f7fc2f2122",
+      "primary_stream_key": "41c7ccba02941486fa21109a86b135be630684c599ae6e7897f5367f91aa934a",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/187744/image",
       "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
+      "url": "https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/index.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
@@ -33,24 +34,71 @@
       "backups": [
         {
           "name": "Backup-1",
-          "url": "https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/index.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
           "requires_headers": false,
           "inherit_manifest_query": false,
-          "verification_mode": "transient_rescue",
-          "verification_status": "retryable_pending",
-          "verification_badge": "Temporary",
-          "verified": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
-          "host": "tvsen5.aynaott.com",
-          "transient_rescue_count": 1,
-          "playback_id": "ctv_059947814661f156797f54417044a925"
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "SD",
+          "resolution_height": 576,
+          "playback_id": "ctv_ae59ca34ea58f381670191284107e167",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
         }
       ],
       "channels": [
+        {
+          "id": "bangladesh-vs-west-indies--t-sports",
+          "name": "T Sports",
+          "normalized_name": "t-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/187744/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "bangladesh-vs-west-indies--t-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "bangladesh-vs-west-indies--t-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_6b704cd884d3f5bda1529e5b",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_059947814661f156797f54417044a925",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "hls"
+            }
+          ]
+        },
         {
           "id": "bangladesh-vs-west-indies--fancode",
           "name": "FANCODE",
@@ -86,44 +134,10 @@
               "stream_type": "dash"
             }
           ]
-        },
-        {
-          "id": "bangladesh-vs-west-indies--t-sports",
-          "name": "T Sports",
-          "normalized_name": "t-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/187744/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "bangladesh-vs-west-indies--t-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": false,
-          "verification_status": "retryable_pending",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "bangladesh-vs-west-indies--t-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_6b704cd884d3f5bda1529e5b",
-              "provider": "sm-sports-data",
-              "verification_status": "retryable_pending",
-              "verified": false,
-              "playback_id": "ctv_059947814661f156797f54417044a925",
-              "stream_type": "hls"
-            }
-          ]
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "bangladesh-vs-west-indies--fancode",
+      "default_channel_id": "bangladesh-vs-west-indies--t-sports",
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 0,
@@ -143,12 +157,8 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "SD",
-      "resolution_height": 576,
+      "resolution": "HD",
+      "resolution_height": 720,
       "start_time": "2026-11-07T03:30:00+00:00",
       "start_at": "2026-11-07T03:30:00+00:00",
       "end_time": "2026-11-07T11:30:00+00:00",
@@ -168,14 +178,7 @@
       "sport_class_evidence": "ICC World Test Championship",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_ae59ca34ea58f381670191284107e167",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "playback_id": "ctv_059947814661f156797f54417044a925"
     },
     {
       "id": "western-australia-vs-england",
@@ -264,11 +267,11 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "END_PENDING",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 2,
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "end_pending_confirmations": 3,
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-07T08:44:33.443035+00:00"
     },
     {
@@ -796,7 +799,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 16,
+      "carried_forward_misses": 17,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T04:04:15.698350+00:00"
     },
@@ -956,7 +959,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-07T04:40:00+00:00",
       "start_at": "2026-11-07T04:40:00+00:00",
-      "end_time": "2026-11-07T10:04:03+00:00",
+      "end_time": "2026-11-07T10:24:09+00:00",
       "end_time_source": "assumed",
       "competition": "Women's Big Bash League",
       "fixture_id": "provider:women-s-big-bash-league|women big bash league|2026-11-07",
@@ -1134,7 +1137,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-07T05:00:00+00:00",
       "start_at": "2026-11-07T05:00:00+00:00",
-      "end_time": "2026-11-07T10:04:03+00:00",
+      "end_time": "2026-11-07T10:24:09+00:00",
       "end_time_source": "assumed",
       "competition": "U19 Asia Cup",
       "fixture_id": "provider:afghanistan-under-19-vs-malaysia-under-19|u19 asia cup|2026-11-07",
@@ -1331,7 +1334,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-07T05:00:00+00:00",
       "start_at": "2026-11-07T05:00:00+00:00",
-      "end_time": "2026-11-07T10:04:03+00:00",
+      "end_time": "2026-11-07T10:24:09+00:00",
       "end_time_source": "assumed",
       "competition": "U19 Asia Cup",
       "fixture_id": "provider:sri-lanka-under-19-vs-bangladesh-under-19|u19 asia cup|2026-11-07",
@@ -1649,7 +1652,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 10,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T06:24:37.073093+00:00"
     },
@@ -1972,7 +1975,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T08:44:33.443035+00:00"
     },
@@ -2337,19 +2340,19 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T09:04:19.826678+00:00"
     },
     {
       "id": "sri-lanka-u19-vs-bangladesh-u19",
       "name": "Sri Lanka U19 vs Bangladesh U19",
-      "primary_stream_key": "b2c6dabe74d516491ef5a4e212954ceaec0ee291b330fbcd90bac75c89d24e4f",
+      "primary_stream_key": "cc9fb19c4da5fa6fd3848967fff8648ff733c350dcd2cf93e8f6f7177c1b8899",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.9ba1fbec-5219-427a-b408-5f6c67c0030a/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
       "category": "today_match",
-      "header_profile": "android_tv",
+      "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
       "requires_headers": false,
@@ -2398,7 +2401,7 @@
         },
         {
           "name": "Backup-2",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -2409,14 +2412,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_9c98dd5a84e087016755c7aaeb096b67",
+          "playback_id": "ctv_b0b3e9b34beeaa01b65c1a93ba4e09be",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2438,14 +2441,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "a96aivottlinear-a.akamaihd.net",
+          "host": "ss-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_dcd96d53f491c75dd3f466461b79e19a",
+          "playback_id": "ctv_1e9cf1faa14804d961bdd64a2f6fbf06",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2467,14 +2470,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "ss-ott.bia-cf.live.pv-cdn.net",
+          "host": "a96aivottlinear-a.akamaihd.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_1e9cf1faa14804d961bdd64a2f6fbf06",
+          "playback_id": "ctv_dcd96d53f491c75dd3f466461b79e19a",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2510,11 +2513,11 @@
               "id": "sri-lanka-u19-vs-bangladesh-u19--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_bc73c106dbc40752ee779cac",
+              "variant_key": "sv_b8c1585d314ed4557bf33412",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_b0b3e9b34beeaa01b65c1a93ba4e09be",
+              "playback_id": "ctv_9c98dd5a84e087016755c7aaeb096b67",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2536,11 +2539,11 @@
               "id": "sri-lanka-u19-vs-bangladesh-u19--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_b8c1585d314ed4557bf33412",
+              "variant_key": "sv_bc73c106dbc40752ee779cac",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_9c98dd5a84e087016755c7aaeb096b67",
+              "playback_id": "ctv_b0b3e9b34beeaa01b65c1a93ba4e09be",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2572,11 +2575,11 @@
               "id": "sri-lanka-u19-vs-bangladesh-u19--willow--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_b91513525ee5293c11bafd6a",
+              "variant_key": "sv_67ff1cf7708dfef8f9fc872e",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_dcd96d53f491c75dd3f466461b79e19a",
+              "playback_id": "ctv_1e9cf1faa14804d961bdd64a2f6fbf06",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2585,11 +2588,11 @@
               "id": "sri-lanka-u19-vs-bangladesh-u19--willow--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_67ff1cf7708dfef8f9fc872e",
+              "variant_key": "sv_b91513525ee5293c11bafd6a",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_1e9cf1faa14804d961bdd64a2f6fbf06",
+              "playback_id": "ctv_dcd96d53f491c75dd3f466461b79e19a",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2630,9 +2633,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-07T09:04:03+00:00",
-      "start_at": "2026-11-07T09:04:03+00:00",
-      "end_time": "2026-11-07T14:04:03+00:00",
+      "start_time": "2026-11-07T09:24:09+00:00",
+      "start_at": "2026-11-07T09:24:09+00:00",
+      "end_time": "2026-11-07T14:24:09+00:00",
       "end_time_source": "sport",
       "competition": "ACC Mens U19 Asia Cup 2026 - 6th Match",
       "fixture_id": "provider:sri-lanka-u19-vs-bangladesh-u19|acc men u19 asia cup 2026 6th|2026-11-07",
@@ -2647,7 +2650,7 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_b0b3e9b34beeaa01b65c1a93ba4e09be",
+      "playback_id": "ctv_9c98dd5a84e087016755c7aaeb096b67",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -2659,7 +2662,7 @@
     {
       "id": "melbourne-renegades-women-vs-adelaide-strikers-women",
       "name": "Melbourne Renegades Women vs Adelaide Strikers Women",
-      "primary_stream_key": "6623eb7d5cbb151ae9fc2b4331e1ae0ec03c7d1978bc9eceaa5d0d27181ddf7d",
+      "primary_stream_key": "d59346be96072fe1cd729d9a9065e6974466e838b6aea14e5aea10726908fe50",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.a4105473-29cb-4c06-af5c-03d8b080da6c/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
@@ -2684,7 +2687,7 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -2695,14 +2698,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_2c22fc7670db2133fe55bf7c61c74cd2",
+          "playback_id": "ctv_c2bd7e9b4d189dbf273b0b9e2aad762e",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2742,7 +2745,7 @@
         },
         {
           "name": "Backup-3",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -2753,14 +2756,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_c05e155ae87c42da84ad684137cb760c",
+          "playback_id": "ctv_2c22fc7670db2133fe55bf7c61c74cd2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2854,11 +2857,11 @@
               "id": "melbourne-renegades-women-vs-adelaide-strikers-women--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_414b8fea6e600e7d1fd6a61a",
+              "variant_key": "sv_3510ba1915f212ec69de8c39",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_c2bd7e9b4d189dbf273b0b9e2aad762e",
+              "playback_id": "ctv_c05e155ae87c42da84ad684137cb760c",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2867,11 +2870,11 @@
               "id": "melbourne-renegades-women-vs-adelaide-strikers-women--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_7c5b6ad28322b83b6b115b17",
+              "variant_key": "sv_414b8fea6e600e7d1fd6a61a",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_2c22fc7670db2133fe55bf7c61c74cd2",
+              "playback_id": "ctv_c2bd7e9b4d189dbf273b0b9e2aad762e",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2893,11 +2896,11 @@
               "id": "melbourne-renegades-women-vs-adelaide-strikers-women--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_3510ba1915f212ec69de8c39",
+              "variant_key": "sv_7c5b6ad28322b83b6b115b17",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_c05e155ae87c42da84ad684137cb760c",
+              "playback_id": "ctv_2c22fc7670db2133fe55bf7c61c74cd2",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2987,9 +2990,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-07T09:04:03+00:00",
-      "start_at": "2026-11-07T09:04:03+00:00",
-      "end_time": "2026-11-07T13:04:03+00:00",
+      "start_time": "2026-11-07T09:24:09+00:00",
+      "start_at": "2026-11-07T09:24:09+00:00",
+      "end_time": "2026-11-07T13:24:09+00:00",
       "end_time_source": "sport",
       "competition": "Womens Big Bash League 2026 - 13th Match",
       "fixture_id": "provider:melbourne-renegades-vs-adelaide-strikers-women|women big bash league 2026 13th|2026-11-07",
@@ -3011,7 +3014,7 @@
           "name": "Melbourne Renegades Women vs Adelaide Strikers Women",
           "competition": "Women's Big Bash League",
           "kickoff": "2026-11-07T04:40:00+00:00",
-          "kickoff_delta_minutes": -264.1,
+          "kickoff_delta_minutes": -284.1,
           "status": "LIVE"
         },
         {
@@ -3022,13 +3025,13 @@
           "name": "Melbourne Renegades W vs Adelaide Strikers W",
           "competition": "Women's Big Bash League",
           "kickoff": "2026-11-07T04:40:00+00:00",
-          "kickoff_delta_minutes": -264.1,
+          "kickoff_delta_minutes": -284.1,
           "status": "FINISHED"
         }
       ],
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_c2bd7e9b4d189dbf273b0b9e2aad762e",
+      "playback_id": "ctv_c05e155ae87c42da84ad684137cb760c",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -3040,12 +3043,12 @@
     {
       "id": "brisbane-heat-women-vs-hobart-hurricanes-women",
       "name": "Brisbane Heat Women vs Hobart Hurricanes Women",
-      "primary_stream_key": "7dcdd7a9e45cba7fb5ccb3c37dfd5818f3631b8f4a33d4143cd48c473bcb9a0f",
+      "primary_stream_key": "b57c6662a402e71434242b2c49ba73716df0e81198bbccc1922d6bde9f01cd05",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.8540dc19-4fd6-482f-9bad-855bed41f903/1/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
       "category": "today_match",
-      "header_profile": "android_tv",
+      "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
       "requires_headers": false,
@@ -3123,7 +3126,7 @@
         },
         {
           "name": "Backup-3",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -3134,14 +3137,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_c199221a7e90a70aebd5cafd30cb2451",
+          "playback_id": "ctv_90d87f75f52e6ef81f331cc4f5287269",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -3235,11 +3238,11 @@
               "id": "brisbane-heat-women-vs-hobart-hurricanes-women--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_a28af054af019aa5c97b983b",
+              "variant_key": "sv_f47b16eb2b81e49b8bc41406",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_90d87f75f52e6ef81f331cc4f5287269",
+              "playback_id": "ctv_c199221a7e90a70aebd5cafd30cb2451",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -3274,11 +3277,11 @@
               "id": "brisbane-heat-women-vs-hobart-hurricanes-women--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_f47b16eb2b81e49b8bc41406",
+              "variant_key": "sv_a28af054af019aa5c97b983b",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_c199221a7e90a70aebd5cafd30cb2451",
+              "playback_id": "ctv_90d87f75f52e6ef81f331cc4f5287269",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -3368,9 +3371,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-07T09:04:03+00:00",
-      "start_at": "2026-11-07T09:04:03+00:00",
-      "end_time": "2026-11-07T13:04:03+00:00",
+      "start_time": "2026-11-07T09:24:09+00:00",
+      "start_at": "2026-11-07T09:24:09+00:00",
+      "end_time": "2026-11-07T13:24:09+00:00",
       "end_time_source": "sport",
       "competition": "Womens Big Bash League 2026 - 14th Match",
       "fixture_id": "provider:brisbane-heat-vs-hobart-hurricanes-women|women big bash league 2026 14th|2026-11-07",
@@ -3392,7 +3395,7 @@
           "name": "Brisbane Heat Women vs Hobart Hurricanes Women",
           "competition": "Women's Big Bash League",
           "kickoff": "2026-11-07T08:10:00+00:00",
-          "kickoff_delta_minutes": -54.0,
+          "kickoff_delta_minutes": -74.2,
           "status": "UPCOMING"
         },
         {
@@ -3403,7 +3406,7 @@
           "name": "Brisbane Heat W vs Hobart Hurricanes W",
           "competition": "Women's Big Bash League",
           "kickoff": "2026-11-07T08:10:00+00:00",
-          "kickoff_delta_minutes": -54.0,
+          "kickoff_delta_minutes": -74.2,
           "status": "LIVE"
         }
       ],
@@ -3411,7 +3414,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/6r5cly1492606239.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vdcla41492606553.png",
-      "playback_id": "ctv_90d87f75f52e6ef81f331cc4f5287269",
+      "playback_id": "ctv_c199221a7e90a70aebd5cafd30cb2451",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -3503,7 +3506,6 @@
       "sport_type_derived": true,
       "logo": "https://r2.thesportsdb.com/images/media/event/thumb/shbib41758095029.jpg",
       "category": "today_match",
-      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "media",
@@ -3521,7 +3523,6 @@
       "source_id": "sm-fancode",
       "metadata_only": true,
       "available_link_count": 0,
-      "backups": [],
       "channel_stats": {
         "streams_in": 1,
         "unresolved_channel_streams": 0,
@@ -3564,6 +3565,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING",
