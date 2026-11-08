@@ -472,7 +472,7 @@
     "foxbleu-cdn.com/live/e8:aa:cb:c4:bf:92/aMzpeeG/78382.ts": {
       "route_id": "foxbleu-cdn.com/live/e8:aa:cb:c4:bf:92/aMzpeeG/78382.ts",
       "url_public_template": "foxbleu-cdn.com/live/{seg}/aMzpeeG/{file}",
-      "reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it",
+      "reason": "the playback proxy refuses this route: error code: 1003",
       "sessions": 1,
       "media_progress_seconds": [
         0
@@ -56108,6 +56108,42 @@
         "window_seconds": 0.0,
         "evidence_report": "reports/delivery-path-check.json"
       }
+    },
+    "box.bbaria.net:8083/Nagorik_TV/video.m3u8": {
+      "route_id": "box.bbaria.net:8083/Nagorik_TV/video.m3u8",
+      "url_public_template": "{id}.bbaria.net/Nagorik_TV/{file}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
+    },
+    "otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/9ztbf2k2id/out/v1/4ea8d6be295640c590d74f8f6fb9e722/cenc.mpd": {
+      "route_id": "otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/9ztbf2k2id/out/v1/4ea8d6be295640c590d74f8f6fb9e722/cenc.mpd",
+      "url_public_template": "{id}.{id}.{id}.{id}.aiv-cdn.net/iad-nitro/live/clients/dash/enc/{seg}/out/v1/{seg}/{file}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
+    },
+    "a96aivottlinear-a.akamaihd.net/OTTB/pdx-nitro/live/clients/dash/enc/rpefporlb5/out/v1/e6bb4ef3929e41e7a893cf20d8ea7c0b/cenc.mpd": {
+      "route_id": "a96aivottlinear-a.akamaihd.net/OTTB/pdx-nitro/live/clients/dash/enc/rpefporlb5/out/v1/e6bb4ef3929e41e7a893cf20d8ea7c0b/cenc.mpd",
+      "url_public_template": "{id}.akamaihd.net/OTTB/pdx-nitro/live/clients/dash/enc/{seg}/out/v1/{seg}/{file}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
     }
   },
   "note": "Routes a real browser measured and could not play, each with the vantage it was measured from. Marks the card; never hides it, never changes publish_allowed, never demotes another route. Keyed by route, so a channel recovers when its route changes - or when a later measurement from any vantage passes, which supersedes the failure rather than deleting it."
