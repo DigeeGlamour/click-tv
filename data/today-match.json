@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-08T01:06:27.037295+00:00",
+  "updated_at": "2026-11-08T01:24:17.600782+00:00",
   "count": 12,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -72,27 +72,30 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1558812)"
+        "ESPN espn-header=Live (Live, event 1558812)",
+        "LiveScore livescore=Play in progress (33, event 1914821)"
       ],
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "LIVE",
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "1558812"
+        "espn-header": "1558812",
+        "livescore": "1914821"
       },
       "lifecycle_reason": "still live: authority_live",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 16,
+      "carried_forward_misses": 17,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00",
       "authority_status": "LIVE"
@@ -337,7 +340,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_bcec224ab89f88d59b07a857f6ea2314",
       "protected_source": true,
       "requires_credentials": true,
@@ -346,14 +349,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 21,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-07T19:04:37.727368+00:00"
+      "carried_forward_misses": 22,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-07T19:04:37.727368+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 22,
+      "ended_seen_at": "2026-11-08T01:24:12.579706+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "cricket-review-usa-seniors-cricket-npl-2026-austin-hunters-vs-ny-x-factor-10th-match",
@@ -602,7 +609,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 18,
+      "carried_forward_misses": 19,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T20:04:41.942463+00:00"
     },
@@ -634,7 +641,7 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -645,14 +652,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4a311acd046c267f477e41191829180e",
+          "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -681,7 +688,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_a46940232ac934789f6a363d0320e6ab",
+          "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -692,7 +699,7 @@
         },
         {
           "name": "Backup-3",
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -703,14 +710,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_0c29c78a99c2756f9e2e752592b41df3",
+          "playback_id": "ctv_4a311acd046c267f477e41191829180e",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -732,14 +739,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "ss-ott.bia-cf.live.pv-cdn.net",
+          "host": "a96aivottlinear-a.akamaihd.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_c7bf8d46b42732e2ebb195a000e3a1ae",
+          "playback_id": "ctv_0783536a643b00d5ef3b8f5e9c2cc583",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -761,14 +768,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "a96aivottlinear-a.akamaihd.net",
+          "host": "ss-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_0783536a643b00d5ef3b8f5e9c2cc583",
+          "playback_id": "ctv_c7bf8d46b42732e2ebb195a000e3a1ae",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -817,11 +824,11 @@
               "id": "chicago-cavaliers-vs-seattle-moose--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_491dc8b294dde630a1a3699b",
+              "variant_key": "sv_40b5984104c08534ce93ba98",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_4a311acd046c267f477e41191829180e",
+              "playback_id": "ctv_9437f7b847773f0c5bb05b00932d1d67",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -830,11 +837,11 @@
               "id": "chicago-cavaliers-vs-seattle-moose--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_50e9dc2e355dbd12b8cdf51c",
+              "variant_key": "sv_64b1265d54d66528d0699925",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_a46940232ac934789f6a363d0320e6ab",
+              "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -856,11 +863,11 @@
               "id": "chicago-cavaliers-vs-seattle-moose--prime-video--5",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_c5dea7f8c635ec579719738a",
+              "variant_key": "sv_69b889f788a97aa5addcd66d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_8bdc2d52905c5605b7e22aa29a06e225",
+              "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -869,11 +876,11 @@
               "id": "chicago-cavaliers-vs-seattle-moose--prime-video--6",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_69b889f788a97aa5addcd66d",
+              "variant_key": "sv_50e9dc2e355dbd12b8cdf51c",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
+              "playback_id": "ctv_a46940232ac934789f6a363d0320e6ab",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -906,11 +913,11 @@
               "id": "chicago-cavaliers-vs-seattle-moose--willow--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_4a2da5dc1eb776c56fdcf8b2",
+              "variant_key": "sv_01372c088953e02ebac6a4f1",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_c7bf8d46b42732e2ebb195a000e3a1ae",
+              "playback_id": "ctv_0783536a643b00d5ef3b8f5e9c2cc583",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -919,11 +926,11 @@
               "id": "chicago-cavaliers-vs-seattle-moose--willow--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_01372c088953e02ebac6a4f1",
+              "variant_key": "sv_4a2da5dc1eb776c56fdcf8b2",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_0783536a643b00d5ef3b8f5e9c2cc583",
+              "playback_id": "ctv_c7bf8d46b42732e2ebb195a000e3a1ae",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1033,7 +1040,7 @@
           "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_496b633cb47f5aa80a6113dea3a95840",
+          "playback_id": "ctv_2e9d7a7a7da861a9a6afe8ee67be839f",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1059,12 +1066,17 @@
               "source_id": "srhady-primevideo-sports",
               "source_name": "Prime Video Free Sports",
               "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+            },
+            {
+              "source_id": "srhady-willow-event",
+              "source_name": "Willow Event Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
             }
           ],
           "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_cf360d2cb0273f5c269494b5a5cc0350",
+          "playback_id": "ctv_3c2651d53676614fb2d0930daa7926bd",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1096,9 +1108,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-08T01:06:04+00:00",
-      "start_at": "2026-11-08T01:06:04+00:00",
-      "end_time": "2026-11-08T06:06:04+00:00",
+      "start_time": "2026-11-08T01:23:57+00:00",
+      "start_at": "2026-11-08T01:23:57+00:00",
+      "end_time": "2026-11-08T06:23:57+00:00",
       "end_time_source": "sport",
       "competition": "USA Seniors Cricket NPL 2026 - 12th Match",
       "fixture_id": "provider:chicago-cavaliers-vs-seattle-moose|usa seniors cricket npl 2026 12th|2026-11-08",
@@ -1259,11 +1271,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-07T22:44:19.340105+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 8,
+      "end_pending_confirmations": 9,
       "ended_seen_at": "2026-11-08T01:06:19.119462+00:00",
       "lifecycle_end_basis": "estimate"
     },
@@ -1514,7 +1526,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 16,
+      "carried_forward_misses": 17,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00"
     },
@@ -1638,11 +1650,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 13,
+      "carried_forward_misses": 14,
       "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-07T21:24:14.020180+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 13,
+      "end_pending_confirmations": 14,
       "ended_seen_at": "2026-11-08T01:06:19.119462+00:00",
       "lifecycle_end_basis": "estimate"
     },
@@ -1766,11 +1778,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 13,
+      "carried_forward_misses": 14,
       "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-07T21:24:14.020180+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 13,
+      "end_pending_confirmations": 14,
       "ended_seen_at": "2026-11-08T01:06:19.119462+00:00",
       "lifecycle_end_basis": "estimate"
     },
@@ -2021,7 +2033,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-08T00:44:20.443623+00:00"
     },
@@ -2273,7 +2285,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-08T01:06:19.119462+00:00"
     },
@@ -2628,9 +2640,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-08T01:06:04+00:00",
-      "start_at": "2026-11-08T01:06:04+00:00",
-      "end_time": "2026-11-08T03:36:04+00:00",
+      "start_time": "2026-11-08T01:23:57+00:00",
+      "start_at": "2026-11-08T01:23:57+00:00",
+      "end_time": "2026-11-08T03:53:57+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:deportivo-toluca-fc-vs-cf-monterrey|2026-11-08",
       "status": "LIVE_NOW",
