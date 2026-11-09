@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-09T21:25:21.866821+00:00",
+  "updated_at": "2026-11-09T21:44:56.709109+00:00",
   "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -184,7 +184,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-09T20:44:58.229743+00:00"
     },
@@ -421,7 +421,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_4a311acd046c267f477e41191829180e",
       "protected_source": true,
       "requires_credentials": true,
@@ -430,14 +430,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 11,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-09T18:04:43.954176+00:00"
+      "carried_forward_misses": 12,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-09T18:04:43.954176+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 12,
+      "ended_seen_at": "2026-11-09T21:44:53.506469+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "west-indies-a-vs-england-lions",
@@ -499,27 +503,22 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1558813)",
+        "ESPN espn-header=Scheduled (Scheduled, event 1558813)",
         "LiveScore livescore=Play in progress (33, event 1914822)"
       ],
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "1558813",
-        "livescore": "1914822"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558813); LiveScore livescore=Play in progress (33, event 1914822)",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE"
+      "lifecycle_state": "STARTING"
     },
     {
       "id": "united-tigers-vs-royal-desert-champions",
@@ -775,7 +774,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-09T19:04:51.747789+00:00",
       "authority_near_misses": [
@@ -896,7 +895,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-09T19:30:00+00:00",
       "start_at": "2026-11-09T19:30:00+00:00",
-      "end_time": "2026-11-09T22:24:56+00:00",
+      "end_time": "2026-11-09T22:44:37+00:00",
       "end_time_source": "assumed",
       "competition": "LaLiga 2",
       "fixture_id": "provider:ce-sabadell-vs-real-sociedad-b|laliga 2|2026-11-09",
@@ -911,6 +910,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "LiveScore livescore=FT (6, event 1811166)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "livescore": "1811166"
+      },
+      "authority_finished_confirmations": 1,
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_376adb6b05836b1c254c9c13eefeb6b4",
