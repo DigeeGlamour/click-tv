@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T21:45:17.912276+00:00",
+  "generated_at": "2026-11-10T22:05:08.338115+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,15 +13,9 @@
       "fixtures": 285,
       "unknown_statuses": [
         "133|Stumps - day 2",
-        "2|12'",
-        "3|58'",
-        "3|84'",
-        "3|86'",
-        "3|89'",
-        "3|90+7'",
-        "3|90+9'",
-        "44|ToFi",
-        "4|Pen"
+        "2|31'",
+        "3|77'",
+        "44|ToFi"
       ],
       "attempts": [
         {
@@ -119,15 +113,14 @@
     "upcoming": 58,
     "fixtures": 71,
     "verdicts": {
-      "PARTIAL_AUTHORITY": 3,
+      "CONFLICT": 6,
       "UNVERIFIED": 55,
-      "CONFLICT": 3,
       "VERIFIED": 10
     },
     "verified": 10,
-    "partial_authority": 3,
+    "partial_authority": 0,
     "unverified": 55,
-    "conflict": 3,
+    "conflict": 6,
     "matched_by_authority": {
       "espn-header": {
         "matched": 15,
@@ -140,12 +133,12 @@
     },
     "matched_by_two_independent_authorities": 11,
     "authority_agreements": 6,
-    "authority_disagreements": 2,
+    "authority_disagreements": 5,
     "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "authorities disagree": 5,
       "kickoff": 1,
-      "card says LIVE, authority says FINISHED": 1,
-      "authorities disagree": 2
+      "card says LIVE, authority says FINISHED": 1
     },
     "identity_near_misses": 6,
     "independent_authority_count_distribution": {
@@ -156,15 +149,9 @@
     "unknown_authority_statuses": {
       "livescore": [
         "133|Stumps - day 2",
-        "2|12'",
-        "3|58'",
-        "3|84'",
-        "3|86'",
-        "3|89'",
-        "3|90+7'",
-        "3|90+9'",
-        "44|ToFi",
-        "4|Pen"
+        "2|31'",
+        "3|77'",
+        "44|ToFi"
       ],
       "espn-header": [
         "STATUS_FINAL_AGT|AGT"
@@ -259,7 +246,7 @@
           "competition_id": "19483",
           "kickoff": "2026-11-10T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "45'",
+          "status_raw": "5'",
           "status_code": "STATUS_FIRST_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -268,7 +255,7 @@
           "gender": "women",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "45'",
+          "espn_status_detail": "5'",
           "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
@@ -289,9 +276,9 @@
           "competition_id": "104",
           "kickoff": "2026-11-10T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "86'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "4",
           "format": "",
@@ -305,65 +292,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:ue-tavernes-vs-valencia|copa del rey|2026-11-10",
-      "card_id": "ue-tavernes-vs-valencia",
-      "name": "UE Tavernes Vs Valencia",
-      "competition": "Copa del Rey",
-      "kickoff": "2026-11-10T20:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
       ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Tavernes de la Valldigna vs Valencia",
-              "event_id": "401928504",
-              "agreed_side": "valencia",
-              "ours": "ue tavernes",
-              "theirs": "tavernes de la valldigna"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Tavernes de la Valldigna vs Valencia",
-              "event_id": "1903176",
-              "agreed_side": "valencia",
-              "ours": "ue tavernes",
-              "theirs": "tavernes de la valldigna"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -371,7 +305,7 @@
       "card_id": "fc-internazionale-milano-vs-manchester-city-wfc",
       "name": "FC Internazionale Milano vs Manchester City WFC",
       "competition": "",
-      "kickoff": "2026-11-10T21:45:17+00:00",
+      "kickoff": "2026-11-10T22:05:08+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -438,7 +372,7 @@
           "competition_id": "19483",
           "kickoff": "2026-11-10T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "44'",
+          "status_raw": "4'",
           "status_code": "STATUS_FIRST_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -447,7 +381,7 @@
           "gender": "women",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "44'",
+          "espn_status_detail": "4'",
           "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
@@ -468,11 +402,11 @@
           "competition_id": "104",
           "kickoff": "2026-11-10T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "89'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
-          "round": "League Stage",
+          "round": "4",
           "format": "",
           "gender": ""
         }
@@ -484,10 +418,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -525,7 +461,7 @@
           "competition_id": "19483",
           "kickoff": "2026-11-10T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "45'",
+          "status_raw": "5'",
           "status_code": "STATUS_FIRST_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -534,7 +470,7 @@
           "gender": "women",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "45'",
+          "espn_status_detail": "5'",
           "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
@@ -555,9 +491,9 @@
           "competition_id": "104",
           "kickoff": "2026-11-10T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "84'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "4",
           "format": "",
@@ -571,10 +507,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -582,7 +520,7 @@
       "card_id": "wpt-venetian-fall-championship-final-table",
       "name": "WPT Venetian Fall Championship Final Table",
       "competition": "",
-      "kickoff": "2026-11-10T21:45:17+00:00",
+      "kickoff": "2026-11-10T22:05:08+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -716,6 +654,61 @@
       "conflict_reasons": [
         "kickoff: ours 2026-11-10T20:25, espn-header 2026-11-10T17:45 (-160.1 min)"
       ],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:ue-tavernes-vs-valencia|copa del rey|2026-11-10",
+      "card_id": "ue-tavernes-vs-valencia",
+      "name": "UE Tavernes Vs Valencia",
+      "competition": "Copa del Rey",
+      "kickoff": "2026-11-10T20:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Tavernes de la Valldigna vs Valencia",
+              "event_id": "401928504",
+              "agreed_side": "valencia",
+              "ours": "ue tavernes",
+              "theirs": "tavernes de la valldigna"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Tavernes de la Valldigna vs Valencia",
+              "event_id": "1903176",
+              "agreed_side": "valencia",
+              "ours": "ue tavernes",
+              "theirs": "tavernes de la valldigna"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
@@ -916,7 +909,7 @@
           "competition_id": "3951",
           "kickoff": "2026-11-10T19:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "89'",
+          "status_raw": "49'",
           "status_code": "STATUS_SECOND_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -925,7 +918,7 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "89'",
+          "espn_status_detail": "49'",
           "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
@@ -1005,7 +998,7 @@
           "competition_id": "3951",
           "kickoff": "2026-11-10T19:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "89'",
+          "status_raw": "49'",
           "status_code": "STATUS_SECOND_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -1014,7 +1007,7 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "89'",
+          "espn_status_detail": "49'",
           "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
@@ -1297,9 +1290,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1463,9 +1456,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1504,9 +1497,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1618,8 +1611,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1755,9 +1748,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1885,9 +1878,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2014,9 +2007,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2129,9 +2122,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2208,9 +2201,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2249,9 +2242,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2327,9 +2320,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2441,8 +2434,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2482,9 +2475,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2525,9 +2518,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2765,9 +2758,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2844,8 +2837,8 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2885,9 +2878,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2927,9 +2920,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2970,9 +2963,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3108,9 +3101,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3483,9 +3476,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3575,9 +3568,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3762,7 +3755,7 @@
           "competition_id": "19483",
           "kickoff": "2026-11-10T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "45'",
+          "status_raw": "5'",
           "status_code": "STATUS_FIRST_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -3771,7 +3764,7 @@
           "gender": "women",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "45'",
+          "espn_status_detail": "5'",
           "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
@@ -3792,9 +3785,9 @@
           "competition_id": "104",
           "kickoff": "2026-11-10T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "86'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "4",
           "format": "",
@@ -3808,97 +3801,11 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY"
-    },
-    {
-      "fixture_id": "provider:cd-anaitasuna-ft-vs-deportivo-alavés|copa del rey|2026-11-10",
-      "card_id": "cd-anaitasuna-ft-vs-deportivo-alavés",
-      "name": "CD Anaitasuna FT Vs Deportivo Alavés",
-      "competition": "Copa del Rey",
-      "kickoff": "2026-11-10T18:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401928514",
-          "upstream_family": "ESPN",
-          "name": "Anaitasuna vs Alavés",
-          "home": "Anaitasuna",
-          "away": "Alavés",
-          "home_team_id": "20776",
-          "away_team_id": "96",
-          "competition": "Spanish Copa del Rey",
-          "competition_id": "3951",
-          "kickoff": "2026-11-10T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3951~e:401928514~c:401928514"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1903164",
-          "upstream_family": "LiveScore",
-          "name": "CD Anaitasuna vs Deportivo Alaves",
-          "home": "CD Anaitasuna",
-          "away": "Deportivo Alaves",
-          "home_team_id": "101609",
-          "away_team_id": "4482",
-          "competition": "Copa del Rey: Round 1",
-          "competition_id": "139",
-          "kickoff": "2026-11-10T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
       ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT"
     }
   ]
