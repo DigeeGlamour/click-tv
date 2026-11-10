@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T08:07:59.340315+00:00",
+  "generated_at": "2026-11-10T08:24:43.315937+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -128,12 +128,12 @@
       }
     },
     "matched_by_two_independent_authorities": 8,
-    "authority_agreements": 8,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "authority_agreements": 7,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "kickoff": 3,
-      "card says LIVE, authority says UPCOMING": 1
+      "kickoff": 5,
+      "authorities disagree": 1
     },
     "identity_near_misses": 3,
     "independent_authority_count_distribution": {
@@ -307,12 +307,12 @@
       "card_id": "hobart-hurricanes-women-vs-adelaide-strikers-women",
       "name": "Hobart Hurricanes Women vs Adelaide Strikers Women",
       "competition": "Womens Big Bash League 2026 - 17th Match",
-      "kickoff": "2026-11-10T08:07:59+00:00",
+      "kickoff": "2026-11-10T07:40:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
       "provider_identity": "",
       "source_ids": [
         "srhady-primevideo-sports",
@@ -338,7 +338,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "21284",
           "kickoff": "2026-11-10T08:10:00+00:00",
-          "kickoff_delta_minutes": 2.0,
+          "kickoff_delta_minutes": 30.0,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -368,10 +368,10 @@
           "competition": "Women's Big Bash League",
           "competition_id": "25707",
           "kickoff": "2026-11-10T08:10:00+00:00",
-          "kickoff_delta_minutes": 2.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "kickoff_delta_minutes": 30.0,
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "Match 17",
           "format": "Womens Domestic Twenty20",
@@ -386,10 +386,12 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
+        "kickoff: ours 2026-11-10T07:40, espn-header 2026-11-10T08:10 (+30.0 min)",
+        "kickoff: ours 2026-11-10T07:40, livescore 2026-11-10T08:10 (+30.0 min)",
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
       ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -398,7 +400,7 @@
       "card_id": "india-u19-vs-united-arab-emirates-u19",
       "name": "India U19 vs United Arab Emirates U19",
       "competition": "ACC Mens U19 Asia Cup 2026 - 11th Match",
-      "kickoff": "2026-11-10T08:07:59+00:00",
+      "kickoff": "2026-11-10T08:24:43+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -406,12 +408,14 @@
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-primevideo-sports"
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
       "upstream_families": [
-        "PrimeVideo"
+        "PrimeVideo",
+        "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -472,7 +476,7 @@
       "card_id": "pakistan-u19-vs-nepal-u19",
       "name": "Pakistan U19 vs Nepal U19",
       "competition": "ACC Mens U19 Asia Cup 2026 - 12th Match",
-      "kickoff": "2026-11-10T08:07:59+00:00",
+      "kickoff": "2026-11-10T08:24:43+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -794,9 +798,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -887,9 +891,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -966,9 +970,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1007,9 +1011,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1048,9 +1052,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1260,9 +1264,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1339,9 +1343,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1454,9 +1458,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1533,9 +1537,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1574,9 +1578,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1652,9 +1656,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1768,9 +1772,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1811,9 +1815,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1890,9 +1894,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2019,9 +2023,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2135,9 +2139,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2177,9 +2181,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2220,9 +2224,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2313,9 +2317,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2393,9 +2397,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2457,9 +2461,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2535,9 +2539,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2629,9 +2633,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3056,9 +3060,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3148,9 +3152,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
