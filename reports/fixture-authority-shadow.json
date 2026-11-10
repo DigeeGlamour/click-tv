@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-10T14:24:43.904813+00:00",
+  "generated_at": "2026-11-10T14:44:41.884226+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,7 +10,7 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 300,
+      "fixtures": 301,
       "unknown_statuses": [
         "133|Stumps - day 2"
       ],
@@ -49,7 +49,7 @@
           "sport": "football",
           "date": "2026-11-11",
           "result": "ok",
-          "fixtures": 109
+          "fixtures": 110
         }
       ]
     },
@@ -110,15 +110,14 @@
     "upcoming": 54,
     "fixtures": 65,
     "verdicts": {
-      "UNVERIFIED": 53,
-      "CONFLICT": 1,
+      "UNVERIFIED": 54,
       "VERIFIED": 10,
       "PARTIAL_AUTHORITY": 1
     },
     "verified": 10,
     "partial_authority": 1,
-    "unverified": 53,
-    "conflict": 1,
+    "unverified": 54,
+    "conflict": 0,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 55,
@@ -129,19 +128,19 @@
         "matched": 9
       }
     },
-    "matched_by_two_independent_authorities": 6,
+    "matched_by_two_independent_authorities": 5,
     "authority_agreements": 5,
-    "authority_disagreements": 1,
+    "authority_disagreements": 0,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
       "kickoff": 2,
-      "authorities disagree": 1
+      "sport": 2
     },
     "identity_near_misses": 3,
     "independent_authority_count_distribution": {
-      "0": 53,
+      "0": 54,
       "1": 6,
-      "2": 6
+      "2": 5
     },
     "unknown_authority_statuses": {
       "livescore": [
@@ -332,25 +331,25 @@
       "card_id": "yas-lions-vs-united-tigers",
       "name": "Yas Lions vs United Tigers",
       "competition": "Abu Dhabi T10 League 2026 - 9th Match",
-      "kickoff": "2026-11-10T13:15:00+00:00",
+      "kickoff": "2026-11-10T14:44:41+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-willow-event"
+        "srhady-primevideo-sports"
       ],
       "upstream_families": [
-        "Willow"
+        "PrimeVideo"
       ],
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
+          "matched_by": "kickoff_lifted",
+          "verified": false,
           "event_id": "1561258",
           "upstream_family": "ESPN",
           "name": "United Tigers vs Yas Lions",
@@ -361,7 +360,7 @@
           "competition": "Abu Dhabi T10",
           "competition_id": "18522",
           "kickoff": "2026-11-10T13:45:00+00:00",
-          "kickoff_delta_minutes": 30.0,
+          "kickoff_delta_minutes": -59.7,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -379,8 +378,8 @@
         },
         "livescore": {
           "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
+          "matched_by": "kickoff_lifted",
+          "verified": false,
           "event_id": "1906327",
           "upstream_family": "LiveScore",
           "name": "Yas Lions vs United Tigers",
@@ -391,9 +390,9 @@
           "competition": "Abu Dhabi T10 League",
           "competition_id": "26618",
           "kickoff": "2026-11-10T13:45:00+00:00",
-          "kickoff_delta_minutes": 30.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
+          "kickoff_delta_minutes": -59.7,
+          "status_raw": "Between innings",
+          "status_code": "157",
           "status": "LIVE",
           "sport": "cricket",
           "round": "Match 9",
@@ -401,21 +400,22 @@
           "gender": ""
         }
       },
-      "authority_upstreams": [
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [
         "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
+      "near_miss_count": 2,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-10T13:15, espn-header 2026-11-10T13:45 (+30.0 min)",
-        "kickoff: ours 2026-11-10T13:15, livescore 2026-11-10T13:45 (+30.0 min)",
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+        "kickoff: ours 2026-11-10T14:44, espn-header 2026-11-10T13:45 (-59.7 min)",
+        "sport: ours football, espn-header cricket",
+        "kickoff: ours 2026-11-10T14:44, livescore 2026-11-10T13:45 (-59.7 min)",
+        "sport: ours football, livescore cricket"
       ],
-      "authority_agreement": "DISAGREE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -495,22 +495,22 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:afghanistan-vs-zimbabwe|test series|2026-11-10",
-      "card_id": "afghanistan-vs-zimbabwe",
-      "name": "Afghanistan Vs Zimbabwe",
-      "competition": "Test Series",
-      "kickoff": "2026-11-10T05:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
+      "fixture_id": "provider:sudurpaschim-royals-vs-janakpur-bolts|nepal premier league season 3 2026|2026-11-10",
+      "card_id": "sudurpaschim-royals-vs-janakpur-bolts",
+      "name": "Sudurpaschim Royals vs Janakpur Bolts",
+      "competition": "Nepal Premier League Season 3, 2026",
+      "kickoff": "2026-11-10T11:15:00+00:00",
+      "schedule_status": "LINK_UPDATING",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
+      "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "FanCode"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -532,22 +532,22 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:sudurpaschim-royals-vs-janakpur-bolts|nepal premier league season 3 2026|2026-11-10",
-      "card_id": "sudurpaschim-royals-vs-janakpur-bolts",
-      "name": "Sudurpaschim Royals vs Janakpur Bolts",
-      "competition": "Nepal Premier League Season 3, 2026",
-      "kickoff": "2026-11-10T11:15:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "AWAITING_LINK",
+      "fixture_id": "provider:afghanistan-vs-zimbabwe|test series|2026-11-10",
+      "card_id": "afghanistan-vs-zimbabwe",
+      "name": "Afghanistan Vs Zimbabwe",
+      "competition": "Test Series",
+      "kickoff": "2026-11-10T05:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "vk1817-fancode-mirror"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "FanCode"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
