@@ -1,7 +1,7 @@
 {
   "category": "Other",
-  "updated_at": "2026-11-10T07:42:24.410808+00:00",
-  "count": 305,
+  "updated_at": "2026-11-10T08:00:07.703711+00:00",
+  "count": 310,
   "channels": [
     {
       "id": "24-hour-free-movies",
@@ -439,8 +439,8 @@
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
+      "verification_mode": "same_run_cloud_proxy",
+      "verification_status": "verified_proxy",
       "verification_badge": "Verified",
       "verified": true,
       "publish_allowed": true,
@@ -464,6 +464,8 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
+      "transient_rescue_count": 1,
+      "vantage_note": "HTTP 500 from this run's egress on a route the published catalogue was already carrying. Held for one more scan instead of being deleted; a second consecutive transient answer, or any permanent one, fails it.",
       "playback_id": "ctv_079190d23bfa8be7b51273d98482748b"
     },
     {
@@ -1285,8 +1287,8 @@
       "source_ids": [
         "sm-iptv-combined"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "quality_unknown": true,
+      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
       "playback_id": "ctv_6598842db985dc5b7db967547e1851ac"
     },
     {
@@ -2091,16 +2093,16 @@
     {
       "id": "channel-16",
       "name": "Channel 16",
-      "primary_stream_key": "a51bf3e284255f0e5c13ee41cfd8d952a306b7e2366bbe1d03015babef6036dc",
+      "primary_stream_key": "f43ffecd23dfa4833db52cf0b0385f467d948ae80b1e33eb1dcbcd96d12f7728",
       "sport_type": "",
       "sport_type_derived": false,
       "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/channel16-150x150.jpeg",
       "category": "Other",
-      "url": "http://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/channel16bd.stream/tracks-v1a1/mono.m3u8",
+      "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/channel16bd.stream/tracks-v1a1/mono.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "proxy_first",
       "stream_type": "hls",
-      "requires_headers": false,
+      "requires_headers": true,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -2111,23 +2113,43 @@
       "original_source_pipeline": "tv",
       "content_kind": "live_tv",
       "routing_reason": "configured_tv_pipeline",
-      "source_id": "sm-iptv-combined",
+      "source_id": "smartplaytv-worker-stream",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "http://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/channel16bd.stream/tracks-v1a1/mono.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-iptv-combined",
+          "host": "app24.jagobd.com.bd",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_0510611b3b69511a164fd0e3e2d673b2"
+        }
+      ],
       "source_provenance": [
         {
-          "source_id": "sm-iptv-combined",
-          "source_name": "SM IPTV Combined Live TV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+          "source_id": "smartplaytv-worker-stream",
+          "source_name": "SmartPlay TV Worker Stream",
+          "source_url": "https://cloud.smartplaytv.workers.dev/?u=admin&s=5&p=4545&f=.m3u8"
         }
       ],
       "source_ids": [
-        "sm-iptv-combined"
+        "smartplaytv-worker-stream"
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_0510611b3b69511a164fd0e3e2d673b2"
+      "playback_id": "ctv_7259bff77323cb4b25ce8af465e0213b"
     },
     {
       "id": "channel-16-226",
@@ -3455,8 +3477,8 @@
         "manual-playlist-1",
         "sm-iptv-combined"
       ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
+      "quality_unknown": true,
+      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
       "playback_id": "ctv_f062335f96d766c56680b4e0f7129d10"
     },
     {
@@ -4073,6 +4095,47 @@
       "resolution": "HD",
       "resolution_height": 720,
       "playback_id": "ctv_c47bfcd0c1f52bf6171515b5c09c2f36"
+    },
+    {
+      "id": "g-tv-313",
+      "name": "G TV 313",
+      "primary_stream_key": "3e374de0890af609ad895f9848d9aac068405d0b14f84e6daef64a02a768d745",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/g-tv.png",
+      "category": "Other",
+      "url": "https://iptvlive.ahmed-bd-org.workers.dev/g-tv-1/index.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "sm-iptv-combined",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-combined"
+      ],
+      "quality_unknown": true,
+      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
+      "playback_id": "ctv_04f368424bf98ff29b5438231f269696"
     },
     {
       "id": "global-fashion-channel",
@@ -5771,18 +5834,18 @@
       "playback_id": "ctv_dc54211e54491fcdb5fe5fab31f0fdca"
     },
     {
-      "id": "music-bangla-529",
+      "id": "music-bangla",
       "name": "Music Bangla",
-      "primary_stream_key": "469236c57d93a04ae93c0015ca34a4c6b245c4b5df2ee084e478d975c5b7c433",
+      "primary_stream_key": "f165e2fc4dc8b589297b0e3ed224c4723ff1eef7c53924ddcff9d767240012e4",
       "sport_type": "",
       "sport_type_derived": false,
-      "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/mb-150x150.jpg",
+      "logo": "https://static.wikia.nocookie.net/logopedia/images/7/75/Music_Bangla_new.jpeg",
       "category": "Other",
       "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/musicbangla2025.stream/playlist.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
+      "proxy_mode": "proxy_first",
       "stream_type": "hls",
-      "requires_headers": false,
+      "requires_headers": true,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -5793,7 +5856,7 @@
       "original_source_pipeline": "tv",
       "content_kind": "live_tv",
       "routing_reason": "configured_tv_pipeline",
-      "source_id": "sm-iptv-combined",
+      "source_id": "smartplaytv-worker-stream",
       "metadata_only": false,
       "available_link_count": 2,
       "backups": [
@@ -5801,35 +5864,36 @@
           "name": "Backup-1",
           "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/musicbangla2025.stream/playlist.m3u8",
           "header_profile": "android_tv",
-          "proxy_mode": "proxy_first",
+          "proxy_mode": "direct_first",
           "stream_type": "hls",
-          "requires_headers": true,
+          "requires_headers": false,
           "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
+          "verification_mode": "same_run_cloud_proxy",
+          "verification_status": "verified_proxy",
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "smartplaytv-worker-stream",
+          "source_id": "sm-iptv-combined",
           "host": "app24.jagobd.com.bd",
+          "transient_rescue_count": 1,
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_37780be8d9b3ee251c7599c46311bcfa"
+          "playback_id": "ctv_153f5ad2918d34a0bb9825aadf756d2e"
         }
       ],
       "source_provenance": [
         {
-          "source_id": "sm-iptv-combined",
-          "source_name": "SM IPTV Combined Live TV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+          "source_id": "smartplaytv-worker-stream",
+          "source_name": "SmartPlay TV Worker Stream",
+          "source_url": "https://cloud.smartplaytv.workers.dev/?u=admin&s=5&p=4545&f=.m3u8"
         }
       ],
       "source_ids": [
-        "sm-iptv-combined"
+        "smartplaytv-worker-stream"
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_153f5ad2918d34a0bb9825aadf756d2e"
+      "playback_id": "ctv_37780be8d9b3ee251c7599c46311bcfa"
     },
     {
       "id": "music-tv",
@@ -8282,8 +8346,8 @@
       "source_ids": [
         "sm-iptv-combined"
       ],
-      "quality_unknown": true,
-      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "playback_id": "ctv_7ef71bd1a0deadf1ee364990e66795c7"
     },
     {
@@ -9024,8 +9088,8 @@
         "sm-aynaott-auto-update",
         "sm-iptv-combined"
       ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
+      "resolution": "HD",
+      "resolution_height": 720,
       "playback_id": "ctv_43f300cec55df37c419dcd107f503190"
     },
     {
@@ -12271,6 +12335,47 @@
       "playback_id": "ctv_4034019fd1bfe5709cf0fcc8cbe751ac"
     },
     {
+      "id": "4ever-cinema",
+      "name": "4ever Cinema",
+      "primary_stream_key": "6b2d9afb5d72851b8292cc7c5b82d6840867773f25d56b7c741bd7d95fc3edb1",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/4ever-cinema-1080p-46222eea9d.png",
+      "category": "Other",
+      "url": "http://stream.mcquack.net/258/index.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "sm-iptv-combined",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-combined"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_e4495d0c330059db3dfc1af07bb16091"
+    },
+    {
       "id": "analai-express-cinema",
       "name": "Analai Express Cinema",
       "primary_stream_key": "45fd6ccc1016ecf0eba1aabcccb4fa973549a3ab7dcb8c501e4ffec49acd2304",
@@ -12676,47 +12781,6 @@
       "playback_id": "ctv_c3149db028d4db4ae89a46c28f50c922"
     },
     {
-      "id": "mango",
-      "name": "Mango",
-      "primary_stream_key": "8e8cdde678dd8196d5f19ab409a2647ddf3775378a47d618964429eb8d8245cd",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/mango.png",
-      "category": "Other",
-      "url": "https://stmv6.voxtvhd.com.br/cinehindi/cinehindi/playlist.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "sm-iptv-combined",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "sm-iptv-combined",
-          "source_name": "SM IPTV Combined Live TV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
-        }
-      ],
-      "source_ids": [
-        "sm-iptv-combined"
-      ],
-      "quality_unknown": true,
-      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
-      "playback_id": "ctv_290ec38af22a970edc968fd10f1e9741"
-    },
-    {
       "id": "mn",
       "name": "MN+",
       "primary_stream_key": "b940dc0d5d6c22ca6bcc33b47399adfe03c2268225d3037a4df997693f24cc0d",
@@ -13011,6 +13075,129 @@
       }
     },
     {
+      "id": "rs-premiere",
+      "name": "RS PREMIERE",
+      "primary_stream_key": "8f84124a8f04cb46b719b8d344b852c994be20e63cdb8bd9fd7f06c600e76828",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "",
+      "category": "Other",
+      "url": "https://video03.logicahost.com.br/rspremiere/rspremiere/playlist.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "manual-playlist-1",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        }
+      ],
+      "source_ids": [
+        "manual-playlist-1"
+      ],
+      "resolution": "HD",
+      "resolution_height": 720,
+      "playback_id": "ctv_fea99d8e30557c5b96504c0421f3d818"
+    },
+    {
+      "id": "rs-premiere-2",
+      "name": "RS PREMIERE 2",
+      "primary_stream_key": "8a6cdfc2af095466486c368969c37de3972bc2f26e7495d1f33ec96601e9e59e",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "",
+      "category": "Other",
+      "url": "https://video03.logicahost.com.br/rspremiere2/rspremiere2/playlist.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "manual-playlist-1",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        }
+      ],
+      "source_ids": [
+        "manual-playlist-1"
+      ],
+      "resolution": "HD",
+      "resolution_height": 720,
+      "playback_id": "ctv_c14e049a08c4a9c282e8bb6777a0023c"
+    },
+    {
+      "id": "rs-premiere-3",
+      "name": "RS PREMIERE 3",
+      "primary_stream_key": "29cb20effc073ce05e59ccad946561cc015a726f1e448c59f86773cd17b6b850",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "",
+      "category": "Other",
+      "url": "https://video03.logicahost.com.br/rspremiere3/rspremiere3/playlist.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "manual-playlist-1",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        }
+      ],
+      "source_ids": [
+        "manual-playlist-1"
+      ],
+      "resolution": "HD",
+      "resolution_height": 720,
+      "playback_id": "ctv_75676ce05d8968832e7f5b946bd62b8b"
+    },
+    {
       "id": "rs-tv",
       "name": "RS TV",
       "primary_stream_key": "8ef67336a0ab6bb51c30088ab73460a52efefd9524038bacd046dba11056789d",
@@ -13050,6 +13237,47 @@
       "resolution": "HD",
       "resolution_height": 720,
       "playback_id": "ctv_5810902f8a1094150a4dbe050779eec2"
+    },
+    {
+      "id": "sangeet-bangla-150",
+      "name": "Sangeet Bangla 150",
+      "primary_stream_key": "638c302063bb6d038a3b3d02f04c7cbe19a20cfaf9db0cba8ec69d668de86606",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sangeet-bangla.png",
+      "category": "Other",
+      "url": "https://tvsen6.aynaott.com/hT5jHczt/tracks-v1a1/mono.ts.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "sm-iptv-combined",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-combined"
+      ],
+      "quality_unknown": true,
+      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
+      "playback_id": "ctv_f461d989a70a112197c7a72a4c343685"
     }
   ]
 }
