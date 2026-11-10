@@ -1,32 +1,32 @@
 {
-  "generated_at": "2026-11-10T03:44:25.387664+00:00",
+  "generated_at": "2026-11-10T04:04:39.279009+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
     "fixtures": 65,
     "published_fixtures": 56,
     "fixtures_with_verified_stream": 9,
     "fixtures_with_zero_verified": 56,
-    "published_without_stream": 56,
-    "fallback_available": 0,
+    "published_without_stream": 55,
+    "fallback_available": 1,
     "targeted_fixtures": 2,
     "targeted_attempts": 7,
     "fixtures_with_a_first_link_time": 1,
-    "candidate_routes": 57,
-    "verified_routes": 31,
-    "failed_routes": 26,
+    "candidate_routes": 72,
+    "verified_routes": 44,
+    "failed_routes": 28,
     "fixtures_touched_by_a_route_failure": 11,
     "fixtures_left_with_nothing": 4,
     "distinct_failure_codes": 7,
     "unrecognised_candidate_groups": 32,
-    "unrecognised_failed_routes": 64
+    "unrecognised_failed_routes": 70
   },
   "failure_codes": {
     "browser_unreachable": 29,
-    "http_404": 28,
-    "http_403": 24,
+    "http_403": 26,
+    "http_404": 25,
+    "timeout": 11,
     "dns": 2,
     "http_400": 2,
-    "timeout": 2,
     "http_591": 1,
     "http_452": 1,
     "verification_failed": 1
@@ -34,11 +34,11 @@
   "failure_code_fixtures": {
     "http_403": 8,
     "browser_unreachable": 3,
-    "http_404": 1,
-    "http_452": 1,
     "dns": 1,
-    "http_400": 1,
-    "timeout": 1
+    "http_452": 1,
+    "timeout": 1,
+    "http_404": 1,
+    "http_400": 1
   },
   "fixtures": [
     {
@@ -51,12 +51,12 @@
         "sm-sports-data"
       ],
       "candidate_stream_count": 16,
-      "verified_stream_count": 2,
-      "failed_stream_count": 14,
+      "verified_stream_count": 1,
+      "failed_stream_count": 15,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_404",
         "timeout",
+        "http_404",
         "http_403",
         "dns",
         "browser_unreachable"
@@ -78,13 +78,13 @@
       "source_id": "drmlive-sonyliv-backup",
       "source_ids": [
         "drmlive-sonyliv-backup",
-        "sportlive-sonyliv-backup",
         "sayanpal-sonyliv-backup",
+        "sportlive-sonyliv-backup",
         "kajju-sonyliv-backup"
       ],
-      "candidate_stream_count": 8,
+      "candidate_stream_count": 10,
       "verified_stream_count": 0,
-      "failed_stream_count": 8,
+      "failed_stream_count": 10,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_403"
@@ -181,6 +181,33 @@
       "targeted": false
     },
     {
+      "fixture_id": "monday-night-raw",
+      "fixture_key": "monday-night-raw",
+      "fixture_name": "Monday Night RAW",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 5,
+      "verified_stream_count": 1,
+      "failed_stream_count": 4,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "timeout",
+        "http_403",
+        "http_404"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "tennis",
       "fixture_key": "tennis",
       "fixture_name": "TENNIS | EVENTO",
@@ -241,8 +268,8 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 1,
+      "candidate_stream_count": 5,
+      "verified_stream_count": 2,
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -288,6 +315,32 @@
       "fixture_id": "charlotte-hornets-vs-cleveland-cavaliers",
       "fixture_key": "charlotte-hornets-vs-cleveland-cavaliers",
       "fixture_name": "Charlotte Hornets Vs Cleveland Cavaliers",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 1,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "dallas-mavericks-vs-indiana-pacers",
+      "fixture_key": "dallas-mavericks-vs-indiana-pacers",
+      "fixture_name": "Dallas Mavericks Vs Indiana Pacers",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
@@ -393,22 +446,24 @@
       "fixture_key": "pakistan-vs-sri-lanka",
       "fixture_name": "Pakistan Vs Sri Lanka",
       "recognised_fixture": true,
-      "source_id": "sm-sports-data",
+      "source_id": "srhady-primevideo-sports",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 1,
+      "candidate_stream_count": 15,
+      "verified_stream_count": 12,
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_403",
         "browser_unreachable"
       ],
-      "fallback_available": false,
+      "fallback_available": true,
       "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
+      "published_tab": "today",
+      "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -457,32 +512,6 @@
       "failure_codes": [
         "http_404",
         "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "monday-night-raw",
-      "fixture_key": "monday-night-raw",
-      "fixture_name": "Monday Night RAW",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 5,
-      "verified_stream_count": 3,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403",
-        "http_404"
       ],
       "fallback_available": false,
       "published": false,
@@ -619,20 +648,20 @@
       "targeted": false
     },
     {
-      "fixture_id": "dallas-mavericks-vs-indiana-pacers",
-      "fixture_key": "dallas-mavericks-vs-indiana-pacers",
-      "fixture_name": "Dallas Mavericks Vs Indiana Pacers",
+      "fixture_id": "edmonton-oilers-vs-new-york-rangers",
+      "fixture_key": "edmonton-oilers-vs-new-york-rangers",
+      "fixture_name": "Edmonton Oilers Vs New York Rangers",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 3,
+      "candidate_stream_count": 3,
+      "verified_stream_count": 2,
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "browser_unreachable"
+        "http_404"
       ],
       "fallback_available": false,
       "published": false,
@@ -727,8 +756,8 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 3,
+      "candidate_stream_count": 5,
+      "verified_stream_count": 4,
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -752,8 +781,8 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 2,
+      "candidate_stream_count": 4,
+      "verified_stream_count": 3,
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -976,10 +1005,10 @@
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1073,10 +1102,10 @@
       "source_id": "srhady-willow-event",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1124,9 +1153,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1151,9 +1180,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1177,9 +1206,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1312,29 +1341,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "edmonton-oilers-vs-new-york-rangers",
-      "fixture_key": "edmonton-oilers-vs-new-york-rangers",
-      "fixture_name": "Edmonton Oilers Vs New York Rangers",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 3,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "provider:fc-juárez-vs-cd-guadalajara|liga mx women apertura|2026-11-11",
       "fixture_key": "fc-juarez-vs-cd-guadalajara",
       "fixture_name": "FC Juárez Vs CD Guadalajara",
@@ -1388,10 +1394,10 @@
       "source_id": "srhady-willow-event",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1439,9 +1445,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1512,9 +1518,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1539,9 +1545,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1566,9 +1572,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1616,9 +1622,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1689,10 +1695,10 @@
       "source_id": "srhady-willow-event",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1717,10 +1723,10 @@
       "source_id": "srhady-willow-event",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1768,9 +1774,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1820,9 +1826,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1870,9 +1876,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1897,10 +1903,10 @@
       "source_id": "srhady-willow-event",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1925,10 +1931,10 @@
       "source_id": "srhady-willow-event",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1953,10 +1959,10 @@
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sm-fancode",
+        "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2003,10 +2009,10 @@
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2031,9 +2037,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2081,9 +2087,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2108,10 +2114,10 @@
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2412,10 +2418,10 @@
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sm-fancode",
+        "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
