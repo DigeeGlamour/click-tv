@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T01:24:51.244296+00:00",
+  "generated_at": "2026-11-11T01:45:05.871621+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,8 +13,10 @@
       "fixtures": 282,
       "unknown_statuses": [
         "133|Stumps - day 2",
-        "2|19'",
-        "2|21'",
+        "170|Lunch - day 1",
+        "2|13'",
+        "2|39'",
+        "2|41'",
         "44|ToFi"
       ],
       "attempts": [
@@ -62,8 +64,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 5,
-      "fixtures": 274,
+      "requests_ok": 6,
+      "fixtures": 301,
       "unknown_statuses": [
         "STATUS_FINAL_AGT|AGT"
       ],
@@ -83,8 +85,8 @@
         {
           "sport": "cricket",
           "date": "2026-11-12",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 28
         },
         {
           "sport": "football",
@@ -102,7 +104,7 @@
           "sport": "football",
           "date": "2026-11-12",
           "result": "ok",
-          "fixtures": 93
+          "fixtures": 92
         }
       ]
     }
@@ -113,43 +115,47 @@
     "upcoming": 57,
     "fixtures": 63,
     "verdicts": {
-      "VERIFIED": 15,
-      "PARTIAL_AUTHORITY": 3,
-      "UNVERIFIED": 45
+      "CONFLICT": 1,
+      "PARTIAL_AUTHORITY": 1,
+      "UNVERIFIED": 47,
+      "VERIFIED": 14
     },
-    "verified": 15,
-    "partial_authority": 3,
-    "unverified": 45,
-    "conflict": 0,
+    "verified": 14,
+    "partial_authority": 1,
+    "unverified": 47,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 15,
-        "unmatched": 48
+        "matched": 17,
+        "unmatched": 46
       },
       "livescore": {
         "matched": 16,
         "unmatched": 47
       }
     },
-    "matched_by_two_independent_authorities": 9,
-    "authority_agreements": 9,
+    "matched_by_two_independent_authorities": 11,
+    "authority_agreements": 10,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
       "kickoff": 2,
       "sport": 2
     },
     "identity_near_misses": 2,
     "independent_authority_count_distribution": {
-      "0": 45,
-      "1": 9,
-      "2": 9
+      "0": 47,
+      "1": 5,
+      "2": 11
     },
     "unknown_authority_statuses": {
       "livescore": [
         "133|Stumps - day 2",
-        "2|19'",
-        "2|21'",
+        "170|Lunch - day 1",
+        "2|13'",
+        "2|39'",
+        "2|41'",
         "44|ToFi"
       ],
       "espn-header": [
@@ -182,9 +188,9 @@
       "name": "Once Caldas Vs Atlético Nacional",
       "competition": "Copa Colombia",
       "kickoff": "2026-11-11T01:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -241,9 +247,9 @@
           "competition_id": "25653",
           "kickoff": "2026-11-11T01:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "13'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "Semi Finals",
           "format": "",
@@ -257,10 +263,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -301,7 +309,7 @@
           "competition_id": "732",
           "kickoff": "2026-11-11T01:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "21'",
+          "status_raw": "41'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -327,7 +335,7 @@
       "card_id": "wpt-venetian-fall-championship-final-table",
       "name": "WPT Venetian Fall Championship Final Table",
       "competition": "",
-      "kickoff": "2026-11-11T01:24:51+00:00",
+      "kickoff": "2026-11-11T01:45:05+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -418,8 +426,8 @@
       "authorities": {
         "espn-header": {
           "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
+          "matched_by": "ambiguous",
+          "verified": false,
           "event_id": "1544873",
           "upstream_family": "ESPN",
           "name": "New South Wales vs South Australia",
@@ -461,27 +469,26 @@
           "competition_id": "25761",
           "kickoff": "2026-11-10T23:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Lunch - day 1",
+          "status_code": "170",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "Match 11",
           "format": "Domestic First Class",
           "gender": ""
         }
       },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
       "near_miss_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 1,
+      "near_miss_count": 2,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -506,8 +513,8 @@
       "authorities": {
         "espn-header": {
           "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
+          "matched_by": "ambiguous",
+          "verified": false,
           "event_id": "1544875",
           "upstream_family": "ESPN",
           "name": "Queensland vs Tasmania",
@@ -558,18 +565,17 @@
           "gender": ""
         }
       },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
       "near_miss_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 1,
+      "near_miss_count": 2,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -2158,7 +2164,34 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543963",
+          "upstream_family": "ESPN",
+          "name": "Melbourne Renegades Women vs Sydney Sixers Women",
+          "home": "Melbourne Renegades Women",
+          "away": "Sydney Sixers Women",
+          "home_team_id": "896407",
+          "away_team_id": "896403",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-12T08:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "20th Match (D/N)",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-12T23:59:00Z",
+          "authority_uid": "s:200~e:1543963~c:1543963"
         },
         "livescore": {
           "result": "matched",
@@ -2185,13 +2218,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2223,7 +2257,34 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543962",
+          "upstream_family": "ESPN",
+          "name": "Melbourne Stars Women vs Brisbane Heat Women",
+          "home": "Melbourne Stars Women",
+          "away": "Brisbane Heat Women",
+          "home_team_id": "896399",
+          "away_team_id": "896397",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-12T04:40:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "19th Match",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-12T23:59:00Z",
+          "authority_uid": "s:200~e:1543962~c:1543962"
         },
         "livescore": {
           "result": "matched",
@@ -2250,13 +2311,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
