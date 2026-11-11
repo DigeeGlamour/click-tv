@@ -1,20 +1,40 @@
 {
-  "timestamp": "2026-11-11T13:17:33.575964+00:00",
+  "timestamp": "2026-11-11T13:22:30.703354+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 2,
-  "total_global_network_checked": 2,
-  "total_proxy_selected": 0,
-  "total_proxy_checked": 0,
-  "total_processed": 2,
-  "total_publishable": 0,
+  "total_input_pool": 4,
+  "total_global_network_checked": 4,
+  "total_proxy_selected": 1,
+  "total_proxy_checked": 1,
+  "total_processed": 4,
+  "total_publishable": 1,
   "strict_player_hidden": 2,
   "browser_unreachable_hidden": 0,
   "unproven_hidden": 0,
   "status_counts": {
-    "metadata_only": 2
+    "failed": 1,
+    "metadata_only": 2,
+    "verified_global": 1
   },
   "groups": {
+    "failed": [
+      {
+        "id": "abu-dhabi-t20-league",
+        "name": "ABU DHABI T20 LEAGUE",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/matrf5qsgb/out/v1/820fd242a0db4693bff1ead95eeea258/cenc.mpd",
+        "verification_status": "failed",
+        "verification_mode": "same_run_player_gate",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+        "permanent_fail_count": 0
+      }
+    ],
     "metadata_only": [
       {
         "id": "west-indies-a-vs-england-lions",
@@ -46,6 +66,24 @@
         "proxy_http_status": 0,
         "verification_error": "",
         "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "permanent_fail_count": 0
+      }
+    ],
+    "verified_global": [
+      {
+        "id": "abu-dhabi-t20-league",
+        "name": "ABU DHABI T20 LEAGUE",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://live.msnetworks.net/a-sports/master.m3u8",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
         "permanent_fail_count": 0
       }
     ]
