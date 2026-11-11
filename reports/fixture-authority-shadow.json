@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T22:24:48.022726+00:00",
+  "generated_at": "2026-11-11T22:44:58.758242+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,10 +12,11 @@
       "requests_ok": 6,
       "fixtures": 284,
       "unknown_statuses": [
-        "10|HT",
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "2|25'"
+        "220|Drinks",
+        "2|44'",
+        "3|51'"
       ],
       "attempts": [
         {
@@ -113,13 +114,14 @@
     "upcoming": 67,
     "fixtures": 72,
     "verdicts": {
-      "VERIFIED": 12,
-      "UNVERIFIED": 60
+      "CONFLICT": 1,
+      "UNVERIFIED": 60,
+      "VERIFIED": 11
     },
-    "verified": 12,
+    "verified": 11,
     "partial_authority": 0,
     "unverified": 60,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "matched": 14,
@@ -133,8 +135,9 @@
     "matched_by_two_independent_authorities": 10,
     "authority_agreements": 10,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says FINISHED": 1,
       "kickoff": 4,
       "sport": 4
     },
@@ -146,10 +149,11 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "2|25'"
+        "220|Drinks",
+        "2|44'",
+        "3|51'"
       ],
       "espn-header": [
         "STATUS_FINAL_AGT|AGT"
@@ -212,18 +216,18 @@
           "competition_id": "19483",
           "kickoff": "2026-11-11T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "5'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "women",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "5'",
-          "espn_status_description": "First Half",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:19483~e:401916984~c:401916984"
         },
@@ -246,10 +250,86 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
       "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:game-fayetteville-state-vs-livingstone",
+      "card_id": "ciaa-championship-game-fayetteville-state-vs-livingstone",
+      "name": "CIAA, Championship Game Fayetteville State vs Livingstone",
+      "competition": "",
+      "kickoff": "2026-11-11T19:25:06+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "upstream_families": [
+        "PrimeVideo"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:abu-dhabi-t20-league|abu dhabi t20 league|2026-11-11",
+      "card_id": "abu-dhabi-t20-league",
+      "name": "ABU DHABI T20 LEAGUE",
+      "competition": "ABU DHABI T20 LEAGUE",
+      "kickoff": "2026-11-11T13:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -296,7 +376,7 @@
       "competition": "Abu Dhabi T10 League 2026 - 12th Match",
       "kickoff": "2026-11-11T18:45:08+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
@@ -378,80 +458,6 @@
         "kickoff: ours 2026-11-11T18:45, livescore 2026-11-11T16:00 (-165.1 min)",
         "sport: ours football, livescore cricket"
       ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:game-fayetteville-state-vs-livingstone",
-      "card_id": "ciaa-championship-game-fayetteville-state-vs-livingstone",
-      "name": "CIAA, Championship Game Fayetteville State vs Livingstone",
-      "competition": "",
-      "kickoff": "2026-11-11T19:25:06+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:abu-dhabi-t20-league|abu dhabi t20 league|2026-11-11",
-      "card_id": "abu-dhabi-t20-league",
-      "name": "ABU DHABI T20 LEAGUE",
-      "competition": "ABU DHABI T20 LEAGUE",
-      "kickoff": "2026-11-11T13:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
@@ -592,9 +598,9 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -820,9 +826,9 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -937,9 +943,9 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1116,9 +1122,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1342,9 +1348,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1508,9 +1514,9 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1674,9 +1680,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1789,9 +1795,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1830,9 +1836,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1908,9 +1914,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2249,9 +2255,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2340,9 +2346,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2597,9 +2603,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2730,9 +2736,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2772,9 +2778,9 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2815,9 +2821,9 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2894,9 +2900,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3231,9 +3237,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3384,9 +3390,9 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3625,44 +3631,6 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "upcoming"
-    }
-  ],
-  "retired_or_unpublished": [
-    {
-      "fixture_id": "provider:juventus-fc-vs-ol-lyonnes|2026-11-11",
-      "card_id": "juventus-fc-vs-ol-lyonnes",
-      "name": "Juventus FC vs OL Lyonnes",
-      "competition": "",
-      "kickoff": "2026-11-11T22:24:48+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
     }
   ]
 }
