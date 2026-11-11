@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T13:45:06.978041+00:00",
+  "generated_at": "2026-11-11T14:05:38.536225+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -14,9 +14,7 @@
       "unknown_statuses": [
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "3|86'",
-        "3|87'",
-        "3|90'",
+        "2|5'",
         "44|ToFi"
       ],
       "attempts": [
@@ -65,7 +63,7 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 302,
+      "fixtures": 305,
       "unknown_statuses": [
         "STATUS_FINAL_AGT|AGT"
       ],
@@ -98,13 +96,13 @@
           "sport": "football",
           "date": "2026-11-11",
           "result": "ok",
-          "fixtures": 77
+          "fixtures": 76
         },
         {
           "sport": "football",
           "date": "2026-11-12",
           "result": "ok",
-          "fixtures": 93
+          "fixtures": 97
         }
       ]
     }
@@ -116,8 +114,8 @@
     "fixtures": 62,
     "verdicts": {
       "UNVERIFIED": 47,
-      "VERIFIED": 12,
-      "CONFLICT": 3
+      "CONFLICT": 3,
+      "VERIFIED": 12
     },
     "verified": 12,
     "partial_authority": 0,
@@ -133,28 +131,27 @@
         "matched": 13
       }
     },
-    "matched_by_two_independent_authorities": 11,
+    "matched_by_two_independent_authorities": 12,
     "authority_agreements": 9,
     "authority_disagreements": 2,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
       "authorities disagree": 2,
-      "kickoff": 3,
+      "kickoff": 2,
       "sport": 2
     },
     "identity_near_misses": 2,
     "independent_authority_count_distribution": {
       "0": 47,
-      "1": 4,
-      "2": 11
+      "1": 3,
+      "2": 12
     },
     "unknown_authority_statuses": {
       "livescore": [
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "3|86'",
-        "3|87'",
-        "3|90'",
+        "2|5'",
         "44|ToFi"
       ],
       "espn-header": [
@@ -224,9 +221,9 @@
       "name": "Bangladesh Vs Sri Lanka",
       "competition": "SAFF Championship",
       "kickoff": "2026-11-11T14:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -283,9 +280,9 @@
           "competition_id": "14126",
           "kickoff": "2026-11-11T14:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "5'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "3",
           "format": "",
@@ -299,10 +296,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -758,8 +757,8 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -838,8 +837,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -851,8 +850,8 @@
       "authorities": {
         "espn-header": {
           "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
+          "matched_by": "same_fixture",
+          "verified": true,
           "event_id": "401916983",
           "upstream_family": "ESPN",
           "name": "Benfica vs Austria Vienna",
@@ -862,19 +861,19 @@
           "away_team_id": "131643",
           "competition": "UEFA Women's Champions League",
           "competition_id": "19483",
-          "kickoff": "2026-11-11T20:00:00+00:00",
-          "kickoff_delta_minutes": -1440.0,
-          "status_raw": "Postponed",
-          "status_code": "STATUS_POSTPONED",
-          "status": "POSTPONED",
+          "kickoff": "2026-11-12T20:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "women",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Postponed",
-          "espn_status_description": "Postponed",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 12th at 3:00 PM EST",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:19483~e:401916983~c:401916983"
@@ -904,19 +903,16 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [
-        "ESPN"
-      ],
-      "near_miss_count": 1,
-      "conflict_reasons": [
-        "kickoff: ours 2026-11-12T20:00, espn-header 2026-11-11T20:00 (-1440.0 min)"
-      ],
-      "authority_agreement": "SINGLE",
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1020,8 +1016,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -1099,8 +1095,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -1251,8 +1247,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -1292,8 +1288,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -1334,8 +1330,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -1464,8 +1460,8 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -1593,8 +1589,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -1709,8 +1705,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -1789,8 +1785,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -1830,8 +1826,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -1908,8 +1904,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -2210,8 +2206,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -2252,8 +2248,8 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -2345,8 +2341,8 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -2604,8 +2600,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -2685,8 +2681,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -2727,8 +2723,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -2769,8 +2765,8 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -2812,8 +2808,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -2891,8 +2887,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -3154,8 +3150,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
@@ -3378,8 +3374,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
