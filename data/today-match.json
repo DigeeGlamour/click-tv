@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-11T16:25:08.446401+00:00",
+  "updated_at": "2026-11-11T16:45:11.851374+00:00",
   "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -171,7 +171,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-11T14:45:21.073233+00:00"
     },
@@ -260,7 +260,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-11T15:05:11.137509+00:00",
       "authority_independent_count": 2,
@@ -466,7 +466,7 @@
           "host": "tvsen5.aynaott.com",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_059947814661f156797f54417044a925"
+          "playback_id": "ctv_659e0b23fb5d8852668cf9f0b95dcd11"
         }
       ],
       "channels": [
@@ -579,20 +579,36 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401932727)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401932727)",
         "LiveScore livescore=FT (6, event 1904583)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401932727); LiveScore livescore=FT (6, event 1904583)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_41e9a6c7dd1593aadffc54cdab967d9a"
+      "lifecycle_state": "END_PENDING",
+      "playback_id": "ctv_cd97c4f012908ef3ee38347d63d2f952",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401932727",
+        "livescore": "1904583"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-11T16:44:53.339172+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-11T17:04:53.339172+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-11T16:45:07.563986+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-11T16:45:07.563986+00:00"
     },
     {
       "id": "royal-desert-champions-vs-uae-bulls",
@@ -940,6 +956,16 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_efaf3ef705f3678f5e5535602716efa0",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      },
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -953,16 +979,14 @@
           "status": "LIVE"
         }
       ],
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_efaf3ef705f3678f5e5535602716efa0",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-11T16:45:07.563986+00:00"
     }
   ]
 }
