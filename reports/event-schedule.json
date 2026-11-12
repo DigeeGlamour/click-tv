@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-12T23:05:17.615624+00:00",
-  "today_match_count": 12,
+  "generated_at": "2026-11-12T23:25:01.619606+00:00",
+  "today_match_count": 7,
   "upcoming_count": 63,
   "today_missing_logo": [],
   "upcoming_missing_logo": [],
@@ -588,7 +588,7 @@
   "direct_channel_unusable": 0,
   "provider_rejected_fixtures_truncated": 49,
   "streams_attached": 0,
-  "fixtures_with_stream": 5,
+  "fixtures_with_stream": 1,
   "pool_offered": 0,
   "pool_attached": 0,
   "pool_unclaimed": 0,
@@ -686,7 +686,7 @@
       },
       {
         "name": "ATP 250 Bybit Stockholm Open 2026 vs Stockholm, Sweden",
-        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "ATP 250 - Bybit Stockholm Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -718,7 +718,7 @@
       },
       {
         "name": "Day 2 vs Austin, Texas (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "Austin Championship 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
@@ -814,7 +814,7 @@
       },
       {
         "name": "ATP 250 Bybit Stockholm Open 2026 vs Stockholm, Sweden",
-        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "ATP 250 - Bybit Stockholm Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -902,7 +902,7 @@
       },
       {
         "name": "Dallas Stars Vs Winnipeg Jets",
-        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, vk1817",
+        "source": "sm-sports-data, sm-fancode, drmlive-fancode-mirror, sportliv",
         "competition": "NHL",
         "sport_type": "",
         "reason": "league map: hockey",
@@ -1102,7 +1102,7 @@
     "conflicts": [
       {
         "name": "Jordan Vs Indonesia",
-        "reason": "authority says CANCELLED while kickoff is still 1135 minute(s) away",
+        "reason": "authority says CANCELLED while kickoff is still 1115 minute(s) away",
         "status": "CANCELLED",
         "confidence": "LOW",
         "upstream_families": [
@@ -1112,22 +1112,21 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 6,
+    "applied": 7,
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 0,
-    "conflict": 1,
+    "conflict": 0,
     "unmatched": 5,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "FINISHED": 6
+      "FINISHED": 7
     },
     "by_confidence": {
-      "HIGH": 6,
-      "CONFLICT": 1
+      "HIGH": 7
     },
     "applied_fixtures": [
       {
@@ -1164,7 +1163,7 @@
         "authority_finished_seen_at": "2026-11-12T23:04:55.836375+00:00",
         "remove_after": "2026-11-12T23:24:55.836375+00:00",
         "was_playable": true,
-        "lifecycle_state_before": "LIVE"
+        "lifecycle_state_before": "END_PENDING"
       },
       {
         "name": "England Vs Croatia",
@@ -1237,6 +1236,24 @@
         "remove_after": "2026-11-12T23:24:55.836375+00:00",
         "was_playable": true,
         "lifecycle_state_before": "END_PENDING"
+      },
+      {
+        "name": "Benfica Vs FK Austria Wien",
+        "fixture_id": "provider:benfica-vs-fk-austria-wien|uefa women champions league|2026-11-12",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401916983)",
+          "LiveScore livescore=FT (6, event 1887704)"
+        ],
+        "authority_finished_seen_at": "2026-11-12T23:24:46.008732+00:00",
+        "remove_after": "2026-11-12T23:44:46.008732+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
       }
     ],
     "conflicts": [
@@ -1302,9 +1319,9 @@
       },
       {
         "name": "Benfica Vs FK Austria Wien",
-        "reason": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401916983); LiveScore livescore=FT (6, event 1887704)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1320,39 +1337,77 @@
     "no_verdict": 4
   },
   "live_protection": {
-    "carried_forward": 11,
-    "released_ended": 0,
-    "released_ended_ids": [],
-    "retired_terminal": [],
+    "carried_forward": 6,
+    "released_ended": 5,
+    "released_ended_ids": [
+      "albania-vs-finland",
+      "england-vs-croatia",
+      "italy-vs-france",
+      "montenegro-vs-latvia",
+      "san-marino-vs-belarus"
+    ],
+    "retired_terminal": [
+      {
+        "id": "albania-vs-finland",
+        "name": "Albania Vs Finland",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "england-vs-croatia",
+        "name": "England Vs Croatia",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "italy-vs-france",
+        "name": "Italy Vs France",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "montenegro-vs-latvia",
+        "name": "Montenegro Vs Latvia",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "san-marino-vs-belarus",
+        "name": "San Marino Vs Belarus",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      }
+    ],
     "released_listing_expired": 0,
     "released_dead_link": 0,
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 5,
+    "probe_alive": 4,
     "probe_dead": 0,
     "probe_inconclusive": 0,
-    "end_pending": 6,
+    "end_pending": 2,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 5,
-      "END_PENDING": 6
+      "LIVE": 4,
+      "ENDED": 5,
+      "END_PENDING": 2
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 0,
-    "total": 1550,
+    "added": 5,
+    "total": 1555,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 0
+    "decided_this_scan": 5
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1386,19 +1441,19 @@
     "unmatched": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 66,
+    "attempted": 65,
     "poster_filled": 0,
     "badge_filled": 58,
     "badge_used_as_logo": 0,
-    "cache_hits": 32,
+    "cache_hits": 31,
     "cached_entries": 1580,
     "provider": {
-      "requests": 11,
-      "hits": 9,
+      "requests": 8,
+      "hits": 6,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 26,
+      "skipped_rate_limited": 29,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1447,6 +1502,14 @@
           "rejected": 0,
           "published": 22
         },
+        "drmlive-fancode-mirror": {
+          "total": 24,
+          "cricket": 13,
+          "football": 11,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 24
+        },
         "sportlive-fancode-backup": {
           "total": 24,
           "cricket": 13,
@@ -1462,14 +1525,6 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 22
-        },
-        "drmlive-fancode-mirror": {
-          "total": 24,
-          "cricket": 13,
-          "football": 11,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 24
         },
         "sayanpal-fancode-mirror": {
           "total": 24,
@@ -1502,21 +1557,21 @@
       "leaks": []
     },
     "today_match": {
-      "total": 12,
-      "published": 12,
+      "total": 7,
+      "published": 7,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 12
+        "confirmed_football": 7
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 11,
+          "total": 6,
           "cricket": 0,
-          "football": 11,
+          "football": 6,
           "quarantined": 0,
           "rejected": 0,
-          "published": 11
+          "published": 6
         },
         "srhady-primevideo-sports": {
           "total": 1,
@@ -1565,6 +1620,14 @@
           "rejected": 0,
           "published": 22
         },
+        "drmlive-fancode-mirror": {
+          "total": 24,
+          "cricket": 13,
+          "football": 11,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 24
+        },
         "sportlive-fancode-backup": {
           "total": 24,
           "cricket": 13,
@@ -1580,14 +1643,6 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 22
-        },
-        "drmlive-fancode-mirror": {
-          "total": 24,
-          "cricket": 13,
-          "football": 11,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 24
         },
         "sayanpal-fancode-mirror": {
           "total": 24,
@@ -1616,10 +1671,10 @@
     "football_kept": 26,
     "other_discarded": 81,
     "unresolved": 0,
-    "today_final": 12,
+    "today_final": 7,
     "upcoming_final": 63,
     "published_states": {
-      "confirmed_football": 37,
+      "confirmed_football": 32,
       "confirmed_cricket": 38
     },
     "other_sport_leak": 0,
@@ -1646,53 +1701,53 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 6,
+      "provider_or_authority": 2,
       "estimate": 0,
-      "none": 6
+      "none": 5
     }
   },
   "fixture_stream_health": {
-    "fixtures": 80,
-    "published_fixtures": 75,
-    "fixtures_with_verified_stream": 13,
-    "fixtures_with_zero_verified": 67,
+    "fixtures": 75,
+    "published_fixtures": 70,
+    "fixtures_with_verified_stream": 10,
+    "fixtures_with_zero_verified": 65,
     "published_without_stream": 63,
-    "fallback_available": 5,
-    "targeted_fixtures": 7,
-    "targeted_attempts": 26,
-    "fixtures_with_a_first_link_time": 6,
-    "candidate_routes": 68,
-    "verified_routes": 21,
-    "failed_routes": 47,
-    "fixtures_touched_by_a_route_failure": 17,
+    "fallback_available": 2,
+    "targeted_fixtures": 4,
+    "targeted_attempts": 10,
+    "fixtures_with_a_first_link_time": 3,
+    "candidate_routes": 39,
+    "verified_routes": 16,
+    "failed_routes": 23,
+    "fixtures_touched_by_a_route_failure": 12,
     "fixtures_left_with_nothing": 3,
     "distinct_failure_codes": 6,
-    "unrecognised_candidate_groups": 38,
-    "unrecognised_failed_routes": 67
+    "unrecognised_candidate_groups": 43,
+    "unrecognised_failed_routes": 91
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 75,
+    "fixtures": 70,
     "verified": 12,
     "partial_authority": 0,
     "unverified": 54,
-    "conflict": 9,
-    "matched_by_two_independent_authorities": 18,
-    "authority_agreements": 17,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 7,
+    "conflict": 4,
+    "matched_by_two_independent_authorities": 13,
+    "authority_agreements": 13,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 3,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 0
+    "not_published": 5
   },
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 75,
-    "fixtures_with_stream": 5,
-    "fixtures_playable_via_catalogue": 7,
+    "published_fixtures": 70,
+    "fixtures_with_stream": 1,
+    "fixtures_playable_via_catalogue": 6,
     "fixtures_with_fresh_stream": 1,
-    "fixtures_with_carried_stream": 4,
-    "today_with_stream": 5,
+    "fixtures_with_carried_stream": 0,
+    "today_with_stream": 1,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
     "state": "ok",
