@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-13T15:25:24.672937+00:00",
+  "updated_at": "2026-11-13T15:45:01.957056+00:00",
   "count": 13,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -221,6 +221,16 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_ef370a347f15b9c10a7f92107cc07471",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      },
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -245,16 +255,14 @@
           "status": "UNKNOWN"
         }
       ],
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_ef370a347f15b9c10a7f92107cc07471",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-13T15:44:56.800765+00:00"
     },
     {
       "id": "janakpur-bolts-vs-chitwan-rhinos",
@@ -336,8 +344,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 3,
-      "carried_forward_misses": 3,
+      "end_pending_confirmations": 4,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-13T14:55:55.776168+00:00"
     },
@@ -474,7 +482,7 @@
       "resolution_height": 720,
       "start_time": "2026-11-13T11:30:00+00:00",
       "start_at": "2026-11-13T11:30:00+00:00",
-      "end_time": "2026-11-13T16:24:55+00:00",
+      "end_time": "2026-11-13T16:44:44+00:00",
       "end_time_source": "assumed",
       "competition": "ABU DHABI T20 LEAGUE",
       "fixture_id": "provider:abu-dhabi-t20-league|abu dhabi t20 league|2026-11-13",
@@ -854,7 +862,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-13T12:45:01.366413+00:00"
     },
@@ -959,27 +967,39 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401927206)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401927206)",
         "LiveScore livescore=FT (6, event 1873063)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_0bc8622008faf231d1aa4f06325adaa2",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401927206); LiveScore livescore=FT (6, event 1873063)",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-13T15:25:10.775635+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-13T15:25:10.775635+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401927206",
+        "livescore": "1873063"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-13T15:44:44.906716+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-13T16:04:44.906716+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-13T15:44:56.800765+00:00"
     },
     {
       "id": "mozambique-vs-ethiopia",
@@ -1134,29 +1154,41 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401927187)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401927187)",
         "LiveScore livescore=FT (6, event 1873026)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/jpbvy51742102860.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/5byztx1728749764.png",
       "playback_id": "ctv_cd97c4f012908ef3ee38347d63d2f952",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-13T15:04:53.092731+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401927187); LiveScore livescore=FT (6, event 1873026)"
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401927187",
+        "livescore": "1873026"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-13T15:44:44.906716+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-13T16:04:44.906716+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-13T15:44:56.800765+00:00"
     },
     {
       "id": "zambia-vs-burundi",
@@ -1332,19 +1364,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401927203)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401927203)",
         "LiveScore livescore=FT (6, event 1873014)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401927203); LiveScore livescore=FT (6, event 1873014)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yvh0al1553349957.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/gru5fp1593280015.png",
       "playback_id": "ctv_e089390201ab6124c72667120868d74f",
@@ -1354,7 +1385,24 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401927203",
+        "livescore": "1873014"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-13T15:44:44.906716+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-13T16:04:44.906716+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-13T15:44:56.800765+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-13T15:44:56.800765+00:00"
     },
     {
       "id": "united-arab-emirates-vs-honduras",
@@ -1457,6 +1505,11 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tua6w31713725676.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wuu4fp1718413719.png",
+      "playback_id": "ctv_416b4c5ef0079b88b6d2b1dd5ddc56bd",
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -1467,14 +1520,17 @@
           "competition": "International Friendly",
           "kickoff": "2026-11-13T14:10:00+00:00",
           "kickoff_delta_minutes": 70.0,
-          "status": "UPCOMING"
+          "status": "LIVE"
         }
       ],
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tua6w31713725676.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wuu4fp1718413719.png",
-      "playback_id": "ctv_13480a62f2a22e8f5b53f528fb0d479c"
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-13T15:44:56.800765+00:00"
     },
     {
       "id": "live-weigh-in-viddal-riley-v-syedi-coupe",
@@ -1723,7 +1779,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-13T14:55:55.776168+00:00"
     },
@@ -2088,7 +2144,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-13T14:55:55.776168+00:00",
       "authority_near_misses": [
@@ -2217,18 +2273,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401931476)"
+        "ESPN espn-header=31' (STATUS_FIRST_HALF, event 401931476)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401931476"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/24xwpq1594125742.png",
@@ -2260,8 +2317,26 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "https://www.rtmpcdn.com/live/32e50e4d-d9fd-4d58-bf03-e5bd0aed8f8f.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "direct_first",
+          "stream_type": "hls",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "www.rtmpcdn.com",
+          "playback_id": "ctv_41f9dd6ac785bfe0e332ca8960e6ddc9"
+        }
+      ],
       "channels": [
         {
           "id": "qatar-vs-australia--stream-tv",
@@ -2296,16 +2371,50 @@
               "stream_type": "hls"
             }
           ]
+        },
+        {
+          "id": "qatar-vs-australia--tv-quality",
+          "name": "TV QUALITY+",
+          "normalized_name": "tv-quality",
+          "logo": "https://img.sofascore.com/api/v1/team/4792/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "qatar-vs-australia--tv-quality--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "qatar-vs-australia--tv-quality--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_b89351879b27c2ed12cd8246",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_41f9dd6ac785bfe0e332ca8960e6ddc9",
+              "stream_type": "hls"
+            }
+          ]
         }
       ],
-      "channel_count": 1,
+      "channel_count": 2,
       "default_channel_id": "qatar-vs-australia--stream-tv",
       "channel_stats": {
-        "streams_in": 1,
+        "streams_in": 2,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -2336,18 +2445,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401919978)"
+        "ESPN espn-header=20' (STATUS_FIRST_HALF, event 401919978)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401919978"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rs3ir31642708685.png",
@@ -2357,12 +2467,12 @@
     {
       "id": "royal-desert-champions-vs-yas-lions",
       "name": "Royal Desert Champions vs Yas Lions",
-      "primary_stream_key": "ffbb729bf7e2cc364f87d4656873986e345378ef2eef01e9efe25c81b843ad4a",
+      "primary_stream_key": "a8ba1e92013ded1092d65537d3dd16d62e7d06a37eb7a0f12f405715a940361b",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.7c51015d-e7e5-4138-8baa-620916d3ce58/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
       "category": "today_match",
-      "header_profile": "android_chrome",
+      "header_profile": "android_tv",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
       "requires_headers": false,
@@ -2393,14 +2503,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_6221513741fc64f471af69f66a472c56",
+          "playback_id": "ctv_e6d7e4e5a089025def147169607242f3",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2411,7 +2521,7 @@
         },
         {
           "name": "Backup-2",
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -2422,14 +2532,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_e6d7e4e5a089025def147169607242f3",
+          "playback_id": "ctv_2471613d7d57f0b017b40234888e2ad1",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2552,19 +2662,6 @@
               "id": "royal-desert-champions-vs-yas-lions--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_eec1173c14835561927183f8",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_2471613d7d57f0b017b40234888e2ad1",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "royal-desert-champions-vs-yas-lions--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_14525bd28099b65c30c1fd99",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -2575,7 +2672,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "royal-desert-champions-vs-yas-lions--prime-video--3",
+              "id": "royal-desert-champions-vs-yas-lions--prime-video--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_d5738941b44767ddde1ed3a9",
@@ -2583,6 +2680,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_e6d7e4e5a089025def147169607242f3",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "royal-desert-champions-vs-yas-lions--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_eec1173c14835561927183f8",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_2471613d7d57f0b017b40234888e2ad1",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2668,16 +2778,10 @@
           "source_id": "srhady-primevideo-sports",
           "source_name": "Prime Video Free Sports",
           "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        },
-        {
-          "source_id": "srhady-willow-event",
-          "source_name": "Willow Event Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
         }
       ],
       "source_ids": [
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
+        "srhady-primevideo-sports"
       ],
       "drm": {
         "type": "clearkey",
@@ -2685,9 +2789,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-13T15:24:55+00:00",
-      "start_at": "2026-11-13T15:24:55+00:00",
-      "end_time": "2026-11-13T17:54:55+00:00",
+      "start_time": "2026-11-13T15:44:44+00:00",
+      "start_at": "2026-11-13T15:44:44+00:00",
+      "end_time": "2026-11-13T18:14:44+00:00",
       "end_time_source": "sport",
       "competition": "Abu Dhabi T10 League 2026 - 14th Match",
       "fixture_id": "provider:royal-desert-champions-vs-yas-lions|abu dhabi t10 league 2026 14th|2026-11-13",
@@ -2709,7 +2813,7 @@
           "name": "Royal Desert Champions vs Yas Lions",
           "competition": "Abu Dhabi T10",
           "kickoff": "2026-11-13T13:45:00+00:00",
-          "kickoff_delta_minutes": -99.9,
+          "kickoff_delta_minutes": -119.7,
           "status": "FINISHED"
         },
         {
@@ -2720,13 +2824,13 @@
           "name": "Royal Desert Champions vs Yas Lions",
           "competition": "Abu Dhabi T10 League",
           "kickoff": "2026-11-13T13:45:00+00:00",
-          "kickoff_delta_minutes": -99.9,
-          "status": "LIVE"
+          "kickoff_delta_minutes": -119.7,
+          "status": "FINISHED"
         }
       ],
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_2471613d7d57f0b017b40234888e2ad1",
+      "playback_id": "ctv_6221513741fc64f471af69f66a472c56",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
