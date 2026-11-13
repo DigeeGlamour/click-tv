@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-11-13T22:05:31.537794+00:00",
+  "generated_at": "2026-11-13T22:22:31.241029+00:00",
   "today_match_count": 13,
-  "upcoming_count": 59,
+  "upcoming_count": 60,
   "today_missing_logo": [],
   "upcoming_missing_logo": [],
   "timezone": "Asia/Dhaka",
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 243,
+  "provider_fixture": 244,
   "provider_rejected": 119,
   "provider_rejected_reasons": {
     "provider_dead_status": 87,
@@ -596,7 +596,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 243,
+    "total": 244,
     "discarded": 87,
     "examples": [
       {
@@ -1083,28 +1083,48 @@
   },
   "reused_event_ids": 0,
   "authority_status": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 18,
-    "conflict": 2,
-    "unmatched": 41,
+    "conflict": 1,
+    "unmatched": 42,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
+      "FINISHED": 1,
       "UPCOMING": 18
     },
     "by_confidence": {
-      "CONFLICT": 2,
-      "HIGH": 18
+      "CONFLICT": 1,
+      "HIGH": 19
     },
-    "applied_fixtures": [],
-    "conflicts": [
+    "applied_fixtures": [
       {
         "name": "Serbia Vs Germany",
-        "reason": "independent authorities disagree: ESPN espn-header=90'+1' (STATUS_SECOND_HALF, event 401861158); LiveScore livescore=FT (6, event 1738290)",
+        "fixture_id": "provider:serbia-vs-germany|uefa nations league|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861158)",
+          "LiveScore livescore=FT (6, event 1738290)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T22:22:10.775697+00:00",
+        "remove_after": "2026-11-13T22:42:10.775697+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": ""
+      }
+    ],
+    "conflicts": [
+      {
+        "name": "Morocco Vs Niger",
+        "reason": "independent authorities disagree: ESPN espn-header=76' (STATUS_SECOND_HALF, event 401927191); LiveScore livescore=FT (6, event 1872914)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1113,10 +1133,10 @@
         ]
       },
       {
-        "name": "Morocco Vs Niger",
-        "reason": "independent authorities disagree: ESPN espn-header=68' (STATUS_SECOND_HALF, event 401927191); LiveScore livescore=FT (6, event 1872914)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "name": "Serbia Vs Germany",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1125,60 +1145,24 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 4,
+    "applied": 10,
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 0,
-    "conflict": 9,
+    "conflict": 1,
     "unmatched": 2,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "FINISHED": 4
+      "FINISHED": 10
     },
     "by_confidence": {
-      "HIGH": 4,
-      "CONFLICT": 9
+      "HIGH": 10,
+      "CONFLICT": 1
     },
     "applied_fixtures": [
-      {
-        "name": "Egypt Vs Malawi",
-        "fixture_id": "provider:egypt-vs-malawi|africa cup of nations qual|2026-11-13",
-        "status": "FINISHED",
-        "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ],
-        "evidence": [
-          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401927190)",
-          "LiveScore livescore=FT (6, event 1872926)"
-        ],
-        "authority_finished_seen_at": "2026-11-13T21:44:48.879715+00:00",
-        "remove_after": "2026-11-13T22:04:48.879715+00:00",
-        "was_playable": true,
-        "lifecycle_state_before": "END_PENDING"
-      },
-      {
-        "name": "Mali Vs Rwanda",
-        "fixture_id": "provider:mali-vs-rwanda|africa cup of nations qual|2026-11-13",
-        "status": "FINISHED",
-        "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ],
-        "evidence": [
-          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401927185)",
-          "LiveScore livescore=FT (6, event 1873038)"
-        ],
-        "authority_finished_seen_at": "2026-11-13T21:44:48.879715+00:00",
-        "remove_after": "2026-11-13T22:04:48.879715+00:00",
-        "was_playable": true,
-        "lifecycle_state_before": "END_PENDING"
-      },
       {
         "name": "Leganés Vs Burgos Club de Fútbol",
         "fixture_id": "provider:leganés-vs-burgos-club-de-fútbol|laliga 2|2026-11-13",
@@ -1194,6 +1178,78 @@
         ],
         "authority_finished_seen_at": "2026-11-13T22:04:53.900288+00:00",
         "remove_after": "2026-11-13T22:24:53.900288+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
+      },
+      {
+        "name": "Andorra Vs Gibraltar",
+        "fixture_id": "provider:andorra-vs-gibraltar|uefa nations league|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861155)",
+          "LiveScore livescore=FT (6, event 1738362)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T22:22:10.775697+00:00",
+        "remove_after": "2026-11-13T22:42:10.775697+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Bulgaria Vs Iceland",
+        "fixture_id": "provider:bulgaria-vs-iceland|uefa nations league|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861157)",
+          "LiveScore livescore=FT (6, event 1738410)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T22:22:10.775697+00:00",
+        "remove_after": "2026-11-13T22:42:10.775697+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Liechtenstein Vs Azerbaijan",
+        "fixture_id": "provider:liechtenstein-vs-azerbaijan|uefa nations league|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861153)",
+          "LiveScore livescore=FT (6, event 1738296)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T22:22:10.775697+00:00",
+        "remove_after": "2026-11-13T22:42:10.775697+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Luxembourg Vs Estonia",
+        "fixture_id": "provider:luxembourg-vs-estonia|uefa nations league|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861154)",
+          "LiveScore livescore=FT (6, event 1738411)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T22:22:10.775697+00:00",
+        "remove_after": "2026-11-13T22:42:10.775697+00:00",
         "was_playable": true,
         "lifecycle_state_before": "LIVE"
       },
@@ -1214,29 +1270,81 @@
         "remove_after": "2026-11-13T22:24:53.900288+00:00",
         "was_playable": true,
         "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Scotland Vs North Macedonia",
+        "fixture_id": "provider:scotland-vs-north-macedonia|uefa nations league|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861161)",
+          "LiveScore livescore=FT (6, event 1738265)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T22:22:10.775697+00:00",
+        "remove_after": "2026-11-13T22:42:10.775697+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Serbia Vs Germany",
+        "fixture_id": "provider:serbia-vs-germany|uefa nations league|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861158)",
+          "LiveScore livescore=FT (6, event 1738290)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T22:22:10.775697+00:00",
+        "remove_after": "2026-11-13T22:42:10.775697+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Slovakia Vs Faroe Islands",
+        "fixture_id": "provider:slovakia-vs-faroe-islands|uefa nations league|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861160)",
+          "LiveScore livescore=FT (6, event 1738377)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T22:22:10.775697+00:00",
+        "remove_after": "2026-11-13T22:42:10.775697+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Slovenia Vs Switzerland",
+        "fixture_id": "provider:slovenia-vs-switzerland|uefa nations league|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861156)",
+          "LiveScore livescore=FT (6, event 1738266)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T22:22:10.775697+00:00",
+        "remove_after": "2026-11-13T22:42:10.775697+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
       }
     ],
     "conflicts": [
-      {
-        "name": "Egypt Vs Malawi",
-        "reason": "authority says FINISHED while the card still carries a route",
-        "status": "FINISHED",
-        "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
-        "name": "Mali Vs Rwanda",
-        "reason": "authority says FINISHED while the card still carries a route",
-        "status": "FINISHED",
-        "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
       {
         "name": "Leganés Vs Burgos Club de Fútbol",
         "reason": "authority says FINISHED while the card still carries a route",
@@ -1248,20 +1356,10 @@
         ]
       },
       {
-        "name": "Andorra Vs Gibraltar",
-        "reason": "independent authorities disagree: ESPN espn-header=90' (STATUS_SECOND_HALF, event 401861155); LiveScore livescore=FT (6, event 1738362)",
-        "status": "",
-        "confidence": "CONFLICT",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
         "name": "Bulgaria Vs Iceland",
-        "reason": "independent authorities disagree: ESPN espn-header=88' (STATUS_SECOND_HALF, event 401861157); LiveScore livescore=FT (6, event 1738410)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1269,9 +1367,9 @@
       },
       {
         "name": "Liechtenstein Vs Azerbaijan",
-        "reason": "independent authorities disagree: ESPN espn-header=90'+5' (STATUS_SECOND_HALF, event 401861153); LiveScore livescore=FT (6, event 1738296)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1279,9 +1377,9 @@
       },
       {
         "name": "Luxembourg Vs Estonia",
-        "reason": "independent authorities disagree: ESPN espn-header=90'+3' (STATUS_SECOND_HALF, event 401861154); LiveScore livescore=FT (6, event 1738411)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1299,9 +1397,9 @@
       },
       {
         "name": "Scotland Vs North Macedonia",
-        "reason": "independent authorities disagree: ESPN espn-header=90'+3' (STATUS_SECOND_HALF, event 401861161); LiveScore livescore=FT (6, event 1738265)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1309,9 +1407,9 @@
       },
       {
         "name": "Serbia Vs Germany",
-        "reason": "independent authorities disagree: ESPN espn-header=90'+1' (STATUS_SECOND_HALF, event 401861158); LiveScore livescore=FT (6, event 1738290)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1319,9 +1417,9 @@
       },
       {
         "name": "Slovakia Vs Faroe Islands",
-        "reason": "independent authorities disagree: ESPN espn-header=90'+3' (STATUS_SECOND_HALF, event 401861160); LiveScore livescore=FT (6, event 1738377)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1329,9 +1427,9 @@
       },
       {
         "name": "Slovenia Vs Switzerland",
-        "reason": "independent authorities disagree: ESPN espn-header=86' (STATUS_SECOND_HALF, event 401861156); LiveScore livescore=FT (6, event 1738266)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1339,7 +1437,7 @@
       },
       {
         "name": "Morocco Vs Niger",
-        "reason": "independent authorities disagree: ESPN espn-header=68' (STATUS_SECOND_HALF, event 401927191); LiveScore livescore=FT (6, event 1872914)",
+        "reason": "independent authorities disagree: ESPN espn-header=76' (STATUS_SECOND_HALF, event 401927191); LiveScore livescore=FT (6, event 1872914)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1351,54 +1449,37 @@
   },
   "fixture_status_api": {
     "asked": 2,
-    "finished": 2,
+    "finished": 0,
     "unplayable": 0,
-    "cache_hits": 2,
+    "cache_hits": 0,
     "no_verdict": 2
   },
   "live_protection": {
     "carried_forward": 11,
-    "released_ended": 2,
-    "released_ended_ids": [
-      "egypt-vs-malawi",
-      "mali-vs-rwanda"
-    ],
-    "retired_terminal": [
-      {
-        "id": "egypt-vs-malawi",
-        "name": "Egypt Vs Malawi",
-        "provenance": "authority_finished",
-        "reason": "authoritative finished status"
-      },
-      {
-        "id": "mali-vs-rwanda",
-        "name": "Mali Vs Rwanda",
-        "provenance": "authority_finished",
-        "reason": "authoritative finished status"
-      }
-    ],
+    "released_ended": 0,
+    "released_ended_ids": [],
+    "retired_terminal": [],
     "released_listing_expired": 0,
     "released_dead_link": 0,
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
     "probe_alive": 2,
-    "probe_dead": 7,
+    "probe_dead": 0,
     "probe_inconclusive": 0,
-    "end_pending": 1,
+    "end_pending": 2,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 10,
-      "ENDED": 2,
-      "END_PENDING": 1
+      "END_PENDING": 2,
+      "LIVE": 9
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 2,
+    "added": 0,
     "total": 1582,
     "refused": 0,
     "refused_names": [],
@@ -1406,7 +1487,7 @@
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 2
+    "decided_this_scan": 0
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1440,19 +1521,19 @@
     "unmatched": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 62,
+    "attempted": 63,
     "poster_filled": 0,
     "badge_filled": 58,
     "badge_used_as_logo": 0,
     "cache_hits": 32,
     "cached_entries": 1605,
     "provider": {
-      "requests": 10,
-      "hits": 8,
+      "requests": 13,
+      "hits": 11,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 20,
+      "skipped_rate_limited": 18,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1467,15 +1548,15 @@
   "competition_labels_clarified": [],
   "sport_filter": {
     "at_merge": {
-      "total": 68,
-      "published": 61,
+      "total": 69,
+      "published": 62,
       "rejected": 5,
       "quarantined": 2,
       "states": {
-        "confirmed_football": 22,
         "confirmed_cricket": 39,
         "confirmed_other": 5,
-        "unknown": 2
+        "unknown": 2,
+        "confirmed_football": 23
       },
       "by_source": {
         "sm-sports-data": {
@@ -1511,20 +1592,20 @@
           "published": 23
         },
         "sportlive-fancode-backup": {
-          "total": 24,
+          "total": 25,
           "cricket": 12,
-          "football": 11,
+          "football": 12,
           "quarantined": 0,
           "rejected": 1,
-          "published": 23
+          "published": 24
         },
         "drmlive-fancode-mirror": {
-          "total": 24,
+          "total": 25,
           "cricket": 12,
-          "football": 11,
+          "football": 12,
           "quarantined": 0,
           "rejected": 1,
-          "published": 23
+          "published": 24
         },
         "vk1817-fancode-mirror": {
           "total": 24,
@@ -1535,12 +1616,12 @@
           "published": 23
         },
         "sayanpal-fancode-mirror": {
-          "total": 24,
+          "total": 25,
           "cricket": 12,
-          "football": 11,
+          "football": 12,
           "quarantined": 0,
           "rejected": 1,
-          "published": 23
+          "published": 24
         }
       },
       "rejected_examples": [
@@ -1651,13 +1732,13 @@
       "leaks": []
     },
     "upcoming": {
-      "total": 59,
-      "published": 59,
+      "total": 60,
+      "published": 60,
       "rejected": 0,
       "quarantined": 0,
       "states": {
         "confirmed_cricket": 39,
-        "confirmed_football": 20
+        "confirmed_football": 21
       },
       "by_source": {
         "sm-sports-data": {
@@ -1685,20 +1766,20 @@
           "published": 23
         },
         "sportlive-fancode-backup": {
-          "total": 23,
+          "total": 24,
           "cricket": 12,
-          "football": 11,
+          "football": 12,
           "quarantined": 0,
           "rejected": 0,
-          "published": 23
+          "published": 24
         },
         "drmlive-fancode-mirror": {
-          "total": 23,
+          "total": 24,
           "cricket": 12,
-          "football": 11,
+          "football": 12,
           "quarantined": 0,
           "rejected": 0,
-          "published": 23
+          "published": 24
         },
         "vk1817-fancode-mirror": {
           "total": 23,
@@ -1709,12 +1790,12 @@
           "published": 23
         },
         "sayanpal-fancode-mirror": {
-          "total": 23,
+          "total": 24,
           "cricket": 12,
-          "football": 11,
+          "football": 12,
           "quarantined": 0,
           "rejected": 0,
-          "published": 23
+          "published": 24
         }
       },
       "rejected_examples": [],
@@ -1730,15 +1811,15 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 362,
+    "raw_events": 363,
     "cricket_kept": 39,
-    "football_kept": 22,
+    "football_kept": 23,
     "other_discarded": 92,
     "unresolved": 2,
     "today_final": 13,
-    "upcoming_final": 59,
+    "upcoming_final": 60,
     "published_states": {
-      "confirmed_football": 32,
+      "confirmed_football": 33,
       "confirmed_cricket": 40
     },
     "other_sport_leak": 0,
@@ -1765,17 +1846,17 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 1,
-      "estimate": 0,
-      "none": 12
+      "provider_or_authority": 2,
+      "estimate": 1,
+      "none": 10
     }
   },
   "fixture_stream_health": {
-    "fixtures": 83,
-    "published_fixtures": 72,
+    "fixtures": 84,
+    "published_fixtures": 73,
     "fixtures_with_verified_stream": 16,
-    "fixtures_with_zero_verified": 67,
-    "published_without_stream": 60,
+    "fixtures_with_zero_verified": 68,
+    "published_without_stream": 61,
     "fallback_available": 4,
     "targeted_fixtures": 10,
     "targeted_attempts": 48,
@@ -1791,22 +1872,22 @@
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 72,
+    "fixtures": 73,
     "verified": 18,
     "partial_authority": 0,
-    "unverified": 43,
+    "unverified": 44,
     "conflict": 11,
     "matched_by_two_independent_authorities": 29,
-    "authority_agreements": 20,
-    "authority_disagreements": 9,
-    "card_status_conflicts": 2,
+    "authority_agreements": 28,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 10,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 2
+    "not_published": 0
   },
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 72,
+    "published_fixtures": 73,
     "fixtures_with_stream": 10,
     "fixtures_playable_via_catalogue": 2,
     "fixtures_with_fresh_stream": 2,
