@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T03:24:44.397444+00:00",
+  "generated_at": "2026-11-13T03:44:41.071895+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,7 +13,7 @@
       "fixtures": 847,
       "unknown_statuses": [
         "135|Stumps - day 4",
-        "3|63'",
+        "3|83'",
         "44|ToFi"
       ],
       "attempts": [
@@ -112,29 +112,30 @@
     "upcoming": 61,
     "fixtures": 63,
     "verdicts": {
-      "VERIFIED": 28,
       "UNVERIFIED": 33,
-      "CONFLICT": 2
+      "CONFLICT": 3,
+      "VERIFIED": 27
     },
-    "verified": 28,
+    "verified": 27,
     "partial_authority": 0,
     "unverified": 33,
-    "conflict": 2,
+    "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 33,
-        "unmatched": 30
+        "unmatched": 30,
+        "matched": 33
       },
       "livescore": {
-        "matched": 30,
-        "unmatched": 33
+        "unmatched": 33,
+        "matched": 30
       }
     },
     "matched_by_two_independent_authorities": 27,
-    "authority_agreements": 27,
-    "authority_disagreements": 0,
+    "authority_agreements": 26,
+    "authority_disagreements": 1,
     "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "authorities disagree": 1,
       "kickoff": 7,
       "card says UPCOMING, authority says CANCELLED": 1
     },
@@ -147,7 +148,7 @@
     "unknown_authority_statuses": {
       "livescore": [
         "135|Stumps - day 4",
-        "3|63'",
+        "3|83'",
         "44|ToFi"
       ],
       "espn-header": [
@@ -207,13 +208,52 @@
   ],
   "fixtures": [
     {
+      "fixture_id": "provider:4-odi|india tour of new zealand 2026|2026-11-13",
+      "card_id": "4th-odi-13-nov-2026",
+      "name": "4th ODI 13 Nov 2026",
+      "competition": "India Tour of New Zealand 2026",
+      "kickoff": "2026-11-13T03:04:44+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/sliv-live-events/refs/heads/main/sonyliv.json",
+      "provider_identity": "",
+      "source_ids": [
+        "drmlive-sonyliv-backup",
+        "sportlive-sonyliv-backup",
+        "sayanpal-sonyliv-backup"
+      ],
+      "upstream_families": [
+        "SonyLIV"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:australia-vs-england|england tour of australia 2026|2026-11-13",
       "card_id": "australia-vs-england",
       "name": "Australia vs England",
       "competition": "England tour of Australia, 2026",
       "kickoff": "2026-11-13T03:30:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -272,9 +312,9 @@
           "competition_id": "24879",
           "kickoff": "2026-11-13T03:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "1st ODI",
           "format": "ODI",
@@ -288,49 +328,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:4-odi|india tour of new zealand 2026|2026-11-13",
-      "card_id": "4th-odi-13-nov-2026",
-      "name": "4th ODI 13 Nov 2026",
-      "competition": "India Tour of New Zealand 2026",
-      "kickoff": "2026-11-13T03:04:44+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/sliv-live-events/refs/heads/main/sonyliv.json",
-      "provider_identity": "",
-      "source_ids": [
-        "drmlive-sonyliv-backup",
-        "sportlive-sonyliv-backup",
-        "sayanpal-sonyliv-backup"
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
       ],
-      "upstream_families": [
-        "SonyLIV"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -339,8 +342,8 @@
       "name": "Pakistan Vs Sri Lanka",
       "competition": "ICC World Test Championship",
       "kickoff": "2026-11-13T04:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -394,8 +397,8 @@
       "name": "WBBL",
       "competition": "Women's Big Bash League",
       "kickoff": "2026-11-13T04:40:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -442,8 +445,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -983,8 +986,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1024,8 +1027,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1152,8 +1155,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1298,8 +1301,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1450,8 +1453,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1541,8 +1544,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1720,8 +1723,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1849,8 +1852,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2099,8 +2102,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2236,8 +2239,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2327,8 +2330,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2630,8 +2633,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2725,8 +2728,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2767,8 +2770,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2860,8 +2863,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3039,8 +3042,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3167,8 +3170,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3518,6 +3521,7 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3632,8 +3636,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3723,8 +3727,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3764,8 +3768,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3967,8 +3971,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4077,8 +4081,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4322,48 +4326,6 @@
         "SM-Aggregate"
       ],
       "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:australia-vs-england|2026-11-15",
-      "card_id": "australia-vs-england",
-      "name": "Australia vs England",
-      "competition": "",
-      "kickoff": "2026-11-15T03:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode",
-        "Willow"
-      ],
-      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
