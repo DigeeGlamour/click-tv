@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T07:45:17.189292+00:00",
+  "generated_at": "2026-11-13T08:05:14.698045+00:00",
   "today_match_count": 8,
   "upcoming_count": 60,
   "today_missing_logo": [],
@@ -501,7 +501,7 @@
     "examples": [
       {
         "name": "DP World Tour Championship, Dubai Day 2 13 Nov 2026",
-        "source": "drmlive-sonyliv-backup, sportlive-sonyliv-backup",
+        "source": "drmlive-sonyliv-backup",
         "competition": "DP World Tour",
         "sport_type": "",
         "reason": "league map: golf",
@@ -517,7 +517,7 @@
       },
       {
         "name": "Philippine Open Day 2 13 Nov 2026",
-        "source": "drmlive-sonyliv-backup, sportlive-sonyliv-backup",
+        "source": "drmlive-sonyliv-backup",
         "competition": "Asian Tour 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
@@ -549,7 +549,7 @@
       },
       {
         "name": "ATP 250 Bybit Stockholm Open 2026 vs Stockholm, Sweden",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, drmlive-fancode-mirror, vk1817-fancode-mirror, s",
         "competition": "ATP 250 - Bybit Stockholm Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -621,7 +621,7 @@
       },
       {
         "name": "DP World Tour Championship, Dubai Day 2 13 Nov 2026",
-        "source": "sayanpal-sonyliv-backup",
+        "source": "sportlive-sonyliv-backup, sayanpal-sonyliv-backup",
         "competition": "DP World Tour",
         "sport_type": "",
         "reason": "league map: golf",
@@ -637,7 +637,7 @@
       },
       {
         "name": "Philippine Open Day 2 13 Nov 2026",
-        "source": "sayanpal-sonyliv-backup",
+        "source": "sportlive-sonyliv-backup, sayanpal-sonyliv-backup",
         "competition": "Asian Tour 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
@@ -985,31 +985,42 @@
   "authority_status": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 2,
+    "live": 1,
     "recorded": 31,
-    "conflict": 1,
+    "conflict": 2,
     "unmatched": 34,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 2,
+      "LIVE": 1,
       "UPCOMING": 31,
       "CANCELLED": 1
     },
     "by_confidence": {
-      "HIGH": 30,
-      "LOW": 4
+      "HIGH": 29,
+      "LOW": 4,
+      "CONFLICT": 1
     },
     "applied_fixtures": [],
     "conflicts": [
       {
         "name": "Jordan Vs Indonesia",
-        "reason": "authority says CANCELLED while kickoff is still 615 minute(s) away",
+        "reason": "authority says CANCELLED while kickoff is still 595 minute(s) away",
         "status": "CANCELLED",
         "confidence": "LOW",
         "upstream_families": [
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Scotland Women vs Sri Lanka Women",
+        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1557547); LiveScore livescore=FT (6, event 1913236)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
           "LiveScore"
         ]
       }
@@ -1018,29 +1029,38 @@
   "authority_status_carried": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 1,
+    "live": 0,
     "recorded": 0,
-    "conflict": 0,
-    "unmatched": 5,
+    "conflict": 1,
+    "unmatched": 6,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
-    "by_status": {
-      "LIVE": 1
-    },
+    "by_status": {},
     "by_confidence": {
-      "HIGH": 1
+      "CONFLICT": 1
     },
     "applied_fixtures": [],
-    "conflicts": []
+    "conflicts": [
+      {
+        "name": "Scotland Women vs Sri Lanka Women",
+        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1557547); LiveScore livescore=FT (6, event 1913236)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "fixture_status_api": {
-    "asked": 2,
+    "asked": 3,
     "finished": 0,
     "unplayable": 0,
     "cache_hits": 0,
-    "no_verdict": 2
+    "no_verdict": 3
   },
   "live_protection": {
     "carried_forward": 1,
@@ -1115,12 +1135,12 @@
     "cache_hits": 31,
     "cached_entries": 1582,
     "provider": {
-      "requests": 10,
-      "hits": 8,
+      "requests": 9,
+      "hits": 7,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 24,
+      "skipped_rate_limited": 25,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1161,14 +1181,6 @@
           "rejected": 0,
           "published": 23
         },
-        "sportlive-fancode-backup": {
-          "total": 23,
-          "cricket": 11,
-          "football": 12,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 23
-        },
         "sm-fancode": {
           "total": 25,
           "cricket": 13,
@@ -1194,6 +1206,14 @@
           "published": 26
         },
         "sayanpal-fancode-mirror": {
+          "total": 23,
+          "cricket": 11,
+          "football": 12,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 23
+        },
+        "sportlive-fancode-backup": {
           "total": 23,
           "cricket": 11,
           "football": 12,
@@ -1303,14 +1323,6 @@
           "rejected": 0,
           "published": 23
         },
-        "sportlive-fancode-backup": {
-          "total": 23,
-          "cricket": 11,
-          "football": 12,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 23
-        },
         "sm-fancode": {
           "total": 23,
           "cricket": 11,
@@ -1336,6 +1348,14 @@
           "published": 23
         },
         "sayanpal-fancode-mirror": {
+          "total": 23,
+          "cricket": 11,
+          "football": 12,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 23
+        },
+        "sportlive-fancode-backup": {
           "total": 23,
           "cricket": 11,
           "football": 12,
@@ -1441,13 +1461,13 @@
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 68,
-    "verified": 32,
+    "verified": 31,
     "partial_authority": 0,
     "unverified": 34,
-    "conflict": 2,
+    "conflict": 3,
     "matched_by_two_independent_authorities": 30,
-    "authority_agreements": 30,
-    "authority_disagreements": 0,
+    "authority_agreements": 29,
+    "authority_disagreements": 1,
     "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
