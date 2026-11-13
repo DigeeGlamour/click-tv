@@ -64655,7 +64655,17 @@
       ],
       "window_seconds": 0.0,
       "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy"
+      "vantage": "delivery_path_proxy",
+      "superseded_by": {
+        "verdict": "proven",
+        "vantage": "delivery_path_proxy",
+        "sessions": 1,
+        "media_progress_seconds": [
+          0
+        ],
+        "window_seconds": 0.0,
+        "evidence_report": "reports/delivery-path-check.json"
+      }
     },
     "otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/c7di7zkdor/out/v1/f7d5b356e048494a8325563e8916d50b/cenc.mpd": {
       "route_id": "otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/c7di7zkdor/out/v1/f7d5b356e048494a8325563e8916d50b/cenc.mpd",
@@ -65686,6 +65696,18 @@
         "window_seconds": 0.0,
         "evidence_report": "reports/delivery-path-check.json"
       }
+    },
+    "www.rtmpcdn.com/live/dc1a6141-2a3d-43c0-8864-1e7c56eb44fe.m3u8": {
+      "route_id": "www.rtmpcdn.com/live/dc1a6141-2a3d-43c0-8864-1e7c56eb44fe.m3u8",
+      "url_public_template": "{id}.rtmpcdn.com/live/{seg}.m3u8",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
     }
   },
   "note": "Routes a real browser measured and could not play, each with the vantage it was measured from. Marks the card; never hides it, never changes publish_allowed, never demotes another route. Keyed by route, so a channel recovers when its route changes - or when a later measurement from any vantage passes, which supersedes the failure rather than deleting it."
