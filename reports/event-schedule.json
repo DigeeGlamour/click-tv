@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T10:25:13.229280+00:00",
+  "generated_at": "2026-11-13T10:45:24.684846+00:00",
   "today_match_count": 8,
   "upcoming_count": 64,
   "today_missing_logo": [],
@@ -8,13 +8,13 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 186,
-  "provider_rejected": 87,
+  "provider_fixture": 183,
+  "provider_rejected": 88,
   "provider_rejected_reasons": {
     "provider_dead_status": 55,
     "status_neither_live_nor_upcoming": 3,
     "kickoff_missing_and_not_live": 2,
-    "upcoming_kickoff_already_passed": 27
+    "upcoming_kickoff_already_passed": 28
   },
   "provider_rejected_by_source": {
     "sm-sports-data": {
@@ -39,8 +39,8 @@
       "total": 2
     },
     "vk1817-fancode-mirror": {
-      "upcoming_kickoff_already_passed": 1,
-      "total": 1
+      "upcoming_kickoff_already_passed": 2,
+      "total": 2
     },
     "srhady-willow-event": {
       "kickoff_missing_and_not_live": 1,
@@ -473,8 +473,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 186,
-    "discarded": 68,
+    "total": 183,
+    "discarded": 67,
     "examples": [
       {
         "name": "DP World Tour Championship, Dubai Day 2 13 Nov 2026",
@@ -621,14 +621,6 @@
         "evidence": "tennis"
       },
       {
-        "name": "ATP 250 Bybit Stockholm Open 2026 vs Stockholm, Sweden",
-        "source": "vk1817-fancode-mirror",
-        "competition": "ATP 250 - Bybit Stockholm Open 2026",
-        "sport_type": "",
-        "reason": "tennis gazetteer",
-        "evidence": "tennis"
-      },
-      {
         "name": "Formula 1",
         "source": "sm-sports-data",
         "competition": "Formula 1",
@@ -955,37 +947,65 @@
         "sport_type": "",
         "reason": "league map: motorsport",
         "evidence": "Formula 1"
+      },
+      {
+        "name": "SmackDown",
+        "source": "sm-sports-data",
+        "competition": "Friday Night SmackDown",
+        "sport_type": "",
+        "reason": "wrestling / mma / boxing gazetteer",
+        "evidence": "boxing"
       }
     ]
   },
   "reused_event_ids": 0,
   "authority_status": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 30,
-    "conflict": 3,
+    "conflict": 2,
     "unmatched": 39,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
+      "FINISHED": 1,
       "UPCOMING": 30,
       "CANCELLED": 1
     },
     "by_confidence": {
-      "CONFLICT": 2,
-      "HIGH": 27,
-      "LOW": 4
+      "HIGH": 28,
+      "LOW": 4,
+      "CONFLICT": 1
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "Australia Vs England",
+        "fixture_id": "provider:australia-vs-england|one day international|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1528703)",
+          "LiveScore livescore=FT (6, event 1757840)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T10:45:01.716325+00:00",
+        "remove_after": "2026-11-13T11:05:01.716325+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": ""
+      }
+    ],
     "conflicts": [
       {
         "name": "Australia Vs England",
-        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1528703); LiveScore livescore=FT (6, event 1757840)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -993,7 +1013,7 @@
       },
       {
         "name": "Jordan Vs Indonesia",
-        "reason": "authority says CANCELLED while kickoff is still 455 minute(s) away",
+        "reason": "authority says CANCELLED while kickoff is still 434 minute(s) away",
         "status": "CANCELLED",
         "confidence": "LOW",
         "upstream_families": [
@@ -1002,7 +1022,7 @@
       },
       {
         "name": "Thailand Women vs Pakistan Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1557549); LiveScore livescore=Play in progress (33, event 1913231)",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1557549); LiveScore livescore=Between innings (157, event 1913231)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1013,27 +1033,49 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 0,
-    "conflict": 2,
+    "conflict": 1,
     "unmatched": 6,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
-    "by_status": {},
-    "by_confidence": {
-      "CONFLICT": 2
+    "by_status": {
+      "FINISHED": 1
     },
-    "applied_fixtures": [],
+    "by_confidence": {
+      "HIGH": 1,
+      "CONFLICT": 1
+    },
+    "applied_fixtures": [
+      {
+        "name": "Australia Vs England",
+        "fixture_id": "provider:australia-vs-england|one day international|2026-11-13",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1528703)",
+          "LiveScore livescore=FT (6, event 1757840)"
+        ],
+        "authority_finished_seen_at": "2026-11-13T10:45:01.716325+00:00",
+        "remove_after": "2026-11-13T11:05:01.716325+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
     "conflicts": [
       {
         "name": "Australia Vs England",
-        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1528703); LiveScore livescore=FT (6, event 1757840)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1041,7 +1083,7 @@
       },
       {
         "name": "Thailand Women vs Pakistan Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1557549); LiveScore livescore=Play in progress (33, event 1913231)",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1557549); LiveScore livescore=Between innings (157, event 1913231)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1068,14 +1110,14 @@
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 1,
-    "probe_dead": 0,
+    "probe_alive": 0,
+    "probe_dead": 1,
     "probe_inconclusive": 0,
-    "end_pending": 0,
+    "end_pending": 1,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 1
+      "END_PENDING": 1
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -1102,7 +1144,7 @@
   },
   "channel_names": {
     "stamped": 0,
-    "unresolved": 70,
+    "unresolved": 69,
     "names": {}
   },
   "streamed_provider": {
@@ -1311,6 +1353,14 @@
         "confirmed_football": 28
       },
       "by_source": {
+        "sm-sports-data": {
+          "total": 22,
+          "cricket": 1,
+          "football": 21,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 22
+        },
         "srhady-willow-event": {
           "total": 25,
           "cricket": 25,
@@ -1358,14 +1408,6 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 22
-        },
-        "sm-sports-data": {
-          "total": 22,
-          "cricket": 1,
-          "football": 21,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 22
         }
       },
       "rejected_examples": [],
@@ -1381,10 +1423,10 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 273,
+    "raw_events": 271,
     "cricket_kept": 44,
     "football_kept": 28,
-    "other_discarded": 70,
+    "other_discarded": 69,
     "unresolved": 0,
     "today_final": 8,
     "upcoming_final": 64,
@@ -1430,9 +1472,9 @@
     ],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 0,
+      "provider_or_authority": 2,
       "estimate": 0,
-      "none": 8
+      "none": 6
     }
   },
   "fixture_stream_health": {
@@ -1445,14 +1487,14 @@
     "targeted_fixtures": 6,
     "targeted_attempts": 25,
     "fixtures_with_a_first_link_time": 2,
-    "candidate_routes": 45,
-    "verified_routes": 35,
+    "candidate_routes": 44,
+    "verified_routes": 34,
     "failed_routes": 10,
     "fixtures_touched_by_a_route_failure": 9,
     "fixtures_left_with_nothing": 3,
     "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 29,
-    "unrecognised_failed_routes": 65
+    "unrecognised_failed_routes": 68
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
@@ -1462,9 +1504,9 @@
     "unverified": 39,
     "conflict": 4,
     "matched_by_two_independent_authorities": 29,
-    "authority_agreements": 27,
-    "authority_disagreements": 2,
-    "card_status_conflicts": 1,
+    "authority_agreements": 28,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 2,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 1
