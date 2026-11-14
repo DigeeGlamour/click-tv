@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T06:45:59.000305+00:00",
+  "generated_at": "2026-11-14T07:05:15.203592+00:00",
   "today_match_count": 6,
   "upcoming_count": 66,
   "today_missing_logo": [],
@@ -8,7 +8,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 208,
+  "provider_fixture": 209,
   "provider_rejected": 85,
   "provider_rejected_reasons": {
     "provider_dead_status": 50,
@@ -478,8 +478,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 208,
-    "discarded": 70,
+    "total": 209,
+    "discarded": 71,
     "examples": [
       {
         "name": "DP World Tour Championship, Dubai Day 3 14 Nov 2026",
@@ -592,6 +592,14 @@
         "sport_type": "",
         "reason": "league map: gridiron",
         "evidence": "NFL"
+      },
+      {
+        "name": "Day 4 vs Austin, Texas (2026)",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, sayanpal-f",
+        "competition": "Austin Championship 2026",
+        "sport_type": "",
+        "reason": "golf gazetteer",
+        "evidence": "golf"
       },
       {
         "name": "Detroit Lions Vs New England Patriots",
@@ -952,14 +960,6 @@
         "sport_type": "",
         "reason": "wrestling / mma / boxing gazetteer",
         "evidence": "boxing"
-      },
-      {
-        "name": "TENNIS | EVENTO",
-        "source": "sm-sports-data",
-        "competition": "TENNIS | EVENTO",
-        "sport_type": "",
-        "reason": "tennis gazetteer",
-        "evidence": "tennis"
       }
     ]
   },
@@ -986,27 +986,48 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 0,
-    "conflict": 1,
-    "unmatched": 3,
+    "conflict": 0,
+    "unmatched": 4,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
-    "by_status": {},
-    "by_confidence": {
-      "CONFLICT": 1
+    "by_status": {
+      "FINISHED": 1
     },
-    "applied_fixtures": [],
+    "by_confidence": {
+      "HIGH": 1
+    },
+    "applied_fixtures": [
+      {
+        "name": "Melbourne Victory Vs Adelaide United",
+        "fixture_id": "provider:melbourne-victory-vs-adelaide-united|a league women|2026-11-14",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401913234)",
+          "LiveScore livescore=FT (6, event 1884858)"
+        ],
+        "authority_finished_seen_at": "2026-11-14T07:04:47.810716+00:00",
+        "remove_after": "2026-11-14T07:24:47.810716+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
     "conflicts": [
       {
         "name": "Melbourne Victory Vs Adelaide United",
-        "reason": "independent authorities disagree: ESPN espn-header=63' (STATUS_SECOND_HALF, event 401913234); LiveScore livescore=FT (6, event 1884858)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1031,14 +1052,14 @@
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 1,
+    "probe_alive": 0,
     "probe_dead": 0,
     "probe_inconclusive": 0,
-    "end_pending": 0,
+    "end_pending": 1,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 1
+      "END_PENDING": 1
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -1116,32 +1137,32 @@
   "competition_labels_clarified": [],
   "sport_filter": {
     "at_merge": {
-      "total": 75,
+      "total": 74,
       "published": 71,
-      "rejected": 3,
+      "rejected": 2,
       "quarantined": 1,
       "states": {
         "confirmed_cricket": 41,
-        "confirmed_other": 3,
+        "confirmed_other": 2,
         "confirmed_football": 30,
         "unknown": 1
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 37,
+          "total": 36,
           "cricket": 6,
           "football": 27,
           "quarantined": 1,
-          "rejected": 3,
+          "rejected": 2,
           "published": 33
         },
         "srhady-primevideo-sports": {
-          "total": 3,
-          "cricket": 3,
+          "total": 2,
+          "cricket": 2,
           "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 3
+          "published": 2
         },
         "srhady-willow-event": {
           "total": 24,
@@ -1194,14 +1215,6 @@
       },
       "rejected_examples": [
         {
-          "name": "Colorado Buffaloes Vs Houston Cougars",
-          "source": "sm-sports-data",
-          "competition": "NCAA Division FBS",
-          "sport_type": "rugby",
-          "reason": "rugby gazetteer",
-          "evidence": "rugby"
-        },
-        {
           "name": "SPORTS LIVE",
           "source": "sm-sports-data",
           "competition": "SPORTS LIVE",
@@ -1248,12 +1261,12 @@
           "published": 4
         },
         "srhady-primevideo-sports": {
-          "total": 3,
-          "cricket": 3,
+          "total": 2,
+          "cricket": 2,
           "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 3
+          "published": 2
         },
         "srhady-willow-event": {
           "total": 2,
@@ -1344,7 +1357,7 @@
   "sport_quarantined": [],
   "sport_leaks": [],
   "sport_never_dropped": {
-    "refused": 63,
+    "refused": 62,
     "wrongly_refused": [
       {
         "name": "Melbourne United Vs South East Melbourne Phoenix",
@@ -1355,7 +1368,7 @@
     ]
   },
   "sport_pipeline": {
-    "raw_events": 293,
+    "raw_events": 294,
     "cricket_kept": 41,
     "football_kept": 30,
     "other_discarded": 73,
@@ -1390,26 +1403,26 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 0,
+      "provider_or_authority": 1,
       "estimate": 0,
-      "none": 6
+      "none": 5
     }
   },
   "fixture_stream_health": {
     "fixtures": 80,
     "published_fixtures": 72,
-    "fixtures_with_verified_stream": 16,
-    "fixtures_with_zero_verified": 64,
+    "fixtures_with_verified_stream": 15,
+    "fixtures_with_zero_verified": 65,
     "published_without_stream": 66,
     "fallback_available": 5,
     "targeted_fixtures": 3,
     "targeted_attempts": 4,
     "fixtures_with_a_first_link_time": 3,
     "candidate_routes": 71,
-    "verified_routes": 46,
-    "failed_routes": 25,
+    "verified_routes": 45,
+    "failed_routes": 26,
     "fixtures_touched_by_a_route_failure": 13,
-    "fixtures_left_with_nothing": 4,
+    "fixtures_left_with_nothing": 5,
     "distinct_failure_codes": 5,
     "unrecognised_candidate_groups": 25,
     "unrecognised_failed_routes": 49
@@ -1422,9 +1435,9 @@
     "unverified": 36,
     "conflict": 3,
     "matched_by_two_independent_authorities": 27,
-    "authority_agreements": 26,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 0,
+    "authority_agreements": 27,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 0
