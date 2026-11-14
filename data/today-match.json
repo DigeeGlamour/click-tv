@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-14T21:24:31.116931+00:00",
+  "updated_at": "2026-11-14T21:27:45.158596+00:00",
   "count": 11,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -182,14 +182,14 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1558815)",
+        "ESPN espn-header=Scheduled (Scheduled, event 1558815)",
         "LiveScore livescore=Play in progress (33, event 1914824)"
       ],
       "authority_independent_count": 2,
@@ -208,7 +208,8 @@
       "end_pending_confirmations": 2,
       "carried_forward_misses": 2,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
-      "carried_forward_first_missed_at": "2026-11-14T21:04:09.681520+00:00"
+      "carried_forward_first_missed_at": "2026-11-14T21:04:09.681520+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558815); LiveScore livescore=Play in progress (33, event 1914824)"
     },
     {
       "id": "lethwei-fighting-championship-1",
@@ -728,7 +729,7 @@
           "competition": "Abu Dhabi T10",
           "kickoff": "2026-11-14T16:00:00+00:00",
           "kickoff_delta_minutes": -144.3,
-          "status": "FINISHED"
+          "status": "LIVE"
         }
       ]
     },
@@ -825,7 +826,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-14T19:00:00+00:00",
       "start_at": "2026-11-14T19:00:00+00:00",
-      "end_time": "2026-11-14T22:24:07+00:00",
+      "end_time": "2026-11-14T22:27:20+00:00",
       "end_time_source": "assumed",
       "competition": "Africa Cup of Nations Qual.",
       "fixture_id": "provider:angola-vs-south-sudan|africa cup of nations qual|2026-11-14",
@@ -847,10 +848,10 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=82' (STATUS_SECOND_HALF, event 401927215)",
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401927215)",
         "LiveScore livescore=FT (6, event 1872925)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=82' (STATUS_SECOND_HALF, event 401927215); LiveScore livescore=FT (6, event 1872925)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401927215); LiveScore livescore=FT (6, event 1872925)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bm2gzt1553208021.png",
@@ -1124,7 +1125,7 @@
           "competition": "French Première Ligue",
           "kickoff": "2026-11-14T17:30:00+00:00",
           "kickoff_delta_minutes": -114.1,
-          "status": "FINISHED"
+          "status": "LIVE"
         }
       ]
     },
@@ -1407,35 +1408,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_3fc22cf6f7697964786a63712d5dbbc3",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1464,7 +1436,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1484,6 +1456,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_f1574a66b6987a994752a13a896e1923",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_3fc22cf6f7697964786a63712d5dbbc3",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1584,17 +1585,30 @@
               "id": "romania-vs-poland--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_0ebdf2039ccaaf29a9c01624",
+              "variant_key": "sv_2d2f601495fcb96ed9f2bc7e",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_3fc22cf6f7697964786a63712d5dbbc3",
+              "playback_id": "ctv_91ab59d601b1dddf8245cf2d60a5c237",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
             },
             {
               "id": "romania-vs-poland--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_c41db73fef408f93b736ac67",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f1574a66b6987a994752a13a896e1923",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "romania-vs-poland--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_f5011945a2410fd4ceb32227",
@@ -1607,27 +1621,14 @@
               "stream_type": "dash"
             },
             {
-              "id": "romania-vs-poland--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_2d2f601495fcb96ed9f2bc7e",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_91ab59d601b1dddf8245cf2d60a5c237",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
               "id": "romania-vs-poland--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_c41db73fef408f93b736ac67",
+              "variant_key": "sv_0ebdf2039ccaaf29a9c01624",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_f1574a66b6987a994752a13a896e1923",
+              "playback_id": "ctv_3fc22cf6f7697964786a63712d5dbbc3",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1664,7 +1665,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-14T19:45:00+00:00",
       "start_at": "2026-11-14T19:45:00+00:00",
-      "end_time": "2026-11-14T22:24:07+00:00",
+      "end_time": "2026-11-14T22:27:20+00:00",
       "end_time_source": "assumed",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:romania-vs-poland|uefa nations league|2026-11-14",
@@ -1679,19 +1680,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "UPCOMING",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401861168)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861168)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401861168"
       },
-      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/w903wb1689198300.png",
@@ -1765,13 +1765,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "UPCOMING",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=44' (STATUS_FIRST_HALF, event 401883115)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401883115)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1795,12 +1795,12 @@
     {
       "id": "central-washington-vs-west-texas-a-m-football",
       "name": "Central Washington vs West Texas A M Football",
-      "primary_stream_key": "36334b52c160e23abee3dd88985b3133cc302716119dbb561cd885cc87fa871e",
+      "primary_stream_key": "07c9e71fcac4b098994dbba2c17784239cde5aeb51e28631d40bbc5ea77674bd",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.b6de216f-de58-4646-8db0-54ff763664c0/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
       "category": "today_match",
-      "header_profile": "android_chrome",
+      "header_profile": "android_tv",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
       "requires_headers": false,
@@ -1849,7 +1849,7 @@
         },
         {
           "name": "Backup-2",
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -1860,14 +1860,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
+          "playback_id": "ctv_f40d0dd07e0d3b34e943a6485614a084",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1889,14 +1889,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_f40d0dd07e0d3b34e943a6485614a084",
+          "playback_id": "ctv_55fa22bb2d0e979e5a21fce5eae43852",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1932,11 +1932,11 @@
               "id": "central-washington-vs-west-texas-a-m-football--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_d29ade42fd9842f9fc81560e",
+              "variant_key": "sv_ea63e494f67b40f1a47957d6",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_55fa22bb2d0e979e5a21fce5eae43852",
+              "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1958,11 +1958,11 @@
               "id": "central-washington-vs-west-texas-a-m-football--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_ea63e494f67b40f1a47957d6",
+              "variant_key": "sv_73c8ade531e51d14e61704a8",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
+              "playback_id": "ctv_f40d0dd07e0d3b34e943a6485614a084",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1971,11 +1971,11 @@
               "id": "central-washington-vs-west-texas-a-m-football--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_73c8ade531e51d14e61704a8",
+              "variant_key": "sv_d29ade42fd9842f9fc81560e",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_f40d0dd07e0d3b34e943a6485614a084",
+              "playback_id": "ctv_55fa22bb2d0e979e5a21fce5eae43852",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2010,9 +2010,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-14T21:24:07+00:00",
-      "start_at": "2026-11-14T21:24:07+00:00",
-      "end_time": "2026-11-14T23:54:07+00:00",
+      "start_time": "2026-11-14T21:27:20+00:00",
+      "start_at": "2026-11-14T21:27:20+00:00",
+      "end_time": "2026-11-14T23:57:20+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:central-washington-vs-west-texas-a-m-football|2026-11-14",
       "status": "LIVE_NOW",
@@ -2026,7 +2026,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_55fa22bb2d0e979e5a21fce5eae43852",
+      "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
