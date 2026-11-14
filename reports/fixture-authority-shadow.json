@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T09:05:13.638546+00:00",
+  "generated_at": "2026-11-14T09:23:21.457842+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,8 +12,8 @@
       "requests_ok": 6,
       "fixtures": 1232,
       "unknown_statuses": [
-        "2|2'",
-        "2|4'",
+        "2|20'",
+        "2|23'",
         "44|ToFi"
       ],
       "attempts": [
@@ -112,31 +112,32 @@
     "upcoming": 64,
     "fixtures": 73,
     "verdicts": {
+      "CONFLICT": 4,
       "UNVERIFIED": 38,
-      "CONFLICT": 3,
-      "VERIFIED": 32
+      "VERIFIED": 31
     },
-    "verified": 32,
+    "verified": 31,
     "partial_authority": 0,
     "unverified": 38,
-    "conflict": 3,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 41,
-        "matched": 32
+        "matched": 32,
+        "unmatched": 41
       },
       "livescore": {
-        "unmatched": 39,
-        "matched": 34
+        "matched": 34,
+        "unmatched": 39
       }
     },
     "matched_by_two_independent_authorities": 26,
-    "authority_agreements": 25,
-    "authority_disagreements": 0,
+    "authority_agreements": 24,
+    "authority_disagreements": 1,
     "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
       "kickoff": 6,
-      "card says LIVE, authority says UPCOMING": 1
+      "authorities disagree": 1
     },
     "identity_near_misses": 11,
     "independent_authority_count_distribution": {
@@ -146,8 +147,8 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "2|2'",
-        "2|4'",
+        "2|20'",
+        "2|23'",
         "44|ToFi"
       ],
       "espn-header": [
@@ -247,6 +248,95 @@
   ],
   "fixtures": [
     {
+      "fixture_id": "provider:india-vs-bhutan|saff championship|2026-11-14",
+      "card_id": "india-vs-bhutan",
+      "name": "India Vs Bhutan",
+      "competition": "SAFF Championship",
+      "kickoff": "2026-11-14T09:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401934182",
+          "upstream_family": "ESPN",
+          "name": "India vs Bhutan",
+          "home": "India",
+          "away": "Bhutan",
+          "home_team_id": "4385",
+          "away_team_id": "5784",
+          "competition": "SAFF Championship",
+          "competition_id": "18914",
+          "kickoff": "2026-11-14T09:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, November 14th at 4:00 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:18914~e:401934182~c:401934182"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1917656",
+          "upstream_family": "LiveScore",
+          "name": "India vs Bhutan",
+          "home": "India",
+          "away": "Bhutan",
+          "home_team_id": "9035",
+          "away_team_id": "10976",
+          "competition": "SAFF Championship: Play off",
+          "competition_id": "26772",
+          "kickoff": "2026-11-14T09:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "23'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "Semi-finals",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:wbbl|women big bash league|2026-11-14",
       "card_id": "wbbl",
       "name": "WBBL",
@@ -318,8 +408,8 @@
           "competition_id": "24799",
           "kickoff": "2026-11-13T06:00:00+00:00",
           "kickoff_delta_minutes": -1380.0,
-          "status_raw": "Drinks",
-          "status_code": "Drinks",
+          "status_raw": "Live",
+          "status_code": "Live",
           "status": "LIVE",
           "sport": "cricket",
           "round": "2nd Test",
@@ -328,7 +418,7 @@
           "espn_state": "in",
           "espn_status": "in",
           "espn_status_detail": "Live",
-          "espn_status_description": "Drinks",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-18T23:59:00Z",
           "authority_uid": "s:200~e:1555124~c:1555124"
@@ -374,100 +464,11 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:india-vs-bhutan|saff championship|2026-11-14",
-      "card_id": "india-vs-bhutan",
-      "name": "India Vs Bhutan",
-      "competition": "SAFF Championship",
-      "kickoff": "2026-11-14T09:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401934182",
-          "upstream_family": "ESPN",
-          "name": "India vs Bhutan",
-          "home": "India",
-          "away": "Bhutan",
-          "home_team_id": "4385",
-          "away_team_id": "5784",
-          "competition": "SAFF Championship",
-          "competition_id": "18914",
-          "kickoff": "2026-11-14T09:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Sat, November 14th at 4:00 AM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:18914~e:401934182~c:401934182"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1917656",
-          "upstream_family": "LiveScore",
-          "name": "India vs Bhutan",
-          "home": "India",
-          "away": "Bhutan",
-          "home_team_id": "9035",
-          "away_team_id": "10976",
-          "competition": "SAFF Championship: Play off",
-          "competition_id": "26772",
-          "kickoff": "2026-11-14T09:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "4'",
-          "status_code": "2",
-          "status": "UNKNOWN",
-          "sport": "football",
-          "round": "Semi-finals",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:pakistan-u19-vs-india-u19|acc men u19 asia cup 2026 final|2026-11-14",
       "card_id": "pakistan-u19-vs-india-u19",
       "name": "Pakistan U19 vs India U19",
       "competition": "ACC Mens U19 Asia Cup 2026 - Final",
-      "kickoff": "2026-11-14T09:05:13+00:00",
+      "kickoff": "2026-11-14T09:23:21+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -514,12 +515,16 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "PrimeVideo",
+        "SM-Aggregate",
+        "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 3,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -543,7 +548,7 @@
       "card_id": "perth-scorchers-women-vs-adelaide-strikers-women",
       "name": "Perth Scorchers Women vs Adelaide Strikers Women",
       "competition": "Womens Big Bash League 2026 - 22nd Match",
-      "kickoff": "2026-11-14T09:05:13+00:00",
+      "kickoff": "2026-11-14T09:23:21+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -574,7 +579,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "21284",
           "kickoff": "2026-11-14T08:10:00+00:00",
-          "kickoff_delta_minutes": -55.2,
+          "kickoff_delta_minutes": -73.3,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -604,7 +609,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "25707",
           "kickoff": "2026-11-14T08:10:00+00:00",
-          "kickoff_delta_minutes": -55.2,
+          "kickoff_delta_minutes": -73.3,
           "status_raw": "Play in progress",
           "status_code": "33",
           "status": "LIVE",
@@ -622,8 +627,8 @@
       ],
       "near_miss_count": 2,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-14T09:05, espn-header 2026-11-14T08:10 (-55.2 min)",
-        "kickoff: ours 2026-11-14T09:05, livescore 2026-11-14T08:10 (-55.2 min)"
+        "kickoff: ours 2026-11-14T09:23, espn-header 2026-11-14T08:10 (-73.3 min)",
+        "kickoff: ours 2026-11-14T09:23, livescore 2026-11-14T08:10 (-73.3 min)"
       ],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
@@ -741,17 +746,17 @@
           "competition_id": "21284",
           "kickoff": "2026-11-14T04:40:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
+          "status_raw": "Live",
+          "status_code": "Live",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "21st Match",
           "format": "",
           "gender": "women",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-14T23:59:00Z",
           "authority_uid": "s:200~e:1543964~c:1543964"
@@ -787,10 +792,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -1130,9 +1137,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1221,9 +1228,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1491,9 +1498,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1531,11 +1538,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1661,11 +1668,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1916,11 +1923,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2009,10 +2016,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sm-fancode",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2102,9 +2109,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2416,9 +2423,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2609,8 +2616,8 @@
       "name": "Japan Vs Brazil",
       "competition": "International Friendly Games",
       "kickoff": "2026-11-14T10:15:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -2741,11 +2748,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3036,9 +3043,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3223,9 +3230,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3332,9 +3339,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3373,9 +3380,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3543,11 +3550,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3704,11 +3711,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3885,9 +3892,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3976,9 +3983,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4215,9 +4222,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4364,11 +4371,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
