@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-14T20:24:16.510522+00:00",
-  "count": 12,
+  "updated_at": "2026-11-14T20:44:32.804199+00:00",
+  "count": 11,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -112,7 +112,15 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_e7ad3665226759acd52fc2a8e43d535c"
+      "playback_id": "ctv_2adb68167cc1e966518e24177e58d52d",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-14T20:44:27.049246+00:00"
     },
     {
       "id": "pakistan-u19-vs-india-u19",
@@ -427,11 +435,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 19,
+      "carried_forward_misses": 20,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-14T14:44:46.183922+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 19
+      "end_pending_confirmations": 20
     },
     {
       "id": "west-indies-a-vs-england-lions",
@@ -455,12 +463,12 @@
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
+      "source_id": "vk1817-fancode-mirror",
       "metadata_only": true,
       "available_link_count": 0,
       "channel_stats": {
         "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -469,18 +477,12 @@
       },
       "source_provenance": [
         {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
         "vk1817-fancode-mirror"
       ],
       "start_time": "2026-11-14T18:00:00+00:00",
@@ -493,23 +495,26 @@
       "original_status": "UPCOMING",
       "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
       "source_start_time": "2026-11-14T18:00:00+00:00",
       "time_verification": "provider_feed",
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1558815)"
+        "ESPN espn-header=Live (Live, event 1558815)",
+        "LiveScore livescore=Play in progress (33, event 1914824)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "1558815"
+        "espn-header": "1558815",
+        "livescore": "1914824"
       },
       "authority_status": "LIVE",
       "allow_without_stream": true,
@@ -859,7 +864,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_fc65dc75eec43ae7a6bdab7fa4486816",
       "protected_source": true,
       "requires_credentials": true,
@@ -868,13 +873,13 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 13,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 14,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-14T16:45:05.997420+00:00",
       "authority_near_misses": [
         {
@@ -899,7 +904,11 @@
           "kickoff_delta_minutes": -159.3,
           "status": "FINISHED"
         }
-      ]
+      ],
+      "end_pending": true,
+      "end_pending_confirmations": 14,
+      "ended_seen_at": "2026-11-14T20:44:27.049246+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "lethwei-fighting-championship-1",
@@ -1148,112 +1157,9 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 10,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-14T17:44:39.109010+00:00"
-    },
-    {
-      "id": "fleetwood-town-vs-tranmere-rovers",
-      "name": "Fleetwood Town vs Tranmere Rovers",
-      "primary_stream_key": "",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://www.fancode.com/skillup-uploads/cms-media/Mini_Match_Card-2.png",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        }
-      ],
-      "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
-      ],
-      "start_time": "2026-11-14T17:30:00+00:00",
-      "start_at": "2026-11-14T17:30:00+00:00",
-      "end_time": "2026-11-14T20:00:00+00:00",
-      "end_time_source": "sport",
-      "competition": "League Two 2026-27",
-      "fixture_id": "provider:fleetwood-town-vs-tranmere-rovers|league two 2026 27|2026-11-14",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "source_start_time": "2026-11-14T17:30:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401881272)",
-        "LiveScore livescore=FT (6, event 1803606)"
-      ],
-      "allow_without_stream": true,
-      "route_failed_while_live": true,
-      "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/txwuwp1424032712.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ao52xt1626199781.png",
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "401881272",
-        "livescore": "1803606"
-      },
-      "authority_finished_confirmations": 1,
-      "authority_finished_seen_at": "2026-11-14T20:04:05.260882+00:00",
-      "authority_status": "FINISHED",
-      "authority_remove_after": "2026-11-14T20:24:05.260882+00:00",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-11-14T20:04:19.344913+00:00",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-11-14T20:20:34.664121+00:00"
     },
     {
       "id": "yas-lions-vs-uae-bulls",
@@ -1509,7 +1415,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-14T18:44:23.540209+00:00",
       "authority_near_misses": [
@@ -1619,8 +1525,8 @@
       "resolution_height": 1080,
       "start_time": "2026-11-14T19:00:00+00:00",
       "start_at": "2026-11-14T19:00:00+00:00",
-      "end_time": "2026-11-14T21:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-14T21:44:07+00:00",
+      "end_time_source": "assumed",
       "competition": "Africa Cup of Nations Qual.",
       "fixture_id": "provider:angola-vs-south-sudan|africa cup of nations qual|2026-11-14",
       "status": "LIVE_NOW",
@@ -1640,7 +1546,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401927215)"
+        "ESPN espn-header=59' (STATUS_SECOND_HALF, event 401927215)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1907,7 +1813,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-14T19:44:28.131875+00:00",
       "authority_near_misses": [
@@ -2171,7 +2077,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-14T19:44:28.131875+00:00"
     },
@@ -2203,35 +2109,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_91ab59d601b1dddf8245cf2d60a5c237",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -2260,7 +2137,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -2280,6 +2157,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_3fc22cf6f7697964786a63712d5dbbc3",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_91ab59d601b1dddf8245cf2d60a5c237",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2380,32 +2286,6 @@
               "id": "romania-vs-poland--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_f5011945a2410fd4ceb32227",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_16010045cf548be92b71ae4ae231c69e",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "romania-vs-poland--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_2d2f601495fcb96ed9f2bc7e",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_91ab59d601b1dddf8245cf2d60a5c237",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "romania-vs-poland--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_c41db73fef408f93b736ac67",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -2416,7 +2296,20 @@
               "stream_type": "dash"
             },
             {
-              "id": "romania-vs-poland--prime-video--4",
+              "id": "romania-vs-poland--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_f5011945a2410fd4ceb32227",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_16010045cf548be92b71ae4ae231c69e",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "romania-vs-poland--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_0ebdf2039ccaaf29a9c01624",
@@ -2424,6 +2317,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_3fc22cf6f7697964786a63712d5dbbc3",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "romania-vs-poland--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_2d2f601495fcb96ed9f2bc7e",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_91ab59d601b1dddf8245cf2d60a5c237",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2481,7 +2387,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=17' (STATUS_FIRST_HALF, event 401861168)"
+        "ESPN espn-header=33' (STATUS_FIRST_HALF, event 401861168)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2509,7 +2415,6 @@
       "sport_type_derived": true,
       "logo": "https://images.fancode.com/aig/match/v1794380803707/4250594_CASACARDS_APP.png",
       "category": "today_match",
-      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "media",
@@ -2524,13 +2429,12 @@
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
+      "source_id": "vk1817-fancode-mirror",
       "metadata_only": true,
       "available_link_count": 0,
-      "backups": [],
       "channel_stats": {
         "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -2539,18 +2443,12 @@
       },
       "source_provenance": [
         {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
         "vk1817-fancode-mirror"
       ],
       "start_time": "2026-11-14T20:00:00+00:00",
@@ -2563,7 +2461,7 @@
       "original_status": "UPCOMING",
       "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
       "source_start_time": "2026-11-14T20:00:00+00:00",
       "time_verification": "provider_feed",
       "sport_class": "confirmed_football",
@@ -2575,7 +2473,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=3' (STATUS_FIRST_HALF, event 401883115)"
+        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401883115)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2583,6 +2481,7 @@
       },
       "authority_status": "LIVE",
       "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "LIVE",
