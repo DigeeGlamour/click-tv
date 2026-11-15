@@ -1,42 +1,43 @@
 {
-  "generated_at": "2026-11-15T17:44:55.880325+00:00",
+  "generated_at": "2026-11-15T18:04:47.708097+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
-    "fixtures": 74,
-    "published_fixtures": 57,
-    "fixtures_with_verified_stream": 20,
-    "fixtures_with_zero_verified": 54,
-    "published_without_stream": 48,
+    "fixtures": 72,
+    "published_fixtures": 56,
+    "fixtures_with_verified_stream": 24,
+    "fixtures_with_zero_verified": 48,
+    "published_without_stream": 46,
     "fallback_available": 9,
-    "targeted_fixtures": 5,
-    "targeted_attempts": 17,
+    "targeted_fixtures": 4,
+    "targeted_attempts": 10,
     "fixtures_with_a_first_link_time": 3,
-    "candidate_routes": 86,
-    "verified_routes": 62,
-    "failed_routes": 24,
-    "fixtures_touched_by_a_route_failure": 18,
-    "fixtures_left_with_nothing": 10,
-    "distinct_failure_codes": 5,
-    "unrecognised_candidate_groups": 42,
-    "unrecognised_failed_routes": 66
+    "candidate_routes": 105,
+    "verified_routes": 72,
+    "failed_routes": 33,
+    "fixtures_touched_by_a_route_failure": 20,
+    "fixtures_left_with_nothing": 8,
+    "distinct_failure_codes": 7,
+    "unrecognised_candidate_groups": 31,
+    "unrecognised_failed_routes": 60
   },
   "failure_codes": {
     "browser_unreachable": 31,
-    "http_404": 29,
+    "http_404": 25,
+    "http_403": 17,
     "timeout": 14,
-    "http_403": 9,
     "dns": 2,
     "http_400": 2,
-    "http_401": 1,
-    "ssl": 1,
+    "verification_failed": 1,
     "http_452": 1
   },
   "failure_code_fixtures": {
-    "browser_unreachable": 12,
-    "http_403": 5,
-    "http_404": 3,
+    "browser_unreachable": 14,
+    "http_403": 7,
+    "http_404": 4,
+    "dns": 1,
+    "timeout": 1,
     "http_400": 1,
-    "dns": 1
+    "http_452": 1
   },
   "fixtures": [
     {
@@ -55,6 +56,7 @@
       "failure_codes": [
         "timeout",
         "http_404",
+        "http_403",
         "dns",
         "browser_unreachable"
       ],
@@ -98,19 +100,45 @@
       "fixture_id": "npl",
       "fixture_key": "npl",
       "fixture_name": "NPL",
-      "recognised_fixture": false,
+      "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 8,
-      "verified_stream_count": 3,
+      "candidate_stream_count": 7,
+      "verified_stream_count": 2,
       "failed_stream_count": 5,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_404",
         "timeout",
         "http_452",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "detroit-lions-vs-new-england-patriots",
+      "fixture_key": "detroit-lions-vs-new-england-patriots",
+      "fixture_name": "Detroit Lions Vs New England Patriots",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 8,
+      "verified_stream_count": 4,
+      "failed_stream_count": 4,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
         "browser_unreachable"
       ],
       "fallback_available": false,
@@ -136,7 +164,7 @@
       "failed_stream_count": 4,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "ssl",
+        "verification_failed",
         "http_403",
         "http_404",
         "browser_unreachable"
@@ -165,7 +193,8 @@
       "unchecked_stream_count": 0,
       "failure_codes": [
         "timeout",
-        "http_404"
+        "http_404",
+        "http_403"
       ],
       "fallback_available": false,
       "published": false,
@@ -204,6 +233,34 @@
       "targeted": false
     },
     {
+      "fixture_id": "finland-vs-san-marino",
+      "fixture_key": "finland-vs-san-marino",
+      "fixture_name": "Finland Vs San Marino",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "kajju-sonyliv-backup"
+      ],
+      "candidate_stream_count": 9,
+      "verified_stream_count": 6,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "http_403",
+        "browser_unreachable"
+      ],
+      "fallback_available": true,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "nfl-redzone",
       "fixture_key": "nfl-redzone",
       "fixture_name": "NFL REDZONE",
@@ -212,8 +269,34 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 5,
-      "verified_stream_count": 2,
+      "candidate_stream_count": 6,
+      "verified_stream_count": 3,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "new-orleans-saints-vs-carolina-panthers",
+      "fixture_key": "new-orleans-saints-vs-carolina-panthers",
+      "fixture_name": "New Orleans Saints Vs Carolina Panthers",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 1,
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -256,16 +339,16 @@
       "targeted": false
     },
     {
-      "fixture_id": "ufc",
-      "fixture_key": "ufc",
-      "fixture_name": "UFC",
+      "fixture_id": "tennessee-titans-vs-jacksonville-jaguars",
+      "fixture_key": "tennessee-titans-vs-jacksonville-jaguars",
+      "fixture_name": "Tennessee Titans Vs Jacksonville Jaguars",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 0,
+      "candidate_stream_count": 5,
+      "verified_stream_count": 2,
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -282,20 +365,21 @@
       "targeted": false
     },
     {
-      "fixture_id": "cyprus-vs-montenegro",
-      "fixture_key": "cyprus-vs-montenegro",
-      "fixture_name": "Cyprus Vs Montenegro",
+      "fixture_id": "ufc",
+      "fixture_key": "ufc",
+      "fixture_name": "UFC",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 9,
-      "verified_stream_count": 7,
-      "failed_stream_count": 2,
+      "candidate_stream_count": 3,
+      "verified_stream_count": 0,
+      "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_404",
+        "http_403",
         "browser_unreachable"
       ],
       "fallback_available": false,
@@ -308,69 +392,42 @@
       "targeted": false
     },
     {
-      "fixture_id": "detroit-lions-vs-new-england-patriots",
-      "fixture_key": "detroit-lions-vs-new-england-patriots",
-      "fixture_name": "Detroit Lions Vs New England Patriots",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 7,
-      "verified_stream_count": 5,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404",
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "finland-vs-san-marino",
-      "fixture_key": "finland-vs-san-marino",
-      "fixture_name": "Finland Vs San Marino",
+      "fixture_id": "australia-vs-england",
+      "fixture_key": "australia-vs-england",
+      "fixture_name": "Australia Vs England",
       "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
-        "sm-sports-data",
-        "kajju-sonyliv-backup"
+        "sm-sports-data"
       ],
-      "candidate_stream_count": 9,
-      "verified_stream_count": 7,
+      "candidate_stream_count": 6,
+      "verified_stream_count": 4,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_403",
         "browser_unreachable"
       ],
-      "fallback_available": true,
+      "fallback_available": false,
       "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
     },
     {
-      "fixture_id": "latvia-vs-armenia",
-      "fixture_key": "latvia-vs-armenia",
-      "fixture_name": "Latvia Vs Armenia",
+      "fixture_id": "cleveland-browns-vs-houston-texans",
+      "fixture_key": "cleveland-browns-vs-houston-texans",
+      "fixture_name": "Cleveland Browns Vs Houston Texans",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 8,
-      "verified_stream_count": 6,
+      "candidate_stream_count": 4,
+      "verified_stream_count": 2,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -395,8 +452,8 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 2,
+      "candidate_stream_count": 5,
+      "verified_stream_count": 3,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -413,51 +470,25 @@
       "targeted": false
     },
     {
-      "fixture_id": "new-orleans-saints-vs-carolina-panthers",
-      "fixture_key": "new-orleans-saints-vs-carolina-panthers",
-      "fixture_name": "New Orleans Saints Vs Carolina Panthers",
-      "recognised_fixture": false,
+      "fixture_id": "new-zealand-vs-india",
+      "fixture_key": "new-zealand-vs-india",
+      "fixture_name": "New Zealand Vs India",
+      "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 1,
+      "candidate_stream_count": 5,
+      "verified_stream_count": 3,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_404"
+        "http_403"
       ],
       "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "tennis",
-      "fixture_key": "tennis",
-      "fixture_name": "TENNIS | EVENTO",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 7,
-      "verified_stream_count": 5,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_400",
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -481,9 +512,9 @@
         "browser_unreachable"
       ],
       "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -548,8 +579,8 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 5,
-      "verified_stream_count": 4,
+      "candidate_stream_count": 4,
+      "verified_stream_count": 3,
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -558,31 +589,6 @@
       "fallback_available": true,
       "published": true,
       "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "ajax-legends-vs-fc-barcelona-legends",
-      "fixture_key": "ajax-legends-vs-fc-barcelona-legends",
-      "fixture_name": "Ajax Legends Vs FC Barcelona Legends",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
       "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
@@ -615,16 +621,16 @@
       "targeted": false
     },
     {
-      "fixture_id": "aston-villa-vs-birmingham-city-w-f-c",
-      "fixture_key": "aston-villa-vs-birmingham-city-w-f-c",
-      "fixture_name": "Aston Villa Vs Birmingham City W F C",
+      "fixture_id": "atlanta-falcons-vs-kansas-city-chiefs",
+      "fixture_key": "atlanta-falcons-vs-kansas-city-chiefs",
+      "fixture_name": "Atlanta Falcons Vs Kansas City Chiefs",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
+      "candidate_stream_count": 5,
+      "verified_stream_count": 4,
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -673,41 +679,16 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
+      "candidate_stream_count": 2,
+      "verified_stream_count": 1,
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "browser_unreachable"
       ],
       "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "cleveland-browns-vs-houston-texans",
-      "fixture_key": "cleveland-browns-vs-houston-texans",
-      "fixture_name": "Cleveland Browns Vs Houston Texans",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 2,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
+      "published": true,
+      "published_tab": "today",
       "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
@@ -815,31 +796,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "glasgow-city-lfc-vs-montrose-fc",
-      "fixture_key": "glasgow-city-lfc-vs-montrose-fc",
-      "fixture_name": "Glasgow City LFC Vs Montrose FC",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "green-bay-packers-vs-minnesota-vikings",
       "fixture_key": "green-bay-packers-vs-minnesota-vikings",
       "fixture_name": "Green Bay Packers Vs Minnesota Vikings",
@@ -878,57 +834,7 @@
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_401"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "inter-vs-juventus",
-      "fixture_key": "inter-vs-juventus",
-      "fixture_name": "Inter Vs Juventus",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
         "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "macau-vs-hong-kong",
-      "fixture_key": "macau-vs-hong-kong",
-      "fixture_name": "Macau Vs Hong Kong",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404"
       ],
       "fallback_available": false,
       "published": false,
@@ -973,12 +879,62 @@
       "source_ids": [
         "sm-sports-data"
       ],
+      "candidate_stream_count": 5,
+      "verified_stream_count": 4,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_400"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "new-york-jets-vs-buffalo-bills",
+      "fixture_key": "new-york-jets-vs-buffalo-bills",
+      "fixture_name": "New York Jets Vs Buffalo Bills",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
       "candidate_stream_count": 4,
       "verified_stream_count": 3,
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_400"
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "oklahoma-sooners-vs-ole-miss-rebels",
+      "fixture_key": "oklahoma-sooners-vs-ole-miss-rebels",
+      "fixture_name": "Oklahoma Sooners Vs Ole Miss Rebels",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 1,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable"
       ],
       "fallback_available": false,
       "published": false,
@@ -1004,6 +960,31 @@
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_404"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "philadelphia-76ers-vs-indiana-pacers",
+      "fixture_key": "philadelphia-76ers-vs-indiana-pacers",
+      "fixture_name": "Philadelphia 76ers Vs Indiana Pacers",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 2,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable"
       ],
       "fallback_available": false,
       "published": false,
@@ -1090,20 +1071,20 @@
       "targeted": false
     },
     {
-      "fixture_id": "sevilla-fc-vs-club-atletico-de-madrid",
-      "fixture_key": "sevilla-fc-vs-club-atletico-de-madrid",
-      "fixture_name": "Sevilla FC Vs Club Atlético de Madrid",
+      "fixture_id": "tennis",
+      "fixture_key": "tennis",
+      "fixture_name": "TENNIS | EVENTO",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
+      "candidate_stream_count": 8,
+      "verified_stream_count": 7,
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "browser_unreachable"
+        "http_400"
       ],
       "fallback_available": false,
       "published": false,
@@ -1140,31 +1121,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "usa-vs-finland",
-      "fixture_key": "usa-vs-finland",
-      "fixture_name": "USA Vs Finland",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "valencia-vs-granada-club-de-futbol",
       "fixture_key": "valencia-vs-granada-club-de-futbol",
       "fixture_name": "Valencia Vs Granada Club de Fútbol",
@@ -1188,31 +1144,6 @@
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
-    },
-    {
-      "fixture_id": "west-ham-vs-charlton-athletic-wfc",
-      "fixture_key": "west-ham-vs-charlton-athletic-wfc",
-      "fixture_name": "West Ham Vs Charlton Athletic WFC",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 2,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "browser_unreachable"
-      ],
-      "fallback_available": true,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 1,
-      "last_attempt_bucket": "2026-11-15T13:35Z",
-      "first_link_at": "2026-11-15T13:36:29.762157+00:00",
-      "targeted": true
     },
     {
       "fixture_id": "western-australia-vs-south-australia",
@@ -1271,8 +1202,8 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 2,
-      "verified_stream_count": 2,
+      "candidate_stream_count": 3,
+      "verified_stream_count": 3,
       "failed_stream_count": 0,
       "unchecked_stream_count": 0,
       "failure_codes": [],
@@ -1341,9 +1272,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1429,103 +1360,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "provider:arabian-aces-vs-united-tigers|abu dhabi t10 league 2026 22nd|2026-11-16",
-      "fixture_key": "arabian-aces-vs-united-tigers",
-      "fixture_name": "Arabian Aces vs United Tigers",
-      "recognised_fixture": true,
-      "source_id": "srhady-willow-event",
-      "source_ids": [
-        "srhady-willow-event"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "provider:aston-villa-vs-birmingham-city-f-c-women|barclays women super league 2026 27|2026-11-15",
-      "fixture_key": "aston-villa-women-vs-birmingham-city-f-c-women",
-      "fixture_name": "Aston Villa Women vs Birmingham City F C Women",
-      "recognised_fixture": true,
-      "source_id": "vk1817-fancode-mirror",
-      "source_ids": [
-        "vk1817-fancode-mirror"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": true,
-      "target_attempt_count": 7,
-      "last_attempt_bucket": "2026-11-15T14:05Z",
-      "first_link_at": "",
-      "targeted": true
-    },
-    {
-      "fixture_id": "atlanta-falcons-vs-kansas-city-chiefs",
-      "fixture_key": "atlanta-falcons-vs-kansas-city-chiefs",
-      "fixture_name": "Atlanta Falcons Vs Kansas City Chiefs",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 1,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "provider:australia-vs-england|2026-11-18",
-      "fixture_key": "australia-vs-england",
-      "fixture_name": "Australia vs England",
-      "recognised_fixture": true,
-      "source_id": "srhady-willow-event",
-      "source_ids": [
-        "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "provider:bk-häcken-vs-manchester-city-women|uefa women champions league 2026 27|2026-11-18",
       "fixture_key": "bk-hacken-women-vs-manchester-city-women",
       "fixture_name": "BK Häcken Women vs Manchester City Women",
@@ -1533,8 +1367,8 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1643,39 +1477,16 @@
       "targeted": false
     },
     {
-      "fixture_id": "cd-tenerife-vs-ad-ceuta",
-      "fixture_key": "cd-tenerife-vs-ad-ceuta",
-      "fixture_name": "CD Tenerife Vs AD Ceuta",
-      "recognised_fixture": false,
+      "fixture_id": "canada-vs-sweden",
+      "fixture_key": "canada-vs-sweden",
+      "fixture_name": "Canada Vs Sweden",
+      "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
       "candidate_stream_count": 1,
       "verified_stream_count": 1,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "cycling-evento",
-      "fixture_key": "cycling-evento",
-      "fixture_name": "CYCLING EVENTO",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 4,
       "failed_stream_count": 0,
       "unchecked_stream_count": 0,
       "failure_codes": [],
@@ -1697,8 +1508,8 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 1,
+      "candidate_stream_count": 2,
+      "verified_stream_count": 2,
       "failed_stream_count": 0,
       "unchecked_stream_count": 0,
       "failure_codes": [],
@@ -1706,29 +1517,6 @@
       "published": false,
       "published_tab": "",
       "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "provider:emirates-eagles-vs-royal-desert-champions|abu dhabi t10 league 2026 23rd|2026-11-16",
-      "fixture_key": "emirates-eagles-vs-royal-desert-champions",
-      "fixture_name": "Emirates Eagles vs Royal Desert Champions",
-      "recognised_fixture": true,
-      "source_id": "srhady-willow-event",
-      "source_ids": [
-        "srhady-willow-event"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -1928,9 +1716,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1977,8 +1765,8 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1995,41 +1783,13 @@
       "targeted": false
     },
     {
-      "fixture_id": "nj-ny-gotham-fc-vs-kansas-city-current",
+      "fixture_id": "provider:nj-ny-gotham-fc-vs-kansas-city-current|nwsl|2026-11-15",
       "fixture_key": "nj-ny-gotham-fc-vs-kansas-city-current",
       "fixture_name": "NJ NY Gotham FC Vs Kansas City Current",
       "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 1,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "provider:namibia-vs-cameroon|africa cup of nations qual|2026-11-16",
-      "fixture_key": "namibia-vs-cameroon",
-      "fixture_name": "Namibia Vs Cameroon",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2054,9 +1814,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2081,9 +1841,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2094,29 +1854,6 @@
       "published": true,
       "published_tab": "upcoming",
       "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "northern-series-scotland-v-australia",
-      "fixture_key": "northern-series-scotland-v-australia",
-      "fixture_name": "Northern Series Scotland v Australia",
-      "recognised_fixture": true,
-      "source_id": "srhady-primevideo-sports",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 4,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -2149,29 +1886,6 @@
       "fixture_id": "nov-15-ptt-carvoeiro",
       "fixture_key": "nov-15-ptt-carvoeiro",
       "fixture_name": "Nov 15 PTT Carvoeiro",
-      "recognised_fixture": false,
-      "source_id": "srhady-primevideo-sports",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 1,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "nov-15-ptt-oxford",
-      "fixture_key": "nov-15-ptt-oxford",
-      "fixture_name": "Nov 15 PTT Oxford",
       "recognised_fixture": false,
       "source_id": "srhady-primevideo-sports",
       "source_ids": [
@@ -2292,9 +2006,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2305,52 +2019,6 @@
       "published": true,
       "published_tab": "upcoming",
       "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "philadelphia-76ers-vs-indiana-pacers",
-      "fixture_key": "philadelphia-76ers-vs-indiana-pacers",
-      "fixture_name": "Philadelphia 76ers Vs Indiana Pacers",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 1,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "philadelphia-flyers-vs-edmonton-oilers",
-      "fixture_key": "philadelphia-flyers-vs-edmonton-oilers",
-      "fixture_name": "Philadelphia Flyers Vs Edmonton Oilers",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 1,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -2410,8 +2078,8 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2460,9 +2128,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2487,9 +2155,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2575,6 +2243,29 @@
       "targeted": false
     },
     {
+      "fixture_id": "superkarts-usa-supernationals-sunday",
+      "fixture_key": "superkarts-usa-supernationals-sunday",
+      "fixture_name": "Superkarts USA Supernationals, Sunday",
+      "recognised_fixture": true,
+      "source_id": "srhady-primevideo-sports",
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 4,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "provider:sydney-sixers-vs-perth-scorchers-women|women big bash league 2026 30th|2026-11-21",
       "fixture_key": "sydney-sixers-women-vs-perth-scorchers-women",
       "fixture_name": "Sydney Sixers Women vs Perth Scorchers Women",
@@ -2582,34 +2273,6 @@
       "source_id": "srhady-willow-event",
       "source_ids": [
         "srhady-willow-event"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "provider:sydney-thunder-vs-melbourne-stars-women|women big bash league 2026 24th|2026-11-16",
-      "fixture_key": "sydney-thunder-women-vs-melbourne-stars-women",
-      "fixture_name": "Sydney Thunder Women vs Melbourne Stars Women",
-      "recognised_fixture": true,
-      "source_id": "srhady-willow-event",
-      "source_ids": [
-        "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2796,9 +2459,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2815,6 +2478,29 @@
       "targeted": false
     },
     {
+      "fixture_id": "provider:west-ham-vs-charlton-athletic-wfc|women super league|2026-11-15",
+      "fixture_key": "west-ham-vs-charlton-athletic-wfc",
+      "fixture_name": "West Ham Vs Charlton Athletic WFC",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 0,
+      "verified_stream_count": 0,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": true,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 1,
+      "last_attempt_bucket": "2026-11-15T13:35Z",
+      "first_link_at": "2026-11-15T13:36:29.762157+00:00",
+      "targeted": true
+    },
+    {
       "fixture_id": "provider:west-indies-a-vs-england-lions|england lions tour of west indies 2026|2026-11-16",
       "fixture_key": "west-indies-a-vs-england-lions",
       "fixture_name": "West Indies A vs England Lions",
@@ -2823,9 +2509,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
