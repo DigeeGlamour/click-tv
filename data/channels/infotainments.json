@@ -1,6 +1,6 @@
 {
   "category": "Infotainments",
-  "updated_at": "2026-11-14T22:45:21.813254+00:00",
+  "updated_at": "2026-11-15T06:55:06.799306+00:00",
   "count": 59,
   "channels": [
     {
@@ -42,11 +42,6 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
@@ -55,14 +50,19 @@
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "manual-playlist-1",
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
         "sm-aynaott-json",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
@@ -102,11 +102,6 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
@@ -115,13 +110,18 @@
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
         "sm-aynaott-json",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "HD",
       "resolution_height": 720,
@@ -337,8 +337,28 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "sm-iptv-combined",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "http://live.balajibroadband.com:3500/live/821.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "manual-playlist-1",
+          "host": "live.balajibroadband.com",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_64d17c9c90fcf119c78f54e99906e0f5"
+        }
+      ],
       "source_provenance": [
         {
           "source_id": "sm-iptv-combined",
@@ -408,10 +428,10 @@
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
+      "verification_mode": "transient_rescue",
+      "verification_status": "retryable_pending",
+      "verification_badge": "Temporary",
+      "verified": false,
       "publish_allowed": true,
       "source_pipeline": "tv",
       "original_source_pipeline": "tv",
@@ -431,8 +451,10 @@
       "source_ids": [
         "manual-playlist-1"
       ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
+      "resolution": "HD",
+      "resolution_height": 720,
+      "transient_rescue_count": 1,
+      "vantage_note": "a timeout error from this run's egress on a route the published catalogue was already carrying. Held for one more scan instead of being deleted; a second consecutive transient answer, or any permanent one, fails it.",
       "playback_id": "ctv_778c850f4acc00824d6437895148227a"
     },
     {
@@ -592,11 +614,6 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
@@ -605,13 +622,18 @@
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
         "sm-aynaott-json",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
@@ -821,11 +843,6 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
@@ -834,13 +851,18 @@
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
         "sm-aynaott-json",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "HD",
       "resolution_height": 720,
@@ -2061,11 +2083,6 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
@@ -2074,13 +2091,18 @@
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
         "sm-aynaott-json",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "HD",
       "resolution_height": 720,
@@ -2222,11 +2244,6 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
@@ -2235,13 +2252,18 @@
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
         "sm-aynaott-json",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "HD",
       "resolution_height": 720,
@@ -2445,11 +2467,6 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
@@ -2458,13 +2475,18 @@
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
         "sm-aynaott-json",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
@@ -2627,11 +2649,6 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
@@ -2640,13 +2657,18 @@
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
         "sm-aynaott-json",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
