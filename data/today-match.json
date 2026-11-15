@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-15T19:22:36.556555+00:00",
-  "count": 10,
-  "filtered_stale": 1,
+  "updated_at": "2026-11-15T19:25:19.831657+00:00",
+  "count": 12,
+  "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -423,7 +423,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-15T18:05:05.931905+00:00",
       "authority_near_misses": [
@@ -607,7 +607,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-15T18:05:05.931905+00:00"
     },
@@ -889,34 +889,49 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=79' (STATUS_SECOND_HALF, event 401902864)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401902864)",
         "LiveScore livescore=FT (6, event 1850315)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=79' (STATUS_SECOND_HALF, event 401902864); LiveScore livescore=FT (6, event 1850315)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_5e3223c5db571aef540b0ffbb20fd084"
+      "lifecycle_state": "END_PENDING",
+      "playback_id": "ctv_5e3223c5db571aef540b0ffbb20fd084",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401902864",
+        "livescore": "1850315"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-15T19:24:57.358278+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-15T19:44:57.358278+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-15T19:25:14.454135+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-15T19:25:14.454135+00:00"
     },
     {
       "id": "belarus-vs-albania",
       "name": "Belarus Vs Albania",
-      "primary_stream_key": "ac1c79bcccb3809878c9f6e717bfd024b79f92f4d272f2c1ef62c5772fba7ba7",
+      "primary_stream_key": "61cd6bd9bc1d5ff60094f4207fd5fb2c3c54e07d4387f6216c99d8f2c5492ebd",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/4743/image",
       "category": "today_match",
-      "url": "https://chatgpt.hereisman.net/playlist/60171/load-playlist-multi?&.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "media",
-      "requires_headers": true,
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -929,7 +944,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 5,
+      "available_link_count": 4,
       "backups": [
         {
           "name": "Backup-1",
@@ -951,7 +966,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_a46d5ac101585eece6908105300e55d4",
+          "playback_id": "ctv_923a8ede0ff6e05d5b0feb9ec7848d5a",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1009,35 +1024,6 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_923a8ede0ff6e05d5b0feb9ec7848d5a",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-4",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
           "playback_id": "ctv_f8c45315f8afa703c8464dac48d86153",
           "protected_source": true,
           "requires_credentials": true,
@@ -1050,9 +1036,9 @@
       ],
       "channels": [
         {
-          "id": "belarus-vs-albania--fox-soccer",
-          "name": "FOX SOCCER",
-          "normalized_name": "fox-soccer",
+          "id": "belarus-vs-albania--dazn-sports",
+          "name": "DAZN SPORTS",
+          "normalized_name": "dazn-sports",
           "logo": "https://img.sofascore.com/api/v1/team/4743/image",
           "name_confidence": "explicit",
           "name_source": "channel_name",
@@ -1060,7 +1046,7 @@
           "source_ids": [
             "sm-sports-data"
           ],
-          "primary_stream_id": "belarus-vs-albania--fox-soccer--1",
+          "primary_stream_id": "belarus-vs-albania--dazn-sports--1",
           "stream_count": 1,
           "backup_count": 0,
           "verified": true,
@@ -1071,17 +1057,17 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "belarus-vs-albania--fox-soccer--1",
+              "id": "belarus-vs-albania--dazn-sports--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_42189190a83af337a9b5d4ce",
+              "variant_key": "sv_ed36c5dd8cdb72bac79fe351",
               "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_60868b91ccf487d1d4b9a80f7e6abe93",
-              "resolution": "HD",
-              "resolution_height": 720,
-              "stream_type": "media"
+              "playback_id": "ctv_923a8ede0ff6e05d5b0feb9ec7848d5a",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
             }
           ]
         },
@@ -1115,42 +1101,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_eed693ebc94e234ea35949ed1198e18d",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "belarus-vs-albania--dazn-sports",
-          "name": "DAZN SPORTS",
-          "normalized_name": "dazn-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/4743/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "belarus-vs-albania--dazn-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "belarus-vs-albania--dazn-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_ed36c5dd8cdb72bac79fe351",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_923a8ede0ff6e05d5b0feb9ec7848d5a",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1230,14 +1180,14 @@
           ]
         }
       ],
-      "channel_count": 5,
-      "default_channel_id": "belarus-vs-albania--fox-soccer",
+      "channel_count": 4,
+      "default_channel_id": "belarus-vs-albania--server-1",
       "channel_stats": {
-        "streams_in": 5,
+        "streams_in": 4,
         "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 5,
-        "variants": 5,
+        "channels": 4,
+        "variants": 4,
         "embed_variants": 0,
         "generic_server_channels": 1
       },
@@ -1251,11 +1201,15 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "start_time": "2026-11-15T17:00:00+00:00",
       "start_at": "2026-11-15T17:00:00+00:00",
-      "end_time": "2026-11-15T20:04:53+00:00",
+      "end_time": "2026-11-15T20:24:57+00:00",
       "end_time_source": "assumed",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:belarus-vs-albania|uefa nations league|2026-11-15",
@@ -1277,20 +1231,27 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=47' (STATUS_SECOND_HALF, event 401861173)",
+        "ESPN espn-header=67' (STATUS_SECOND_HALF, event 401861173)",
         "LiveScore livescore=FT (6, event 1738319)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=47' (STATUS_SECOND_HALF, event 401861173); LiveScore livescore=FT (6, event 1738319)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=67' (STATUS_SECOND_HALF, event 401861173); LiveScore livescore=FT (6, event 1738319)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bz4o2m1552857077.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vonacg1717365654.png",
-      "playback_id": "ctv_c1bb761ecda9a1c8160e86ceaa08eb5a"
+      "playback_id": "ctv_a46d5ac101585eece6908105300e55d4",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
     },
     {
       "id": "finland-vs-san-marino",
       "name": "Finland Vs San Marino",
-      "primary_stream_key": "c8c7a135db73413f5b054ee71c49d41efcc0009d8417cdff6a43970ddad4a17d",
+      "primary_stream_key": "79a5a1b483c3641fe8b0ef3fad95417f695445630a9457baf3a7940b4095a822",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/4712/image",
@@ -1362,7 +1323,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_9854169781d5c536f9614a9db86f8ee5",
+          "playback_id": "ctv_108d49c3e1c31040cbf75edef821e3f7",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1391,7 +1352,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_f72facdeeb09671c9bc2af33ee1ceea1",
+          "playback_id": "ctv_9854169781d5c536f9614a9db86f8ee5",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1420,7 +1381,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_72a9522e9ba6d7800faaa607f2983b5a",
+          "playback_id": "ctv_f72facdeeb09671c9bc2af33ee1ceea1",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1613,7 +1574,7 @@
         }
       ],
       "channel_count": 5,
-      "default_channel_id": "finland-vs-san-marino--dazn-sports",
+      "default_channel_id": "finland-vs-san-marino--server-1",
       "channel_stats": {
         "streams_in": 5,
         "unresolved_channel_streams": 1,
@@ -1641,7 +1602,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-15T17:00:00+00:00",
       "start_at": "2026-11-15T17:00:00+00:00",
-      "end_time": "2026-11-15T20:04:53+00:00",
+      "end_time": "2026-11-15T20:24:57+00:00",
       "end_time_source": "assumed",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:finland-vs-san-marino|uefa nations league|2026-11-15",
@@ -1663,15 +1624,15 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=48' (STATUS_SECOND_HALF, event 401861174)",
+        "ESPN espn-header=68' (STATUS_SECOND_HALF, event 401861174)",
         "LiveScore livescore=FT (6, event 1738320)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=48' (STATUS_SECOND_HALF, event 401861174); LiveScore livescore=FT (6, event 1738320)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=68' (STATUS_SECOND_HALF, event 401861174); LiveScore livescore=FT (6, event 1738320)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wgvfd21730303889.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vfvy3j1626192199.png",
-      "playback_id": "ctv_108d49c3e1c31040cbf75edef821e3f7",
+      "playback_id": "ctv_72a9522e9ba6d7800faaa607f2983b5a",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1773,7 +1734,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-15T17:30:00+00:00",
       "start_at": "2026-11-15T17:30:00+00:00",
-      "end_time": "2026-11-15T20:04:53+00:00",
+      "end_time": "2026-11-15T20:24:57+00:00",
       "end_time_source": "assumed",
       "competition": "LaLiga 2",
       "fixture_id": "provider:cd-eldense-vs-ce-sabadell|laliga 2|2026-11-15",
@@ -1794,7 +1755,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=34' (STATUS_FIRST_HALF, event 401883137)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401883137)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2165,6 +2126,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/l80c6j1724118398.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ejzu3d1657633345.png",
+      "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      },
       "authority_near_misses": [
         {
           "authority": "livescore",
@@ -2178,18 +2151,14 @@
           "status": "FINISHED"
         }
       ],
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/l80c6j1724118398.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ejzu3d1657633345.png",
-      "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-15T19:25:14.454135+00:00"
     },
     {
       "id": "united-tigers-vs-yas-lions",
@@ -2430,6 +2399,16 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_fb12a1d51ed2138462941a89d57eb91f",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      },
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -2454,16 +2433,262 @@
           "status": "FINISHED"
         }
       ],
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-15T19:25:14.454135+00:00"
+    },
+    {
+      "id": "croatia-vs-czechia",
+      "name": "Croatia Vs Czechia",
+      "primary_stream_key": "a4443aaadfd1c605443bee8593023e848e142902b02364dfd8bbd13c097c7e90",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/4715/image",
+      "category": "today_match",
+      "url": "https://chatgpt.hereisman.net/playlist/60198/load-playlist?&.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "media",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "croatia-vs-czechia--fox-soccer",
+          "name": "FOX SOCCER",
+          "normalized_name": "fox-soccer",
+          "logo": "https://img.sofascore.com/api/v1/team/4715/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "croatia-vs-czechia--fox-soccer--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "croatia-vs-czechia--fox-soccer--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_8ea690e5e65e41bd5fc39aa4",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_15631ba5332a254c7f264323c1f073ce",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "media"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "croatia-vs-czechia--fox-soccer",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "resolution": "HD",
+      "resolution_height": 720,
+      "start_time": "2026-11-15T19:45:00+00:00",
+      "start_at": "2026-11-15T19:45:00+00:00",
+      "end_time": "2026-11-15T22:15:00+00:00",
+      "end_time_source": "sport",
+      "competition": "UEFA Nations League",
+      "fixture_id": "provider:croatia-vs-czechia|uefa nations league|2026-11-15",
+      "status": "STARTING_SOON",
+      "original_status": "LIVE",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-15T19:45:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861178)",
+        "LiveScore livescore=NS (1, event 1738307)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861178",
+        "livescore": "1738307"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_fb12a1d51ed2138462941a89d57eb91f",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "playback_id": "ctv_15631ba5332a254c7f264323c1f073ce"
+    },
+    {
+      "id": "france-vs-türkiye",
+      "name": "France Vs Türkiye",
+      "primary_stream_key": "b2d55bb2df6ed20fdf200062b611ee13885cf16aaecca5efaf3c201eff584249",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/4481/image",
+      "category": "today_match",
+      "url": "https://chatgpt.hereisman.net/playlist/60197/load-playlist?&.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "media",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "france-vs-t-rkiye--stream-tv",
+          "name": "STREAM TV",
+          "normalized_name": "stream-tv",
+          "logo": "https://img.sofascore.com/api/v1/team/4481/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "france-vs-t-rkiye--stream-tv--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "france-vs-t-rkiye--stream-tv--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_c721152b04383ea938e81c34",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_352005d938083be6a4e5c9eb9c049768",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "media"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "france-vs-t-rkiye--stream-tv",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "resolution": "HD",
+      "resolution_height": 720,
+      "start_time": "2026-11-15T19:45:00+00:00",
+      "start_at": "2026-11-15T19:45:00+00:00",
+      "end_time": "2026-11-15T22:15:00+00:00",
+      "end_time_source": "sport",
+      "competition": "UEFA Nations League",
+      "fixture_id": "provider:france-vs-türkiye|uefa nations league|2026-11-15",
+      "status": "STARTING_SOON",
+      "original_status": "LIVE",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-15T19:45:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861177)",
+        "LiveScore livescore=NS (1, event 1738344)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861177",
+        "livescore": "1738344"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_352005d938083be6a4e5c9eb9c049768"
     },
     {
       "id": "spain-vs-england",
@@ -2636,6 +2861,21 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861175)",
+        "LiveScore livescore=NS (1, event 1738308)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861175",
+        "livescore": "1738308"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ncgqyr1726166942.png",
