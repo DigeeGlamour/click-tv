@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T21:25:17.165086+00:00",
+  "generated_at": "2026-11-16T21:44:45.048059+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,16 +12,12 @@
       "requests_ok": 6,
       "fixtures": 683,
       "unknown_statuses": [
-        "10|HT",
         "12|Int.",
         "133|Stumps - day 2",
         "135|Stumps - day 4",
-        "2|14'",
-        "3|50'",
-        "3|76'",
-        "3|79'",
-        "3|81'",
-        "3|83'",
+        "3|26'",
+        "3|62'",
+        "3|69'",
         "3|90+5'"
       ],
       "attempts": [
@@ -122,12 +118,12 @@
     "verdicts": {
       "VERIFIED": 5,
       "UNVERIFIED": 48,
-      "PARTIAL_AUTHORITY": 2
+      "CONFLICT": 2
     },
     "verified": 5,
-    "partial_authority": 2,
+    "partial_authority": 0,
     "unverified": 48,
-    "conflict": 0,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
         "matched": 9,
@@ -140,9 +136,10 @@
     },
     "matched_by_two_independent_authorities": 6,
     "authority_agreements": 4,
-    "authority_disagreements": 0,
+    "authority_disagreements": 2,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
+      "authorities disagree": 2,
       "kickoff": 4,
       "sport": 2
     },
@@ -154,16 +151,12 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "12|Int.",
         "133|Stumps - day 2",
         "135|Stumps - day 4",
-        "2|14'",
-        "3|50'",
-        "3|76'",
-        "3|79'",
-        "3|81'",
-        "3|83'",
+        "3|26'",
+        "3|62'",
+        "3|69'",
         "3|90+5'"
       ],
       "espn-header": [
@@ -217,8 +210,8 @@
           "competition_id": "3921",
           "kickoff": "2026-11-16T19:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "35'",
-          "status_code": "STATUS_FIRST_HALF",
+          "status_raw": "50'",
+          "status_code": "STATUS_SECOND_HALF",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -226,8 +219,8 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "35'",
-          "espn_status_description": "First Half",
+          "espn_status_detail": "50'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3921~e:401883305~c:401883305"
@@ -262,7 +255,7 @@
       "card_id": "flocollege-d2-football-bracket-breakdown",
       "name": "FloCollege D2 Football Bracket Breakdown",
       "competition": "",
-      "kickoff": "2026-11-16T21:25:17+00:00",
+      "kickoff": "2026-11-16T21:44:45+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -329,8 +322,8 @@
           "competition_id": "2395",
           "kickoff": "2026-11-16T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "19'",
-          "status_code": "STATUS_FIRST_HALF",
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -338,8 +331,8 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "19'",
-          "espn_status_description": "First Half",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:2395~e:401861185~c:401861185"
@@ -359,9 +352,9 @@
           "competition_id": "523",
           "kickoff": "2026-11-16T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "83'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "6",
           "format": "",
@@ -375,10 +368,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -416,8 +411,8 @@
           "competition_id": "2395",
           "kickoff": "2026-11-16T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "19'",
-          "status_code": "STATUS_FIRST_HALF",
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -425,8 +420,8 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "19'",
-          "espn_status_description": "First Half",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:2395~e:401861188~c:401861188"
@@ -446,9 +441,9 @@
           "competition_id": "523",
           "kickoff": "2026-11-16T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "81'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "6",
           "format": "",
@@ -462,10 +457,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -533,8 +530,8 @@
           "competition_id": "26737",
           "kickoff": "2026-11-16T18:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
+          "status_raw": "Between innings",
+          "status_code": "157",
           "status": "LIVE",
           "sport": "cricket",
           "round": "5th One-Day Match",
@@ -1103,8 +1100,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1218,8 +1215,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1297,8 +1294,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1426,8 +1423,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1467,8 +1464,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1582,8 +1579,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1624,8 +1621,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1814,8 +1811,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1892,8 +1889,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1933,8 +1930,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2048,8 +2045,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2163,8 +2160,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2204,8 +2201,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2245,8 +2242,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2434,8 +2431,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
