@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-16T19:22:32.788748+00:00",
-  "count": 13,
-  "filtered_stale": 0,
+  "updated_at": "2026-11-16T20:05:22.929716+00:00",
+  "count": 14,
+  "filtered_stale": 1,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -323,7 +323,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-16T08:00:00+00:00",
       "start_at": "2026-11-16T08:00:00+00:00",
-      "end_time": "2026-11-16T19:44:52+00:00",
+      "end_time": "2026-11-16T20:45:01+00:00",
       "end_time_source": "assumed",
       "competition": "ICC World Test Championship",
       "fixture_id": "provider:south-africa-vs-bangladesh|icc world test championship|2026-11-16",
@@ -338,6 +338,9 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "league map",
       "sport_class_evidence": "ICC World Test Championship",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_659e0b23fb5d8852668cf9f0b95dcd11",
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -362,9 +365,15 @@
           "status": "UNKNOWN"
         }
       ],
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_659e0b23fb5d8852668cf9f0b95dcd11"
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-16T20:05:14.604370+00:00"
     },
     {
       "id": "abu-dhabi-t10-league",
@@ -398,35 +407,6 @@
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_bc1e0c2eac4ab0692ed73f770762d031",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
           "requires_headers": false,
           "inherit_manifest_query": false,
           "verification_mode": "global",
@@ -443,6 +423,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_f4de828a6f82546809a0296e0ce65207",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_bc1e0c2eac4ab0692ed73f770762d031",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -564,7 +573,7 @@
       "resolution_height": 720,
       "start_time": "2026-11-16T13:45:00+00:00",
       "start_at": "2026-11-16T13:45:00+00:00",
-      "end_time": "2026-11-16T19:44:52+00:00",
+      "end_time": "2026-11-16T21:05:01+00:00",
       "end_time_source": "assumed",
       "competition": "ABU DHABI T10 LEAGUE",
       "fixture_id": "provider:abu-dhabi-t10-league|abu dhabi t10 league|2026-11-16",
@@ -581,7 +590,7 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_2adb68167cc1e966518e24177e58d52d"
+      "playback_id": "ctv_e7ad3665226759acd52fc2a8e43d535c"
     },
     {
       "id": "west-indies-a-vs-england-lions",
@@ -649,22 +658,27 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1558816)",
+        "ESPN espn-header=Live (Live, event 1558816)",
         "LiveScore livescore=Play in progress (33, event 1914825)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558816); LiveScore livescore=Play in progress (33, event 1914825)",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1558816",
+        "livescore": "1914825"
+      },
+      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE"
     },
     {
       "id": "cricket-abu-dhabi-t10-league-2026-eagles-vs-champions-23rd-match",
@@ -913,7 +927,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-16T18:25:06.083036+00:00"
     },
@@ -1236,7 +1250,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-16T16:45:05.572542+00:00",
       "authority_near_misses": [
@@ -1267,15 +1281,14 @@
     {
       "id": "estonia-vs-bulgaria",
       "name": "Estonia Vs Bulgaria",
-      "primary_stream_key": "818c99ab549d72306f3255d37d7d16b3313fcfc75894e0f9fda0a0ee756ab132",
+      "primary_stream_key": "ae788e963eae23b0563c09338b8783fb2d37e82033bd67c8aa0e56cd3e1692af",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/4759/image",
       "category": "today_match",
-      "url": "https://www.rtmpcdn.com/live/0a7bb239-1182-4945-9d9c-f621c1ce74f6.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
@@ -1289,73 +1302,9 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "SD",
-          "resolution_height": 576,
-          "playback_id": "ctv_ab770fad073a9c85e0afcc251dc116a6",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
+      "available_link_count": 1,
+      "backups": [],
       "channels": [
-        {
-          "id": "estonia-vs-bulgaria--quality-5",
-          "name": "QUALITY 5",
-          "normalized_name": "quality-5",
-          "logo": "https://img.sofascore.com/api/v1/team/4759/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "estonia-vs-bulgaria--quality-5--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "estonia-vs-bulgaria--quality-5--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_4f5dab5c8adf4eef4acc6d34",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4705b2f89427c81f0f4d858f72535f30",
-              "stream_type": "hls"
-            }
-          ]
-        },
         {
           "id": "estonia-vs-bulgaria--sportv2",
           "name": "SPORTV2",
@@ -1393,14 +1342,14 @@
           ]
         }
       ],
-      "channel_count": 2,
-      "default_channel_id": "estonia-vs-bulgaria--quality-5",
+      "channel_count": 1,
+      "default_channel_id": "estonia-vs-bulgaria--sportv2",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 1,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 1,
+        "variants": 1,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1414,9 +1363,15 @@
       "source_ids": [
         "sm-sports-data"
       ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "SD",
+      "resolution_height": 576,
       "start_time": "2026-11-16T17:00:00+00:00",
       "start_at": "2026-11-16T17:00:00+00:00",
-      "end_time": "2026-11-16T19:44:52+00:00",
+      "end_time": "2026-11-16T20:25:00+00:00",
       "end_time_source": "assumed",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:estonia-vs-bulgaria|uefa nations league|2026-11-16",
@@ -1431,38 +1386,58 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=44' (STATUS_FIRST_HALF, event 401861183)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861183)",
+        "LiveScore livescore=FT (6, event 1738408)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401861183"
-      },
-      "authority_status": "LIVE",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/n43zxi1730303815.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/0bee7p1552858893.png",
-      "playback_id": "ctv_a573572e0b00773b026dbf9e2f71cfbd"
+      "playback_id": "ctv_ab770fad073a9c85e0afcc251dc116a6",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      },
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-16T19:45:15.794111+00:00",
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-16T19:45:15.794111+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861183",
+        "livescore": "1738408"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-16T20:05:01.411715+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-16T20:25:01.411715+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "iceland-vs-luxembourg",
       "name": "Iceland Vs Luxembourg",
-      "primary_stream_key": "02e14e10d8d9b58ee23fb1b54e94967a17e4efe5dc826da645d407f31dcd9b76",
+      "primary_stream_key": "796b91721dc99d882a0027e99b3d4450886df64cad6ed0f27b710f67e1100abb",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/4708/image",
       "category": "today_match",
-      "url": "https://www.rtmpcdn.com/live/7eec54af-6462-4b54-a0bc-9baaf8e340f8.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": true,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -1475,29 +1450,29 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 6,
+      "available_link_count": 5,
       "backups": [
         {
           "name": "Backup-1",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": true,
+          "requires_headers": false,
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_387e7e8a9fe89cbadba7da3dd7f474ea",
+          "playback_id": "ctv_91ab59d601b1dddf8245cf2d60a5c237",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1537,35 +1512,6 @@
         },
         {
           "name": "Backup-3",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_91ab59d601b1dddf8245cf2d60a5c237",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-4",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1594,7 +1540,7 @@
           }
         },
         {
-          "name": "Backup-5",
+          "name": "Backup-4",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1624,115 +1570,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "iceland-vs-luxembourg--quality-4",
-          "name": "QUALITY 4",
-          "normalized_name": "quality-4",
-          "logo": "https://img.sofascore.com/api/v1/team/4708/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "iceland-vs-luxembourg--quality-4--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "iceland-vs-luxembourg--quality-4--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_c63083190a4d546a2a347bd7",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_680a082cb2496651623dd9e9fdc7982c",
-              "stream_type": "hls"
-            }
-          ]
-        },
-        {
-          "id": "iceland-vs-luxembourg--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.88b139d3-4455-459d-aecd-e28b307b11a5/6/BOXART-16X9/en-US/1920x1080._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMpng_.png",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
-          "source_ids": [
-            "srhady-primevideo-sports"
-          ],
-          "primary_stream_id": "iceland-vs-luxembourg--prime-video--1",
-          "stream_count": 4,
-          "backup_count": 3,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "iceland-vs-luxembourg--prime-video--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_0ebdf2039ccaaf29a9c01624",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_3fc22cf6f7697964786a63712d5dbbc3",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "iceland-vs-luxembourg--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_f5011945a2410fd4ceb32227",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_16010045cf548be92b71ae4ae231c69e",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "iceland-vs-luxembourg--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_2d2f601495fcb96ed9f2bc7e",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_91ab59d601b1dddf8245cf2d60a5c237",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "iceland-vs-luxembourg--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_c41db73fef408f93b736ac67",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_f1574a66b6987a994752a13a896e1923",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "iceland-vs-luxembourg--fubo-sports",
           "name": "FUBO SPORTS",
@@ -1768,16 +1605,91 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "iceland-vs-luxembourg--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.88b139d3-4455-459d-aecd-e28b307b11a5/6/BOXART-16X9/en-US/1920x1080._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMpng_.png",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "iceland-vs-luxembourg--prime-video--1",
+          "stream_count": 4,
+          "backup_count": 3,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "iceland-vs-luxembourg--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_2d2f601495fcb96ed9f2bc7e",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_91ab59d601b1dddf8245cf2d60a5c237",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "iceland-vs-luxembourg--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_0ebdf2039ccaaf29a9c01624",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_3fc22cf6f7697964786a63712d5dbbc3",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "iceland-vs-luxembourg--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_c41db73fef408f93b736ac67",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f1574a66b6987a994752a13a896e1923",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "iceland-vs-luxembourg--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_f5011945a2410fd4ceb32227",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_16010045cf548be92b71ae4ae231c69e",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 3,
-      "default_channel_id": "iceland-vs-luxembourg--quality-4",
+      "channel_count": 2,
+      "default_channel_id": "iceland-vs-luxembourg--fubo-sports",
       "channel_stats": {
-        "streams_in": 6,
+        "streams_in": 5,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 3,
-        "variants": 6,
+        "channels": 2,
+        "variants": 5,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1791,9 +1703,15 @@
       "source_ids": [
         "sm-sports-data"
       ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "start_time": "2026-11-16T17:00:00+00:00",
       "start_at": "2026-11-16T17:00:00+00:00",
-      "end_time": "2026-11-16T19:44:52+00:00",
+      "end_time": "2026-11-16T20:25:00+00:00",
       "end_time_source": "assumed",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:iceland-vs-luxembourg|uefa nations league|2026-11-16",
@@ -1808,24 +1726,45 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=43' (STATUS_FIRST_HALF, event 401861182)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861182)",
+        "LiveScore livescore=FT (6, event 1738409)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401861182"
-      },
-      "authority_status": "LIVE",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xc6kuy1742982312.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/nsakoo1713725395.png",
-      "playback_id": "ctv_b804662ec52faa3692acc16e7e100237"
+      "playback_id": "ctv_387e7e8a9fe89cbadba7da3dd7f474ea",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      },
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-16T19:45:15.794111+00:00",
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-16T19:45:15.794111+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861182",
+        "livescore": "1738409"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-16T20:05:01.411715+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-16T20:25:01.411715+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "lithuania-vs-liechtenstein",
@@ -1928,24 +1867,41 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=45' (STATUS_FIRST_HALF, event 401861184)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861184)",
+        "LiveScore livescore=FT (6, event 1738295)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401861184"
+        "espn-header": "401861184",
+        "livescore": "1738295"
       },
-      "authority_status": "LIVE",
+      "authority_status": "FINISHED",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ukapsd1689197167.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/4o0nlh1591970494.png",
-      "playback_id": "ctv_b079f6288d4f8a89d7671122ea7bcab5"
+      "playback_id": "ctv_b079f6288d4f8a89d7671122ea7bcab5",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 4,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-16T19:04:58.145550+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-16T19:45:15.794111+00:00",
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-16T20:05:01.411715+00:00",
+      "authority_remove_after": "2026-11-16T20:25:01.411715+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "andorra-vs-azerbaijan",
@@ -2040,8 +1996,8 @@
       "resolution_height": 1080,
       "start_time": "2026-11-16T18:00:00+00:00",
       "start_at": "2026-11-16T18:00:00+00:00",
-      "end_time": "2026-11-16T20:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-16T21:05:01+00:00",
+      "end_time_source": "assumed",
       "competition": "International Friendly Games",
       "fixture_id": "provider:andorra-vs-azerbaijan|international friendly games|2026-11-16",
       "status": "LIVE_NOW",
@@ -2055,19 +2011,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401914292)"
+        "ESPN espn-header=68' (STATUS_SECOND_HALF, event 401914292)",
+        "LiveScore livescore=FT (6, event 1885484)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401914292"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=68' (STATUS_SECOND_HALF, event 401914292); LiveScore livescore=FT (6, event 1885484)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/l5qspn1552847356.png",
@@ -2330,6 +2284,14 @@
         "query_parameters": [],
         "drm": true
       },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 4,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-16T19:04:58.145550+00:00",
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -2340,7 +2302,7 @@
           "competition": "Abu Dhabi T10",
           "kickoff": "2026-11-16T16:00:00+00:00",
           "kickoff_delta_minutes": -164.9,
-          "status": "LIVE"
+          "status": "FINISHED"
         },
         {
           "authority": "livescore",
@@ -2353,258 +2315,7 @@
           "kickoff_delta_minutes": -164.9,
           "status": "FINISHED"
         }
-      ],
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
-      "lifecycle_protections": [
-        "primary_playable",
-        "backup_playable"
-      ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-16T19:04:58.145550+00:00"
-    },
-    {
-      "id": "flocollege-d2-football-bracket-breakdown",
-      "name": "FloCollege D2 Football Bracket Breakdown",
-      "primary_stream_key": "0ab055d8318ca25624249202225aac5bbf5523fe2c0903d7226ce7e237e057e6",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.c6b112c2-4a41-4c1d-9813-795299644248/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
-      "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-primevideo-sports",
-      "metadata_only": false,
-      "available_link_count": 4,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_790011f782de0b35adc32993ce02bb83",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
-      "channels": [
-        {
-          "id": "flocollege-d2-football-bracket-breakdown--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.c6b112c2-4a41-4c1d-9813-795299644248/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
-          "source_ids": [
-            "srhady-primevideo-sports"
-          ],
-          "primary_stream_id": "flocollege-d2-football-bracket-breakdown--prime-video--1",
-          "stream_count": 4,
-          "backup_count": 3,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "flocollege-d2-football-bracket-breakdown--prime-video--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_c1e02be4d063e0566b724069",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "flocollege-d2-football-bracket-breakdown--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_8db6155c66a901f36b688c53",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_790011f782de0b35adc32993ce02bb83",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "flocollege-d2-football-bracket-breakdown--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_b7f37c054f02157af5afadd6",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "flocollege-d2-football-bracket-breakdown--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_01b11c32d050778527634c31",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "flocollege-d2-football-bracket-breakdown--prime-video",
-      "channel_stats": {
-        "streams_in": 4,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 4,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-16T19:04:47+00:00",
-      "start_at": "2026-11-16T19:04:47+00:00",
-      "end_time": "2026-11-16T21:34:47+00:00",
-      "end_time_source": "sport",
-      "fixture_id": "provider:flocollege-d2-football-bracket-breakdown|2026-11-16",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      ]
     },
     {
       "id": "albacete-balompié-vs-celta-fortuna",
@@ -2703,9 +2414,9 @@
       "end_time_source": "sport",
       "competition": "LaLiga 2",
       "fixture_id": "provider:albacete-balompié-vs-celta-fortuna|laliga 2|2026-11-16",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-16T19:30:00+00:00",
@@ -2714,6 +2425,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401883305)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401883305"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_376adb6b05836b1c254c9c13eefeb6b4",
@@ -2953,9 +2676,9 @@
       "end_time_source": "sport",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:germany-vs-netherlands|uefa nations league|2026-11-16",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-16T19:45:00+00:00",
@@ -2964,9 +2687,397 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861185)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401861185"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_b51fd13fbeeb75984b48641a24166931",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "greece-vs-serbia",
+      "name": "Greece Vs Serbia",
+      "primary_stream_key": "2865d0072006ea1db8e4a2372016a0f8c499b82385830312ce08dec17662f6d6",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/4710/image",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "greece-vs-serbia--fox2-sports",
+          "name": "FOX2 SPORTS",
+          "normalized_name": "fox2-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/4710/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "greece-vs-serbia--fox2-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "greece-vs-serbia--fox2-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_2bf40d2d4c5d7b20303cf121",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_8c376d9233a43d762072a0d287b7fb9c",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "greece-vs-serbia--fox2-sports",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "HD",
+      "resolution_height": 720,
+      "start_time": "2026-11-16T19:45:00+00:00",
+      "start_at": "2026-11-16T19:45:00+00:00",
+      "end_time": "2026-11-16T22:15:00+00:00",
+      "end_time_source": "sport",
+      "competition": "UEFA Nations League",
+      "fixture_id": "provider:greece-vs-serbia|uefa nations league|2026-11-16",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-16T19:45:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861188)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401861188"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xtxtts1455465601.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/oxvynb1689195538.png",
+      "playback_id": "ctv_8c376d9233a43d762072a0d287b7fb9c",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "flocollege-d2-football-bracket-breakdown",
+      "name": "FloCollege D2 Football Bracket Breakdown",
+      "primary_stream_key": "0ab055d8318ca25624249202225aac5bbf5523fe2c0903d7226ce7e237e057e6",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.c6b112c2-4a41-4c1d-9813-795299644248/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 4,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_790011f782de0b35adc32993ce02bb83",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "flocollege-d2-football-bracket-breakdown--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.c6b112c2-4a41-4c1d-9813-795299644248/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "flocollege-d2-football-bracket-breakdown--prime-video--1",
+          "stream_count": 4,
+          "backup_count": 3,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "flocollege-d2-football-bracket-breakdown--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_c1e02be4d063e0566b724069",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "flocollege-d2-football-bracket-breakdown--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b7f37c054f02157af5afadd6",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "flocollege-d2-football-bracket-breakdown--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_8db6155c66a901f36b688c53",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_790011f782de0b35adc32993ce02bb83",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "flocollege-d2-football-bracket-breakdown--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_01b11c32d050778527634c31",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "flocollege-d2-football-bracket-breakdown--prime-video",
+      "channel_stats": {
+        "streams_in": 4,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 4,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-16T20:05:01+00:00",
+      "start_at": "2026-11-16T20:05:01+00:00",
+      "end_time": "2026-11-16T22:35:01+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:flocollege-d2-football-bracket-breakdown|2026-11-16",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
