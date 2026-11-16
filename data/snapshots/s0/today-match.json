@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-16T02:57:31.813742+00:00",
+  "updated_at": "2026-11-16T03:25:01.843766+00:00",
   "count": 2,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -85,7 +85,13 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-16T03:24:58.587433+00:00"
     },
     {
       "id": "victoria-vs-western-australia",
@@ -128,22 +134,10 @@
           "source_id": "sm-fancode",
           "source_name": "SM FanCode Auto Update",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "sportlive-fancode-backup",
-          "source_name": "SportLive18 FanCode Backup",
-          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror"
+        "sm-fancode"
       ],
       "start_time": "2026-11-16T03:00:00+00:00",
       "start_at": "2026-11-16T03:00:00+00:00",
@@ -161,6 +155,17 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (Scheduled, event 1544856)",
+        "LiveScore livescore=Play in progress (33, event 1825049)"
+      ],
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1544856); LiveScore livescore=Play in progress (33, event 1825049)",
       "allow_without_stream": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
