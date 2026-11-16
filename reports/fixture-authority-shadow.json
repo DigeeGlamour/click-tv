@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T07:44:53.648809+00:00",
+  "generated_at": "2026-11-16T08:04:45.025754+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,7 +13,7 @@
       "fixtures": 681,
       "unknown_statuses": [
         "12|Int.",
-        "132|Stumps - day 1"
+        "173|Lunch - day 4"
       ],
       "attempts": [
         {
@@ -107,17 +107,18 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 4,
-    "upcoming": 52,
+    "today_match": 6,
+    "upcoming": 50,
     "fixtures": 56,
     "verdicts": {
       "UNVERIFIED": 39,
-      "VERIFIED": 17
+      "CONFLICT": 1,
+      "VERIFIED": 16
     },
-    "verified": 17,
+    "verified": 16,
     "partial_authority": 0,
     "unverified": 39,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "matched": 18,
@@ -131,9 +132,10 @@
     "matched_by_two_independent_authorities": 15,
     "authority_agreements": 15,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "kickoff": 2
+      "kickoff": 2,
+      "card says LIVE, authority says UPCOMING": 1
     },
     "identity_near_misses": 5,
     "independent_authority_count_distribution": {
@@ -144,7 +146,7 @@
     "unknown_authority_statuses": {
       "livescore": [
         "12|Int.",
-        "132|Stumps - day 1"
+        "173|Lunch - day 4"
       ],
       "espn-header": [
         "STATUS_FINAL_AGT|AGT"
@@ -259,9 +261,9 @@
           "competition_id": "24645",
           "kickoff": "2026-11-15T08:00:00+00:00",
           "kickoff_delta_minutes": -1440.0,
-          "status_raw": "Stumps - day 1",
-          "status_code": "132",
-          "status": "UNKNOWN",
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "1st Test",
           "format": "Test",
@@ -279,6 +281,43 @@
         "kickoff: ours 2026-11-16T08:00, espn-header 2026-11-15T08:00 (-1440.0 min)",
         "kickoff: ours 2026-11-16T08:00, livescore 2026-11-15T08:00 (-1440.0 min)"
       ],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:wbbl|women big bash league|2026-11-16",
+      "card_id": "wbbl",
+      "name": "WBBL",
+      "competition": "Women's Big Bash League",
+      "kickoff": "2026-11-16T08:10:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
@@ -328,6 +367,97 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:sydney-thunder-vs-melbourne-stars-women|women big bash league 2026 24th|2026-11-16",
+      "card_id": "sydney-thunder-women-vs-melbourne-stars-women",
+      "name": "Sydney Thunder Women vs Melbourne Stars Women",
+      "competition": "Womens Big Bash League 2026 - 24th Match",
+      "kickoff": "2026-11-16T08:04:45+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "PrimeVideo",
+        "Willow"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543967",
+          "upstream_family": "ESPN",
+          "name": "Sydney Thunder Women vs Melbourne Stars Women",
+          "home": "Sydney Thunder Women",
+          "away": "Melbourne Stars Women",
+          "home_team_id": "896401",
+          "away_team_id": "896399",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-16T08:10:00+00:00",
+          "kickoff_delta_minutes": 5.2,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "24th Match (D/N)",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-16T23:59:00Z",
+          "authority_uid": "s:200~e:1543967~c:1543967"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1813047",
+          "upstream_family": "LiveScore",
+          "name": "Sydney Thunder W vs Melbourne Stars W",
+          "home": "Sydney Thunder W",
+          "away": "Melbourne Stars W",
+          "home_team_id": "86307",
+          "away_team_id": "86308",
+          "competition": "Women's Big Bash League",
+          "competition_id": "25707",
+          "kickoff": "2026-11-16T08:10:00+00:00",
+          "kickoff_delta_minutes": 5.2,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Match 24",
+          "format": "Womens Domestic Twenty20",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -503,43 +633,6 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:wbbl|women big bash league|2026-11-16",
-      "card_id": "wbbl",
-      "name": "WBBL",
-      "competition": "Women's Big Bash League",
-      "kickoff": "2026-11-16T08:10:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
     },
     {
       "fixture_id": "provider:abu-dhabi-t10-league|abu dhabi t10 league|2026-11-16",
@@ -2539,8 +2632,8 @@
       "name": "South Asia vs Europe",
       "competition": "Test Twenty Championship 2026",
       "kickoff": "2026-11-16T09:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -3165,16 +3258,18 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
-    },
+    }
+  ],
+  "retired_or_unpublished": [
     {
       "fixture_id": "provider:sydney-thunder-vs-melbourne-stars-women|women big bash league 2026|2026-11-16",
       "card_id": "sydney-thunder-women-vs-melbourne-stars-women",
       "name": "Sydney Thunder Women vs Melbourne Stars Women",
       "competition": "Women's Big Bash League, 2026",
       "kickoff": "2026-11-16T08:10:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LINK_UPDATING",
       "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
@@ -3182,8 +3277,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3254,8 +3349,7 @@
       "conflict_reasons": [],
       "authority_agreement": "AGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
+      "verdict": "VERIFIED"
     }
   ]
 }
