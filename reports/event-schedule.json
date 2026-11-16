@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T13:45:16.985802+00:00",
+  "generated_at": "2026-11-16T14:05:06.950691+00:00",
   "today_match_count": 8,
   "upcoming_count": 49,
   "today_missing_logo": [],
@@ -8,7 +8,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 187,
+  "provider_fixture": 183,
   "provider_rejected": 103,
   "provider_rejected_reasons": {
     "provider_dead_status": 72,
@@ -39,7 +39,7 @@
       "kickoff_missing_and_not_live": 1,
       "total": 1
     },
-    "drmlive-fancode-mirror": {
+    "sportlive-fancode-backup": {
       "status_neither_live_nor_upcoming": 1,
       "total": 1
     }
@@ -337,7 +337,7 @@
       "name": "Zimbabwe vs Afghanistan",
       "competition": "Zimbabwe Tour of Afghanistan in UAE, 2026",
       "sport": "cricket",
-      "source_id": "drmlive-fancode-mirror",
+      "source_id": "sportlive-fancode-backup",
       "status": "PAUSED",
       "reason": "status_neither_live_nor_upcoming",
       "start_time": "2026-11-13T06:00:00+00:00"
@@ -389,8 +389,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 187,
-    "discarded": 64,
+    "total": 183,
+    "discarded": 65,
     "examples": [
       {
         "name": "GOLF EVENTO",
@@ -402,6 +402,14 @@
       },
       {
         "name": "Nov 16 PTT Carvoeiro",
+        "source": "srhady-primevideo-sports",
+        "competition": "",
+        "sport_type": "",
+        "reason": "table tennis / pickleball gazetteer",
+        "evidence": "ptt"
+      },
+      {
+        "name": "Nov 16 PTT Miami",
         "source": "srhady-primevideo-sports",
         "competition": "",
         "sport_type": "",
@@ -506,7 +514,7 @@
       },
       {
         "name": "Round of 16 vs Hong Kong (2026)",
-        "source": "sportlive-fancode-backup, vk1817-fancode-mirror, drmlive-fan",
+        "source": "sportlive-fancode-backup, vk1817-fancode-mirror, sayanpal-fa",
         "competition": "BWF Super 500 - LI-NING Hong Kong Open 2026",
         "sport_type": "",
         "reason": "badminton gazetteer",
@@ -863,23 +871,15 @@
         "sport_type": "",
         "reason": "league map: motorsport",
         "evidence": "Formula 1"
-      },
-      {
-        "name": "TENNIS | EVENTO",
-        "source": "sm-sports-data",
-        "competition": "TENNIS | EVENTO",
-        "sport_type": "",
-        "reason": "tennis gazetteer",
-        "evidence": "tennis"
       }
     ]
   },
   "reused_event_ids": 0,
   "authority_status": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 0,
-    "recorded": 13,
+    "recorded": 12,
     "conflict": 1,
     "unmatched": 42,
     "start_window": 0,
@@ -887,18 +887,38 @@
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 13
+      "UPCOMING": 12,
+      "FINISHED": 1
     },
     "by_confidence": {
-      "HIGH": 10,
+      "CONFLICT": 1,
       "LOW": 3,
-      "CONFLICT": 1
+      "HIGH": 10
     },
-    "applied_fixtures": [],
-    "conflicts": [
+    "applied_fixtures": [
       {
         "name": "Ireland Women vs Papua New Guinea Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1557557); LiveScore livescore=FT (6, event 1913244)",
+        "fixture_id": "provider:ireland-vs-papua-new-guinea-women|icc women emerging nations trophy 2026|2026-11-16",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1557557)",
+          "LiveScore livescore=FT (6, event 1913244)"
+        ],
+        "authority_finished_seen_at": "2026-11-16T14:04:49.550102+00:00",
+        "remove_after": "2026-11-16T14:24:49.550102+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": ""
+      }
+    ],
+    "conflicts": [
+      {
+        "name": "Arabian Aces vs United Tigers",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1561271); LiveScore livescore=Play in progress (33, event 1906320)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -909,10 +929,10 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 0,
-    "recorded": 2,
+    "recorded": 1,
     "conflict": 1,
     "unmatched": 4,
     "start_window": 0,
@@ -920,18 +940,38 @@
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 2
+      "FINISHED": 1,
+      "UPCOMING": 1
     },
     "by_confidence": {
-      "CONFLICT": 1,
+      "HIGH": 1,
       "LOW": 1,
-      "HIGH": 1
+      "CONFLICT": 1
     },
-    "applied_fixtures": [],
-    "conflicts": [
+    "applied_fixtures": [
       {
         "name": "Ireland Women vs Papua New Guinea Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1557557); LiveScore livescore=FT (6, event 1913244)",
+        "fixture_id": "provider:ireland-vs-papua-new-guinea-women|icc women emerging nations trophy 2026|2026-11-16",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1557557)",
+          "LiveScore livescore=FT (6, event 1913244)"
+        ],
+        "authority_finished_seen_at": "2026-11-16T14:04:49.550102+00:00",
+        "remove_after": "2026-11-16T14:24:49.550102+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": "STARTING"
+      }
+    ],
+    "conflicts": [
+      {
+        "name": "Arabian Aces vs United Tigers",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1561271); LiveScore livescore=Play in progress (33, event 1906320)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -992,7 +1032,7 @@
   },
   "channel_names": {
     "stamped": 0,
-    "unresolved": 57,
+    "unresolved": 56,
     "names": {}
   },
   "streamed_provider": {
@@ -1081,14 +1121,6 @@
           "rejected": 0,
           "published": 28
         },
-        "sportlive-fancode-backup": {
-          "total": 18,
-          "cricket": 12,
-          "football": 6,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
-        },
         "sm-fancode": {
           "total": 16,
           "cricket": 10,
@@ -1096,6 +1128,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 16
+        },
+        "sportlive-fancode-backup": {
+          "total": 17,
+          "cricket": 11,
+          "football": 6,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 17
         },
         "vk1817-fancode-mirror": {
           "total": 16,
@@ -1105,21 +1145,21 @@
           "rejected": 0,
           "published": 16
         },
-        "drmlive-fancode-mirror": {
-          "total": 18,
-          "cricket": 12,
-          "football": 6,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
-        },
         "sayanpal-fancode-mirror": {
-          "total": 18,
-          "cricket": 12,
+          "total": 17,
+          "cricket": 11,
           "football": 6,
           "quarantined": 0,
           "rejected": 0,
-          "published": 18
+          "published": 17
+        },
+        "drmlive-fancode-mirror": {
+          "total": 17,
+          "cricket": 11,
+          "football": 6,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 17
         }
       },
       "rejected_examples": [
@@ -1232,14 +1272,6 @@
           "rejected": 0,
           "published": 27
         },
-        "sportlive-fancode-backup": {
-          "total": 18,
-          "cricket": 12,
-          "football": 6,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
-        },
         "sm-fancode": {
           "total": 14,
           "cricket": 8,
@@ -1247,6 +1279,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 14
+        },
+        "sportlive-fancode-backup": {
+          "total": 17,
+          "cricket": 11,
+          "football": 6,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 17
         },
         "vk1817-fancode-mirror": {
           "total": 16,
@@ -1256,21 +1296,21 @@
           "rejected": 0,
           "published": 16
         },
-        "drmlive-fancode-mirror": {
-          "total": 18,
-          "cricket": 12,
-          "football": 6,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
-        },
         "sayanpal-fancode-mirror": {
-          "total": 18,
-          "cricket": 12,
+          "total": 17,
+          "cricket": 11,
           "football": 6,
           "quarantined": 0,
           "rejected": 0,
-          "published": 18
+          "published": 17
+        },
+        "drmlive-fancode-mirror": {
+          "total": 17,
+          "cricket": 11,
+          "football": 6,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 17
         }
       },
       "rejected_examples": [],
@@ -1286,10 +1326,10 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 290,
+    "raw_events": 286,
     "cricket_kept": 44,
     "football_kept": 12,
-    "other_discarded": 67,
+    "other_discarded": 68,
     "unresolved": 1,
     "today_final": 8,
     "upcoming_final": 49,
@@ -1321,9 +1361,9 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 0,
+      "provider_or_authority": 1,
       "estimate": 0,
-      "none": 8
+      "none": 7
     }
   },
   "fixture_stream_health": {
@@ -1336,26 +1376,26 @@
     "targeted_fixtures": 7,
     "targeted_attempts": 19,
     "fixtures_with_a_first_link_time": 5,
-    "candidate_routes": 70,
-    "verified_routes": 51,
+    "candidate_routes": 64,
+    "verified_routes": 45,
     "failed_routes": 19,
     "fixtures_touched_by_a_route_failure": 11,
     "fixtures_left_with_nothing": 4,
     "distinct_failure_codes": 7,
-    "unrecognised_candidate_groups": 24,
+    "unrecognised_candidate_groups": 25,
     "unrecognised_failed_routes": 75
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 57,
-    "verified": 11,
+    "verified": 12,
     "partial_authority": 0,
     "unverified": 43,
-    "conflict": 3,
+    "conflict": 2,
     "matched_by_two_independent_authorities": 11,
     "authority_agreements": 10,
     "authority_disagreements": 1,
-    "card_status_conflicts": 2,
+    "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 0
