@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T01:25:08.877593+00:00",
+  "generated_at": "2026-11-16T01:45:22.660144+00:00",
   "today_match_count": 2,
   "upcoming_count": 54,
   "today_missing_logo": [],
@@ -8,18 +8,18 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 163,
-  "provider_rejected": 200,
+  "provider_fixture": 157,
+  "provider_rejected": 202,
   "provider_rejected_reasons": {
-    "provider_dead_status": 170,
+    "provider_dead_status": 172,
     "status_neither_live_nor_upcoming": 3,
     "kickoff_missing_and_not_live": 1,
     "upcoming_kickoff_already_passed": 26
   },
   "provider_rejected_by_source": {
     "sm-sports-data": {
-      "provider_dead_status": 170,
-      "total": 170
+      "provider_dead_status": 172,
+      "total": 172
     },
     "srhady-crichd-footy-live": {
       "upcoming_kickoff_already_passed": 5,
@@ -210,6 +210,15 @@
       "status": "ENDED",
       "reason": "provider_dead_status",
       "start_time": "2026-11-15T18:00:00+00:00"
+    },
+    {
+      "name": "Panama Vs Curaçao",
+      "competition": "CONCACAF Nations League",
+      "sport": "football",
+      "source_id": "sm-sports-data",
+      "status": "ENDED",
+      "reason": "provider_dead_status",
+      "start_time": "2026-11-15T23:00:00+00:00"
     },
     {
       "name": "Primera A",
@@ -563,36 +572,27 @@
       "start_time": "2026-11-15T18:00:00+00:00"
     },
     {
-      "name": "Spain Vs England",
-      "competition": "UEFA Nations League",
+      "name": "Panama Vs Curaçao",
+      "competition": "CONCACAF Nations League",
       "sport": "football",
       "source_id": "sm-sports-data",
       "status": "ENDED",
       "reason": "provider_dead_status",
-      "start_time": "2026-11-15T19:45:00+00:00"
-    },
-    {
-      "name": "Arsenal Vs London City Lionesses",
-      "competition": "Women's Super League",
-      "sport": "football",
-      "source_id": "sm-sports-data",
-      "status": "ENDED",
-      "reason": "provider_dead_status",
-      "start_time": "2026-11-15T16:30:00+00:00"
+      "start_time": "2026-11-15T23:00:00+00:00"
     }
   ],
   "ambiguous_suppressed": 0,
   "unverified_suppressed": 0,
   "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
-  "provider_rejected_fixtures_truncated": 34,
+  "provider_rejected_fixtures_truncated": 36,
   "streams_attached": 0,
-  "fixtures_with_stream": 1,
+  "fixtures_with_stream": 0,
   "pool_offered": 0,
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 163,
+    "total": 157,
     "discarded": 50,
     "examples": [
       {
@@ -1003,7 +1003,7 @@
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 15,
-    "conflict": 2,
+    "conflict": 1,
     "unmatched": 39,
     "start_window": 0,
     "start_window_fixtures": [],
@@ -1013,22 +1013,12 @@
       "UPCOMING": 15
     },
     "by_confidence": {
-      "CONFLICT": 2,
       "HIGH": 13,
-      "LOW": 2
+      "LOW": 2,
+      "CONFLICT": 1
     },
     "applied_fixtures": [],
     "conflicts": [
-      {
-        "name": "Panama Vs Curaçao",
-        "reason": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401929709); LiveScore livescore=FT (6, event 1903660)",
-        "status": "",
-        "confidence": "CONFLICT",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
       {
         "name": "Queensland vs Tasmania",
         "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1544854); LiveScore livescore=Play in progress (33, event 1825038)",
@@ -1070,7 +1060,7 @@
       },
       {
         "name": "Panama Vs Curaçao",
-        "reason": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401929709); LiveScore livescore=FT (6, event 1903660)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401929709); LiveScore livescore=FT (6, event 1903660)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1081,14 +1071,14 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 1,
-    "finished": 0,
+    "asked": 2,
+    "finished": 1,
     "unplayable": 0,
     "cache_hits": 0,
     "no_verdict": 1
   },
   "live_protection": {
-    "carried_forward": 0,
+    "carried_forward": 1,
     "released_ended": 0,
     "released_ended_ids": [],
     "retired_terminal": [],
@@ -1097,13 +1087,15 @@
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 0,
+    "probe_alive": 1,
     "probe_dead": 0,
     "probe_inconclusive": 0,
-    "end_pending": 0,
+    "end_pending": 1,
     "released_confirmed": 0,
     "protected_playing": 0,
-    "lifecycle_states": {},
+    "lifecycle_states": {
+      "END_PENDING": 1
+    },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
@@ -1120,7 +1112,9 @@
     "decided_this_scan": 0
   },
   "source_outage": {
-    "sources_in_outage": [],
+    "sources_in_outage": [
+      "srhady-primevideo-sports"
+    ],
     "held": 0,
     "held_names": [],
     "considered": 0,
@@ -1151,19 +1145,19 @@
     "unmatched": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 52,
+    "attempted": 51,
     "poster_filled": 0,
-    "badge_filled": 24,
+    "badge_filled": 22,
     "badge_used_as_logo": 0,
-    "cache_hits": 15,
+    "cache_hits": 14,
     "cached_entries": 1642,
     "provider": {
-      "requests": 12,
-      "hits": 10,
+      "requests": 10,
+      "hits": 8,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 26,
+      "skipped_rate_limited": 28,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1183,32 +1177,23 @@
   "competition_labels_clarified": [],
   "sport_filter": {
     "at_merge": {
-      "total": 61,
-      "published": 56,
+      "total": 59,
+      "published": 55,
       "rejected": 4,
-      "quarantined": 1,
+      "quarantined": 0,
       "states": {
         "confirmed_cricket": 43,
         "confirmed_other": 4,
-        "confirmed_football": 13,
-        "unknown": 1
+        "confirmed_football": 12
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 22,
+          "total": 21,
           "cricket": 7,
-          "football": 11,
+          "football": 10,
           "quarantined": 0,
           "rejected": 4,
-          "published": 18
-        },
-        "srhady-primevideo-sports": {
-          "total": 1,
-          "cricket": 0,
-          "football": 0,
-          "quarantined": 1,
-          "rejected": 0,
-          "published": 0
+          "published": 17
         },
         "srhady-willow-event": {
           "total": 26,
@@ -1218,7 +1203,7 @@
           "rejected": 0,
           "published": 26
         },
-        "sportlive-fancode-backup": {
+        "sm-fancode": {
           "total": 17,
           "cricket": 10,
           "football": 7,
@@ -1226,7 +1211,7 @@
           "rejected": 0,
           "published": 17
         },
-        "sm-fancode": {
+        "sportlive-fancode-backup": {
           "total": 17,
           "cricket": 10,
           "football": 7,
@@ -1242,14 +1227,6 @@
           "rejected": 0,
           "published": 17
         },
-        "vk1817-fancode-mirror": {
-          "total": 18,
-          "cricket": 11,
-          "football": 7,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
-        },
         "sayanpal-fancode-mirror": {
           "total": 17,
           "cricket": 10,
@@ -1257,6 +1234,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 17
+        },
+        "vk1817-fancode-mirror": {
+          "total": 18,
+          "cricket": 11,
+          "football": 7,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 18
         }
       },
       "rejected_examples": [
@@ -1293,15 +1278,7 @@
           "evidence": "motorsport"
         }
       ],
-      "quarantined_events": [
-        {
-          "name": "Superkarts USA Supernationals, Sunday",
-          "source": "srhady-primevideo-sports",
-          "competition": "",
-          "sport_type": "other",
-          "reason": "no sport evidence in the record"
-        }
-      ],
+      "quarantined_events": [],
       "leaks": []
     },
     "today_match": {
@@ -1310,22 +1287,22 @@
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 1,
-        "confirmed_cricket": 1
+        "confirmed_cricket": 1,
+        "confirmed_football": 1
       },
       "by_source": {
-        "sm-sports-data": {
-          "total": 1,
-          "cricket": 0,
-          "football": 1,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
         "vk1817-fancode-mirror": {
           "total": 1,
           "cricket": 1,
           "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
+        },
+        "sm-sports-data": {
+          "total": 1,
+          "cricket": 0,
+          "football": 1,
           "quarantined": 0,
           "rejected": 0,
           "published": 1
@@ -1361,7 +1338,7 @@
           "rejected": 0,
           "published": 26
         },
-        "sportlive-fancode-backup": {
+        "sm-fancode": {
           "total": 17,
           "cricket": 10,
           "football": 7,
@@ -1369,7 +1346,7 @@
           "rejected": 0,
           "published": 17
         },
-        "sm-fancode": {
+        "sportlive-fancode-backup": {
           "total": 17,
           "cricket": 10,
           "football": 7,
@@ -1385,7 +1362,7 @@
           "rejected": 0,
           "published": 17
         },
-        "vk1817-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 17,
           "cricket": 10,
           "football": 7,
@@ -1393,7 +1370,7 @@
           "rejected": 0,
           "published": 17
         },
-        "sayanpal-fancode-mirror": {
+        "vk1817-fancode-mirror": {
           "total": 17,
           "cricket": 10,
           "football": 7,
@@ -1415,16 +1392,16 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 363,
+    "raw_events": 359,
     "cricket_kept": 43,
-    "football_kept": 13,
+    "football_kept": 12,
     "other_discarded": 54,
-    "unresolved": 1,
+    "unresolved": 0,
     "today_final": 2,
     "upcoming_final": 54,
     "published_states": {
-      "confirmed_football": 13,
-      "confirmed_cricket": 43
+      "confirmed_cricket": 43,
+      "confirmed_football": 13
     },
     "other_sport_leak": 0,
     "ball_sport_wrongly_refused": 0
@@ -1450,29 +1427,29 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 0,
+      "provider_or_authority": 1,
       "estimate": 0,
-      "none": 2
+      "none": 1
     }
   },
   "fixture_stream_health": {
-    "fixtures": 64,
+    "fixtures": 63,
     "published_fixtures": 56,
-    "fixtures_with_verified_stream": 12,
+    "fixtures_with_verified_stream": 11,
     "fixtures_with_zero_verified": 52,
     "published_without_stream": 55,
     "fallback_available": 1,
     "targeted_fixtures": 2,
     "targeted_attempts": 8,
     "fixtures_with_a_first_link_time": 1,
-    "candidate_routes": 53,
-    "verified_routes": 26,
+    "candidate_routes": 49,
+    "verified_routes": 22,
     "failed_routes": 27,
     "fixtures_touched_by_a_route_failure": 13,
     "fixtures_left_with_nothing": 4,
     "distinct_failure_codes": 7,
     "unrecognised_candidate_groups": 56,
-    "unrecognised_failed_routes": 151
+    "unrecognised_failed_routes": 153
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
@@ -1490,17 +1467,21 @@
     "not_published": 0
   },
   "stream_health": {
-    "sources_in_outage": [],
+    "sources_in_outage": [
+      "srhady-primevideo-sports"
+    ],
     "published_fixtures": 56,
-    "fixtures_with_stream": 1,
-    "fixtures_playable_via_catalogue": 0,
-    "fixtures_with_fresh_stream": 1,
+    "fixtures_with_stream": 0,
+    "fixtures_playable_via_catalogue": 1,
+    "fixtures_with_fresh_stream": 0,
     "fixtures_with_carried_stream": 0,
-    "today_with_stream": 1,
+    "today_with_stream": 0,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
-    "state": "ok",
-    "warnings": []
+    "state": "degraded",
+    "warnings": [
+      "no published fixture has a playable route: 56 card(s), 0 with a stream, 1 playable through the catalogue; source(s) that produced nothing this scan: srhady-primevideo-sports"
+    ]
   },
   "fixtures_with_attached_stream": 0
 }
