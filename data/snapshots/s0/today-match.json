@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-17T19:22:27.226326+00:00",
-  "count": 15,
+  "updated_at": "2026-11-17T19:37:39.545111+00:00",
+  "count": 16,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -230,7 +230,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-17T19:24:54.877436+00:00"
     },
     {
       "id": "abu-dhabi-t10-league",
@@ -365,7 +373,7 @@
       "resolution_height": 720,
       "start_time": "2026-11-17T13:45:00+00:00",
       "start_at": "2026-11-17T13:45:00+00:00",
-      "end_time": "2026-11-17T20:04:52+00:00",
+      "end_time": "2026-11-17T20:24:48+00:00",
       "end_time_source": "assumed",
       "competition": "ABU DHABI T10 LEAGUE",
       "fixture_id": "provider:abu-dhabi-t10-league|abu dhabi t10 league|2026-11-17",
@@ -745,7 +753,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 13,
+      "carried_forward_misses": 14,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-17T15:05:02.985346+00:00"
     },
@@ -872,7 +880,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-17T18:44:55.233787+00:00"
     },
@@ -977,34 +985,39 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=89' (STATUS_SECOND_HALF, event 401927166)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401927166)",
         "LiveScore livescore=FT (6, event 1873050)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401927166"
+        "espn-header": "401927166",
+        "livescore": "1873050"
       },
-      "authority_status": "LIVE",
+      "authority_status": "FINISHED",
       "event_type": "today_match",
       "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_fc87bac9e18795c710de6f68ac0e7f06",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "carried_forward_misses": 5,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-17T18:05:00.579630+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 4,
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=89' (STATUS_SECOND_HALF, event 401927166); LiveScore livescore=FT (6, event 1873050)"
+      "end_pending_confirmations": 0,
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-17T19:24:48.432748+00:00",
+      "authority_remove_after": "2026-11-17T19:44:48.432748+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "ended_seen_at": "2026-11-17T19:24:54.877436+00:00"
     },
     {
       "id": "kuwait-vs-honduras",
@@ -1111,22 +1124,38 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=58' (STATUS_SECOND_HALF, event 401931956)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401931956)",
         "LiveScore livescore=FT (6, event 1913937)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=58' (STATUS_SECOND_HALF, event 401931956); LiveScore livescore=FT (6, event 1913937)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ep080d1597861076.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wuu4fp1718413719.png",
-      "playback_id": "ctv_fce3114a871d74857f10a88b1e7f228b"
+      "playback_id": "ctv_fce3114a871d74857f10a88b1e7f228b",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401931956",
+        "livescore": "1913937"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-17T19:24:48.432748+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-17T19:44:48.432748+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-17T19:24:54.877436+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-17T19:24:54.877436+00:00"
     },
     {
       "id": "uae-bulls-vs-royal-desert-champions",
@@ -1377,6 +1406,14 @@
         "query_parameters": [],
         "drm": true
       },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-17T19:05:00.765962+00:00",
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -1389,49 +1426,81 @@
           "kickoff_delta_minutes": -164.8,
           "status": "LIVE"
         }
-      ],
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
-      "lifecycle_protections": [
-        "primary_playable",
-        "backup_playable"
-      ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-17T19:05:00.765962+00:00"
+      ]
     },
     {
       "id": "bosnia-herzegovina-vs-romania",
       "name": "Bosnia Herzegovina Vs Romania",
-      "primary_stream_key": "",
+      "primary_stream_key": "6b2099aef391128d1082ce9a81800e5746591a5c0b5f8b5d51c0a9685a730aa8",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/4479/image",
       "category": "today_match",
-      "url": "",
+      "url": "https://chatgpt.hereisman.net/playlist/60314/load-playlist?&.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "proxy_first",
-      "stream_type": "hls",
-      "requires_headers": false,
+      "stream_type": "media",
+      "requires_headers": true,
       "inherit_manifest_query": false,
-      "verification_mode": "undeliverable_bare_ip",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
+      "original_source_pipeline": "today_match",
       "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
+      "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
-      "metadata_only": true,
-      "available_link_count": 0,
+      "metadata_only": false,
+      "available_link_count": 1,
       "backups": [],
+      "channels": [
+        {
+          "id": "bosnia-herzegovina-vs-romania--quality-tv",
+          "name": "QUALITY TV",
+          "normalized_name": "quality-tv",
+          "logo": "https://img.sofascore.com/api/v1/team/4479/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "bosnia-herzegovina-vs-romania--quality-tv--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "bosnia-herzegovina-vs-romania--quality-tv--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_a645ec2199fe2146428a47d4",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_bf1a4647199e09fb15c8564e98ba27bc",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "media"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "bosnia-herzegovina-vs-romania--quality-tv",
       "channel_stats": {
         "streams_in": 1,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
+        "channels": 1,
+        "variants": 1,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1445,40 +1514,28 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "playback_unproven": true,
-      "playback_unproven_reason": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+      "resolution": "HD",
+      "resolution_height": 720,
       "start_time": "2026-11-17T19:45:00+00:00",
       "start_at": "2026-11-17T19:45:00+00:00",
       "end_time": "2026-11-17T22:15:00+00:00",
       "end_time_source": "sport",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:bosnia-herzegovina-vs-romania|uefa nations league|2026-11-17",
-      "status": "STARTING_SOON",
-      "original_status": "UPCOMING",
-      "schedule_status": "STARTING_SOON",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-17T19:45:00+00:00",
       "time_verification": "provider_feed",
+      "source_category": "football",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861196)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401861196"
-      },
       "event_type": "today_match",
-      "lifecycle_state": "STARTING",
-      "allow_without_stream": true,
-      "routing_changed_from": "upcoming"
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_e04664254146ee093cd6b79f6a398127"
     },
     {
       "id": "denmark-vs-norway",
@@ -1588,6 +1645,21 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861194)",
+        "LiveScore livescore=NS (1, event 1738354)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861194",
+        "livescore": "1738354"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/e13arj1717365623.png",
@@ -1625,38 +1697,8 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_4593d40e0c3cfdb900f71d518c3ea558",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
+      "available_link_count": 1,
+      "backups": [],
       "channels": [
         {
           "id": "hungary-vs-northern-ireland--sport3-tv",
@@ -1693,52 +1735,16 @@
               "stream_type": "dash"
             }
           ]
-        },
-        {
-          "id": "hungary-vs-northern-ireland--fox2-sports",
-          "name": "FOX2 SPORTS",
-          "normalized_name": "fox2-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/4709/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "hungary-vs-northern-ireland--fox2-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "hungary-vs-northern-ireland--fox2-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_e4320f3aa4e760084c630725",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4593d40e0c3cfdb900f71d518c3ea558",
-              "resolution": "HD",
-              "resolution_height": 720,
-              "stream_type": "dash"
-            }
-          ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 1,
       "default_channel_id": "hungary-vs-northern-ireland--sport3-tv",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 1,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 1,
+        "variants": 1,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1775,6 +1781,21 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861191)",
+        "LiveScore livescore=NS (1, event 1738329)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861191",
+        "livescore": "1738329"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_a934ea23be83d3c53734e4764de808bb",
@@ -1789,36 +1810,76 @@
     {
       "id": "ireland-vs-kosovo",
       "name": "Ireland Vs Kosovo",
-      "primary_stream_key": "",
+      "primary_stream_key": "ab0633ac7729508790e34bd8b80a0dd172be2a61be61f32a374b6c5b0f0b1d61",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/4693/image",
       "category": "today_match",
-      "url": "",
+      "url": "https://chatgpt.hereisman.net/playlist/60315/load-playlist?&.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "proxy_first",
-      "stream_type": "hls",
-      "requires_headers": false,
+      "stream_type": "media",
+      "requires_headers": true,
       "inherit_manifest_query": false,
-      "verification_mode": "undeliverable_bare_ip",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
+      "original_source_pipeline": "today_match",
       "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
+      "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
-      "metadata_only": true,
-      "available_link_count": 0,
+      "metadata_only": false,
+      "available_link_count": 1,
       "backups": [],
+      "channels": [
+        {
+          "id": "ireland-vs-kosovo--itv-sports",
+          "name": "ITV SPORTS+",
+          "normalized_name": "itv-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/4693/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "ireland-vs-kosovo--itv-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "ireland-vs-kosovo--itv-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_5f603e75353c467aa30e613c",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_7e57bf17c95654b80a8941e7ecac18cb",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "media"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "ireland-vs-kosovo--itv-sports",
       "channel_stats": {
         "streams_in": 1,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
+        "channels": 1,
+        "variants": 1,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1832,76 +1893,103 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "playback_unproven": true,
-      "playback_unproven_reason": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+      "resolution": "HD",
+      "resolution_height": 720,
       "start_time": "2026-11-17T19:45:00+00:00",
       "start_at": "2026-11-17T19:45:00+00:00",
       "end_time": "2026-11-17T22:15:00+00:00",
       "end_time_source": "sport",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:ireland-vs-kosovo|uefa nations league|2026-11-17",
-      "status": "STARTING_SOON",
-      "original_status": "UPCOMING",
-      "schedule_status": "STARTING_SOON",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-17T19:45:00+00:00",
       "time_verification": "provider_feed",
+      "source_category": "football",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "LiveScore livescore=NS (1, event 1738276)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "livescore": "1738276"
-      },
       "event_type": "today_match",
-      "lifecycle_state": "STARTING",
-      "allow_without_stream": true,
-      "routing_changed_from": "upcoming",
+      "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/3vq2cl1679073105.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/i3wq751730304457.png"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/i3wq751730304457.png",
+      "playback_id": "ctv_df78a0a2e59037d2d6a422c94c294f31"
     },
     {
       "id": "israel-vs-austria",
       "name": "Israel Vs Austria",
-      "primary_stream_key": "",
+      "primary_stream_key": "796b91721dc99d882a0027e99b3d4450886df64cad6ed0f27b710f67e1100abb",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/4480/image",
       "category": "today_match",
-      "url": "",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "hls",
-      "requires_headers": false,
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": true,
       "inherit_manifest_query": false,
-      "verification_mode": "undeliverable_bare_ip",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
+      "original_source_pipeline": "today_match",
       "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
+      "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
-      "metadata_only": true,
-      "available_link_count": 0,
+      "metadata_only": false,
+      "available_link_count": 1,
       "backups": [],
+      "channels": [
+        {
+          "id": "israel-vs-austria--fubo-sports",
+          "name": "FUBO SPORTS",
+          "normalized_name": "fubo-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/4480/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "israel-vs-austria--fubo-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "israel-vs-austria--fubo-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_9ae9966b580bfa07af5a6505",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_387e7e8a9fe89cbadba7da3dd7f474ea",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "israel-vs-austria--fubo-sports",
       "channel_stats": {
         "streams_in": 1,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
+        "channels": 1,
+        "variants": 1,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1915,45 +2003,41 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "playback_unproven": true,
-      "playback_unproven_reason": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "start_time": "2026-11-17T19:45:00+00:00",
       "start_at": "2026-11-17T19:45:00+00:00",
       "end_time": "2026-11-17T22:15:00+00:00",
       "end_time_source": "sport",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:israel-vs-austria|uefa nations league|2026-11-17",
-      "status": "STARTING_SOON",
-      "original_status": "UPCOMING",
-      "schedule_status": "STARTING_SOON",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-17T19:45:00+00:00",
       "time_verification": "provider_feed",
+      "source_category": "football",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861193)",
-        "LiveScore livescore=NS (1, event 1738275)"
-      ],
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "401861193",
-        "livescore": "1738275"
-      },
       "event_type": "today_match",
-      "lifecycle_state": "STARTING",
-      "allow_without_stream": true,
-      "routing_changed_from": "upcoming",
+      "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/me4lfd1515700405.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/874p631628721400.png"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/874p631628721400.png",
+      "playback_id": "ctv_387e7e8a9fe89cbadba7da3dd7f474ea",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
     },
     {
       "id": "poland-vs-sweden",
@@ -2063,6 +2147,21 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861195)",
+        "LiveScore livescore=NS (1, event 1738372)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861195",
+        "livescore": "1738372"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ttvrxy1455466076.png",
@@ -2156,11 +2255,18 @@
         "livescore": "1738330"
       },
       "event_type": "today_match",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "allow_without_stream": true,
       "routing_changed_from": "upcoming",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/k36g2e1591982718.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bhwotj1654205067.png"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bhwotj1654205067.png",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-17T19:24:54.877436+00:00"
     },
     {
       "id": "wales-vs-portugal",
@@ -2270,6 +2376,21 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861189)",
+        "LiveScore livescore=NS (1, event 1738353)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861189",
+        "livescore": "1738353"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/pdayn21591983222.png",
@@ -2282,6 +2403,179 @@
         "query_parameters": [],
         "drm": true
       }
+    },
+    {
+      "id": "niger-vs-morocco",
+      "name": "Niger Vs Morocco",
+      "primary_stream_key": "c58bf620cff0575ea6bd3a80b19c6fea0bb56a3e4882c1d2cd31fd1054b54814",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/8031/image",
+      "category": "today_match",
+      "url": "https://live2.jorvakstreamcache.com/live/channel8.m3u8?",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_e089390201ab6124c72667120868d74f",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "niger-vs-morocco--quality",
+          "name": "QUALITY",
+          "normalized_name": "quality",
+          "logo": "https://img.sofascore.com/api/v1/team/8031/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "niger-vs-morocco--quality--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "niger-vs-morocco--quality--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_6c887bf1edb18a320fcc390f",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_db24f0dda82479ae1ed133b40cdbca09",
+              "stream_type": "hls"
+            }
+          ]
+        },
+        {
+          "id": "niger-vs-morocco--bein-sports",
+          "name": "beIN SPORTS",
+          "normalized_name": "bein-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/8031/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "niger-vs-morocco--bein-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "niger-vs-morocco--bein-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_38fc5bd211dad30f14a30d19",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_e089390201ab6124c72667120868d74f",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 2,
+      "default_channel_id": "niger-vs-morocco--quality",
+      "channel_stats": {
+        "streams_in": 2,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 2,
+        "variants": 2,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "start_time": "2026-11-17T20:00:00+00:00",
+      "start_at": "2026-11-17T20:00:00+00:00",
+      "end_time": "2026-11-17T22:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Africa Cup of Nations Qual.",
+      "fixture_id": "provider:niger-vs-morocco|africa cup of nations qual|2026-11-17",
+      "status": "STARTING_SOON",
+      "original_status": "LIVE",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-17T20:00:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/9pmaes1553349468.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hbmwkj1731791275.png",
+      "playback_id": "ctv_db24f0dda82479ae1ed133b40cdbca09"
     }
   ]
 }
