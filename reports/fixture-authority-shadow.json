@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T02:04:57.391076+00:00",
+  "generated_at": "2026-11-17T02:24:42.586785+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,9 +12,10 @@
       "requests_ok": 6,
       "fixtures": 318,
       "unknown_statuses": [
-        "10|HT",
         "133|Stumps - day 2",
-        "135|Stumps - day 4"
+        "135|Stumps - day 4",
+        "2|13'",
+        "3|61'"
       ],
       "attempts": [
         {
@@ -61,8 +62,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 5,
-      "fixtures": 196,
+      "requests_ok": 6,
+      "fixtures": 235,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -80,8 +81,8 @@
         {
           "sport": "cricket",
           "date": "2026-11-18",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 39
         },
         {
           "sport": "football",
@@ -110,44 +111,43 @@
     "upcoming": 44,
     "fixtures": 47,
     "verdicts": {
-      "CONFLICT": 1,
+      "PARTIAL_AUTHORITY": 1,
       "UNVERIFIED": 39,
-      "VERIFIED": 6,
-      "PARTIAL_AUTHORITY": 1
+      "VERIFIED": 7
     },
-    "verified": 6,
+    "verified": 7,
     "partial_authority": 1,
     "unverified": 39,
-    "conflict": 1,
+    "conflict": 0,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 4,
-        "unmatched": 43
+        "matched": 9,
+        "unmatched": 38
       },
       "livescore": {
         "matched": 8,
         "unmatched": 39
       }
     },
-    "matched_by_two_independent_authorities": 1,
-    "authority_agreements": 0,
+    "matched_by_two_independent_authorities": 5,
+    "authority_agreements": 4,
     "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1,
       "kickoff": 2
     },
     "identity_near_misses": 4,
     "independent_authority_count_distribution": {
       "0": 39,
-      "1": 7,
-      "2": 1
+      "1": 3,
+      "2": 5
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "133|Stumps - day 2",
-        "135|Stumps - day 4"
+        "135|Stumps - day 4",
+        "2|13'",
+        "3|61'"
       ],
       "espn-header": []
     }
@@ -222,17 +222,17 @@
           "competition_id": "19267",
           "kickoff": "2026-11-17T01:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "19'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Mon, November 16th at 8:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "19'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:19267~e:401929770~c:401929770"
@@ -252,8 +252,8 @@
           "competition_id": "26584",
           "kickoff": "2026-11-17T01:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "HT",
-          "status_code": "10",
+          "status_raw": "61'",
+          "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
           "round": "Quarter Finals",
@@ -268,12 +268,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -528,9 +526,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
+        "sayanpal-fancode-mirror",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -575,7 +573,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1528705",
+          "upstream_family": "ESPN",
+          "name": "Australia vs England",
+          "home": "Australia",
+          "away": "England",
+          "home_team_id": "2",
+          "away_team_id": "1",
+          "competition": "England tour of Australia 2026/27",
+          "competition_id": "24273",
+          "kickoff": "2026-11-18T03:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "3rd ODI (D/N)",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-19T23:59:00Z",
+          "authority_uid": "s:200~e:1528705~c:1528705"
         },
         "livescore": {
           "result": "matched",
@@ -602,13 +627,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -627,10 +653,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -742,10 +768,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -859,10 +885,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -901,10 +927,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -960,10 +986,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1045,7 +1071,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1561276",
+          "upstream_family": "ESPN",
+          "name": "Emirates Eagles vs Yas Lions",
+          "home": "Emirates Eagles",
+          "away": "Yas Lions",
+          "home_team_id": "1561246",
+          "away_team_id": "1561245",
+          "competition": "Abu Dhabi T10",
+          "competition_id": "18522",
+          "kickoff": "2026-11-18T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "27th Match (D/N)",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-19T23:59:00Z",
+          "authority_uid": "s:200~e:1561276~c:1561276"
         },
         "livescore": {
           "result": "matched",
@@ -1072,13 +1125,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1097,10 +1151,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1139,10 +1193,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1329,10 +1383,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1407,10 +1461,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1448,10 +1502,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1459,7 +1513,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1557561",
+          "upstream_family": "ESPN",
+          "name": "Netherlands Women vs Zimbabwe Women",
+          "home": "Netherlands Women",
+          "away": "Zimbabwe Women",
+          "home_team_id": "2410",
+          "away_team_id": "271866",
+          "competition": "ICC Women's Emerging Nations Trophy",
+          "competition_id": "24142",
+          "kickoff": "2026-11-18T09:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "19th Match, Group B",
+          "format": "T20",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-19T23:59:00Z",
+          "authority_uid": "s:200~e:1557561~c:1557561"
         },
         "livescore": {
           "result": "matched",
@@ -1486,13 +1567,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1607,10 +1689,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1730,8 +1812,8 @@
       "authorities": {
         "espn-header": {
           "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
+          "matched_by": "ambiguous",
+          "verified": false,
           "event_id": "1550712",
           "upstream_family": "ESPN",
           "name": "Pakistan vs Sri Lanka",
@@ -1782,18 +1864,17 @@
           "gender": ""
         }
       },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
       "near_miss_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 1,
+      "near_miss_count": 2,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1810,10 +1891,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1821,7 +1902,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1557559",
+          "upstream_family": "ESPN",
+          "name": "United Arab Emirates Women vs Papua New Guinea Women",
+          "home": "United Arab Emirates Women",
+          "away": "Papua New Guinea Women",
+          "home_team_id": "299039",
+          "away_team_id": "312282",
+          "competition": "ICC Women's Emerging Nations Trophy",
+          "competition_id": "24142",
+          "kickoff": "2026-11-18T05:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "17th Match, Group A",
+          "format": "T20",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-19T23:59:00Z",
+          "authority_uid": "s:200~e:1557559~c:1557559"
         },
         "livescore": {
           "result": "matched",
@@ -1848,13 +1956,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1873,10 +1982,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1914,10 +2023,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2103,10 +2212,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2188,7 +2297,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1561275",
+          "upstream_family": "ESPN",
+          "name": "UAE Bulls vs United Tigers",
+          "home": "UAE Bulls",
+          "away": "United Tigers",
+          "home_team_id": "1511694",
+          "away_team_id": "1561248",
+          "competition": "Abu Dhabi T10",
+          "competition_id": "18522",
+          "kickoff": "2026-11-18T13:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "26th Match (D/N)",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-19T23:59:00Z",
+          "authority_uid": "s:200~e:1561275~c:1561275"
         },
         "livescore": {
           "result": "unmatched",
@@ -2203,14 +2339,16 @@
           ]
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
