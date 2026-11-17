@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T15:44:47.515655+00:00",
+  "generated_at": "2026-11-17T16:04:52.782763+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,15 +10,16 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 320,
+      "fixtures": 315,
       "unknown_statuses": [
+        "10|HT",
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "2|13'",
-        "2|42'",
-        "3|76'",
-        "3|85'",
-        "3|87'"
+        "2|1'",
+        "2|3'",
+        "2|33'",
+        "2|4'",
+        "2|5'"
       ],
       "attempts": [
         {
@@ -49,13 +50,13 @@
           "sport": "football",
           "date": "2026-11-17",
           "result": "ok",
-          "fixtures": 152
+          "fixtures": 151
         },
         {
           "sport": "football",
           "date": "2026-11-18",
           "result": "ok",
-          "fixtures": 76
+          "fixtures": 72
         }
       ]
     },
@@ -66,7 +67,7 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 235,
+      "fixtures": 233,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -79,13 +80,13 @@
           "sport": "cricket",
           "date": "2026-11-17",
           "result": "ok",
-          "fixtures": 21
+          "fixtures": 22
         },
         {
           "sport": "cricket",
           "date": "2026-11-18",
           "result": "ok",
-          "fixtures": 38
+          "fixtures": 35
         },
         {
           "sport": "football",
@@ -110,59 +111,85 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 17,
-    "upcoming": 51,
-    "fixtures": 68,
+    "today_match": 15,
+    "upcoming": 50,
+    "fixtures": 65,
     "verdicts": {
-      "UNVERIFIED": 43,
-      "CONFLICT": 9,
-      "VERIFIED": 16
+      "UNVERIFIED": 44,
+      "CONFLICT": 5,
+      "PARTIAL_AUTHORITY": 1,
+      "VERIFIED": 15
     },
-    "verified": 16,
-    "partial_authority": 0,
-    "unverified": 43,
-    "conflict": 9,
+    "verified": 15,
+    "partial_authority": 1,
+    "unverified": 44,
+    "conflict": 5,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 41,
-        "matched": 27
+        "unmatched": 43,
+        "matched": 22
       },
       "livescore": {
-        "unmatched": 43,
-        "matched": 25
+        "unmatched": 44,
+        "matched": 21
       }
     },
-    "matched_by_two_independent_authorities": 21,
+    "matched_by_two_independent_authorities": 16,
     "authority_agreements": 13,
-    "authority_disagreements": 7,
-    "card_status_conflicts": 2,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 4,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1,
-      "kickoff": 4,
+      "authorities disagree": 1,
+      "kickoff": 6,
+      "card says LIVE, authority says UPCOMING": 3,
       "sport": 2,
-      "card says UPCOMING, authority says LIVE": 1,
-      "authorities disagree": 7
+      "card says UPCOMING, authority says LIVE": 1
     },
-    "identity_near_misses": 6,
+    "identity_near_misses": 9,
     "independent_authority_count_distribution": {
-      "0": 43,
-      "1": 4,
-      "2": 21
+      "0": 44,
+      "1": 5,
+      "2": 16
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "2|13'",
-        "2|42'",
-        "3|76'",
-        "3|85'",
-        "3|87'"
+        "2|1'",
+        "2|3'",
+        "2|33'",
+        "2|4'",
+        "2|5'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Gambia Vs Côte d'Ivoire",
+      "authority": "espn-header",
+      "authority_name": "Gambia vs Ivory Coast",
+      "agreed_side": "gambia",
+      "ours": "cote divoire",
+      "theirs": "ivory coast"
+    },
+    {
+      "fixture": "Gambia Vs Côte d'Ivoire",
+      "authority": "livescore",
+      "authority_name": "Gambia vs Ivory Coast",
+      "agreed_side": "gambia",
+      "ours": "cote divoire",
+      "theirs": "ivory coast"
+    },
+    {
+      "fixture": "Sierra Leone Vs DR Congo",
+      "authority": "espn-header",
+      "authority_name": "Sierra Leone vs Congo DR",
+      "agreed_side": "sierra leone",
+      "ours": "dr congo",
+      "theirs": "congo dr"
+    },
     {
       "fixture": "Lumbini Lions vs Sudurpaschim Royals",
       "authority": "espn-header",
@@ -315,11 +342,246 @@
           "competition_id": "26772",
           "kickoff": "2026-11-17T14:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "85'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "Final",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:kuwait-vs-honduras|international friendly games|2026-11-17",
+      "card_id": "kuwait-vs-honduras",
+      "name": "Kuwait Vs Honduras",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-11-17T16:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401931956",
+          "upstream_family": "ESPN",
+          "name": "Kuwait vs Honduras",
+          "home": "Kuwait",
+          "away": "Honduras",
+          "home_team_id": "841",
+          "away_team_id": "215",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-11-17T16:30:00+00:00",
+          "kickoff_delta_minutes": 30.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Tue, November 17th at 11:30 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401931956~c:401931956"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1913937",
+          "upstream_family": "LiveScore",
+          "name": "Kuwait vs Honduras",
+          "home": "Kuwait",
+          "away": "Honduras",
+          "home_team_id": "7887",
+          "away_team_id": "9209",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-11-17T16:30:00+00:00",
+          "kickoff_delta_minutes": 30.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "kickoff: ours 2026-11-17T16:00, espn-header 2026-11-17T16:30 (+30.0 min)",
+        "kickoff: ours 2026-11-17T16:00, livescore 2026-11-17T16:30 (+30.0 min)",
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:gambia-vs-côte-d-ivoire|africa cup of nations qual|2026-11-17",
+      "card_id": "gambia-vs-côte-divoire",
+      "name": "Gambia Vs Côte d'Ivoire",
+      "competition": "Africa Cup of Nations Qual.",
+      "kickoff": "2026-11-17T16:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Gambia vs Ivory Coast",
+              "event_id": "401927182",
+              "agreed_side": "gambia",
+              "ours": "cote divoire",
+              "theirs": "ivory coast"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Gambia vs Ivory Coast",
+              "event_id": "1872940",
+              "agreed_side": "gambia",
+              "ours": "cote divoire",
+              "theirs": "ivory coast"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:kenya-vs-south-africa|africa cup of nations qual|2026-11-17",
+      "card_id": "kenya-vs-south-africa",
+      "name": "Kenya Vs South Africa",
+      "competition": "Africa Cup of Nations Qual.",
+      "kickoff": "2026-11-17T16:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401927175",
+          "upstream_family": "ESPN",
+          "name": "Kenya vs South Africa",
+          "home": "Kenya",
+          "away": "South Africa",
+          "home_team_id": "2848",
+          "away_team_id": "467",
+          "competition": "Africa Cup of Nations Qualifying",
+          "competition_id": "8315",
+          "kickoff": "2026-11-17T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Tue, November 17th at 11:00 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8315~e:401927175~c:401927175"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1872951",
+          "upstream_family": "LiveScore",
+          "name": "Kenya vs South Africa",
+          "home": "Kenya",
+          "away": "South Africa",
+          "home_team_id": "6186",
+          "away_team_id": "9287",
+          "competition": "Qualification: Group D",
+          "competition_id": "137",
+          "kickoff": "2026-11-17T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "3'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "Group Stage Group D",
           "format": "",
           "gender": ""
         }
@@ -377,15 +639,15 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:south-africa-vs-bangladesh|icc world test championship|2026-11-17",
-      "card_id": "south-africa-vs-bangladesh",
-      "name": "South Africa Vs Bangladesh",
-      "competition": "ICC World Test Championship",
-      "kickoff": "2026-11-17T08:00:00+00:00",
+      "fixture_id": "provider:saudi-arabia-vs-uzbekistan|international friendly games|2026-11-17",
+      "card_id": "saudi-arabia-vs-uzbekistan",
+      "name": "Saudi Arabia Vs Uzbekistan",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-11-17T15:30:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
+      "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
@@ -397,20 +659,140 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401931495",
+          "upstream_family": "ESPN",
+          "name": "Saudi Arabia vs Uzbekistan",
+          "home": "Saudi Arabia",
+          "away": "Uzbekistan",
+          "home_team_id": "655",
+          "away_team_id": "2570",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-11-17T15:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Tue, November 17th at 10:30 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401931495~c:401931495"
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1913903",
+          "upstream_family": "LiveScore",
+          "name": "Saudi Arabia vs Uzbekistan",
+          "home": "Saudi Arabia",
+          "away": "Uzbekistan",
+          "home_team_id": "7220",
+          "away_team_id": "8531",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-11-17T15:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "33'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:sierra-leone-vs-dr-congo|africa cup of nations qual|2026-11-17",
+      "card_id": "sierra-leone-vs-dr-congo",
+      "name": "Sierra Leone Vs DR Congo",
+      "competition": "Africa Cup of Nations Qual.",
+      "kickoff": "2026-11-17T16:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Sierra Leone vs Congo DR",
+              "event_id": "401927174",
+              "agreed_side": "sierra leone",
+              "ours": "dr congo",
+              "theirs": "congo dr"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1872963",
+          "upstream_family": "LiveScore",
+          "name": "Sierra Leone vs DR Congo",
+          "home": "Sierra Leone",
+          "away": "DR Congo",
+          "home_team_id": "9353",
+          "away_team_id": "6873",
+          "competition": "Qualification: Group E",
+          "competition_id": "137",
+          "kickoff": "2026-11-17T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "4'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "Group Stage Group E",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -418,7 +800,7 @@
       "card_id": "yas-lions-vs-arabian-aces",
       "name": "Yas Lions vs Arabian Aces",
       "competition": "Abu Dhabi T10 League 2026 - 24th Match",
-      "kickoff": "2026-11-17T15:44:47+00:00",
+      "kickoff": "2026-11-17T16:04:52+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -449,7 +831,7 @@
           "competition": "Abu Dhabi T10",
           "competition_id": "18522",
           "kickoff": "2026-11-17T13:45:00+00:00",
-          "kickoff_delta_minutes": -119.8,
+          "kickoff_delta_minutes": -139.9,
           "status_raw": "Live",
           "status_code": "Live",
           "status": "LIVE",
@@ -479,7 +861,7 @@
           "competition": "Abu Dhabi T10 League",
           "competition_id": "26618",
           "kickoff": "2026-11-17T13:45:00+00:00",
-          "kickoff_delta_minutes": -119.8,
+          "kickoff_delta_minutes": -139.9,
           "status_raw": "FT",
           "status_code": "6",
           "status": "FINISHED",
@@ -497,9 +879,9 @@
       ],
       "near_miss_count": 2,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-17T15:44, espn-header 2026-11-17T13:45 (-119.8 min)",
+        "kickoff: ours 2026-11-17T16:04, espn-header 2026-11-17T13:45 (-139.9 min)",
         "sport: ours football, espn-header cricket",
-        "kickoff: ours 2026-11-17T15:44, livescore 2026-11-17T13:45 (-119.8 min)",
+        "kickoff: ours 2026-11-17T16:04, livescore 2026-11-17T13:45 (-139.9 min)",
         "sport: ours football, livescore cricket"
       ],
       "authority_agreement": "NONE",
@@ -593,13 +975,127 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:south-africa-vs-bangladesh|icc world test championship|2026-11-17",
+      "card_id": "south-africa-vs-bangladesh",
+      "name": "South Africa Vs Bangladesh",
+      "competition": "ICC World Test Championship",
+      "kickoff": "2026-11-17T08:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:united-arab-emirates-vs-syria|international friendly games|2026-11-17",
+      "card_id": "united-arab-emirates-vs-syria",
+      "name": "United Arab Emirates Vs Syria",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-11-17T14:10:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401932718",
+          "upstream_family": "ESPN",
+          "name": "United Arab Emirates vs Syria",
+          "home": "United Arab Emirates",
+          "away": "Syria",
+          "home_team_id": "4397",
+          "away_team_id": "4380",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-11-17T14:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
+          "status": "LIVE",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401932718~c:401932718"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "UAE vs Syria",
+              "event_id": "1914703",
+              "agreed_side": "syria",
+              "ours": "united arab emirates",
+              "theirs": "uae"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says UPCOMING, authority says LIVE"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:wbbl|women big bash league|2026-11-17",
       "card_id": "wbbl",
       "name": "WBBL",
       "competition": "Women's Big Bash League",
       "kickoff": "2026-11-17T08:10:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -636,7 +1132,7 @@
       "competition": "ICC World Test Championship",
       "kickoff": "2026-11-17T04:30:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -715,793 +1211,6 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:united-arab-emirates-vs-syria|international friendly games|2026-11-17",
-      "card_id": "united-arab-emirates-vs-syria",
-      "name": "United Arab Emirates Vs Syria",
-      "competition": "International Friendly Games",
-      "kickoff": "2026-11-17T14:10:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401932718",
-          "upstream_family": "ESPN",
-          "name": "United Arab Emirates vs Syria",
-          "home": "United Arab Emirates",
-          "away": "Syria",
-          "home_team_id": "4397",
-          "away_team_id": "4380",
-          "competition": "International Friendly",
-          "competition_id": "3922",
-          "kickoff": "2026-11-17T14:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "34'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "34'",
-          "espn_status_description": "First Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401932718~c:401932718"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "UAE vs Syria",
-              "event_id": "1914703",
-              "agreed_side": "syria",
-              "ours": "united arab emirates",
-              "theirs": "uae"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says UPCOMING, authority says LIVE"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:burundi-vs-zambia|africa cup of nations qual|2026-11-17",
-      "card_id": "burundi-vs-zambia",
-      "name": "Burundi Vs Zambia",
-      "competition": "Africa Cup of Nations Qual.",
-      "kickoff": "2026-11-17T13:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401927169",
-          "upstream_family": "ESPN",
-          "name": "Burundi vs Zambia",
-          "home": "Burundi",
-          "away": "Zambia",
-          "home_team_id": "5779",
-          "away_team_id": "4277",
-          "competition": "Africa Cup of Nations Qualifying",
-          "competition_id": "8315",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "83'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "83'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:8315~e:401927169~c:401927169"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1873016",
-          "upstream_family": "LiveScore",
-          "name": "Burundi vs Zambia",
-          "home": "Burundi",
-          "away": "Zambia",
-          "home_team_id": "6796",
-          "away_team_id": "9128",
-          "competition": "Qualification: Group I",
-          "competition_id": "137",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "4",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:ethiopia-vs-mozambique|africa cup of nations qual|2026-11-17",
-      "card_id": "ethiopia-vs-mozambique",
-      "name": "Ethiopia Vs Mozambique",
-      "competition": "Africa Cup of Nations Qual.",
-      "kickoff": "2026-11-17T13:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401927168",
-          "upstream_family": "ESPN",
-          "name": "Ethiopia vs Mozambique",
-          "home": "Ethiopia",
-          "away": "Mozambique",
-          "home_team_id": "5777",
-          "away_team_id": "8939",
-          "competition": "Africa Cup of Nations Qualifying",
-          "competition_id": "8315",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "85'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "85'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:8315~e:401927168~c:401927168"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1873028",
-          "upstream_family": "LiveScore",
-          "name": "Ethiopia vs Mozambique",
-          "home": "Ethiopia",
-          "away": "Mozambique",
-          "home_team_id": "9008",
-          "away_team_id": "9067",
-          "competition": "Qualification: Group J",
-          "competition_id": "137",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "4",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:lesotho-vs-gabon|africa cup of nations qual|2026-11-17",
-      "card_id": "lesotho-vs-gabon",
-      "name": "Lesotho Vs Gabon",
-      "competition": "Africa Cup of Nations Qual.",
-      "kickoff": "2026-11-17T13:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401927181",
-          "upstream_family": "ESPN",
-          "name": "Lesotho vs Gabon",
-          "home": "Lesotho",
-          "away": "Gabon",
-          "home_team_id": "6640",
-          "away_team_id": "4231",
-          "competition": "Africa Cup of Nations Qualifying",
-          "competition_id": "8315",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "84'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "84'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:8315~e:401927181~c:401927181"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1872915",
-          "upstream_family": "LiveScore",
-          "name": "Lesotho vs Gabon",
-          "home": "Lesotho",
-          "away": "Gabon",
-          "home_team_id": "9257",
-          "away_team_id": "9259",
-          "competition": "Qualification: Group A",
-          "competition_id": "137",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Group Stage Group A",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:malawi-vs-egypt|africa cup of nations qual|2026-11-17",
-      "card_id": "malawi-vs-egypt",
-      "name": "Malawi Vs Egypt",
-      "competition": "Africa Cup of Nations Qual.",
-      "kickoff": "2026-11-17T13:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401927179",
-          "upstream_family": "ESPN",
-          "name": "Malawi vs Egypt",
-          "home": "Malawi",
-          "away": "Egypt",
-          "home_team_id": "4325",
-          "away_team_id": "2620",
-          "competition": "Africa Cup of Nations Qualifying",
-          "competition_id": "8315",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "87'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "87'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:8315~e:401927179~c:401927179"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1872927",
-          "upstream_family": "LiveScore",
-          "name": "Malawi vs Egypt",
-          "home": "Malawi",
-          "away": "Egypt",
-          "home_team_id": "9360",
-          "away_team_id": "9145",
-          "competition": "Qualification: Group B",
-          "competition_id": "137",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "4",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:south-sudan-vs-angola|africa cup of nations qual|2026-11-17",
-      "card_id": "south-sudan-vs-angola",
-      "name": "South Sudan Vs Angola",
-      "competition": "Africa Cup of Nations Qual.",
-      "kickoff": "2026-11-17T13:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401927178",
-          "upstream_family": "ESPN",
-          "name": "South Sudan vs Angola",
-          "home": "South Sudan",
-          "away": "Angola",
-          "home_team_id": "14075",
-          "away_team_id": "653",
-          "competition": "Africa Cup of Nations Qualifying",
-          "competition_id": "8315",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "82'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "82'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:8315~e:401927178~c:401927178"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1872928",
-          "upstream_family": "LiveScore",
-          "name": "South Sudan vs Angola",
-          "home": "South Sudan",
-          "away": "Angola",
-          "home_team_id": "6878",
-          "away_team_id": "9260",
-          "competition": "Qualification: Group B",
-          "competition_id": "137",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Group Stage Group B",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:tanzania-vs-nigeria|africa cup of nations qual|2026-11-17",
-      "card_id": "tanzania-vs-nigeria",
-      "name": "Tanzania Vs Nigeria",
-      "competition": "Africa Cup of Nations Qual.",
-      "kickoff": "2026-11-17T13:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401927165",
-          "upstream_family": "ESPN",
-          "name": "Tanzania vs Nigeria",
-          "home": "Tanzania",
-          "away": "Nigeria",
-          "home_team_id": "5778",
-          "away_team_id": "657",
-          "competition": "Africa Cup of Nations Qualifying",
-          "competition_id": "8315",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "77'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "77'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:8315~e:401927165~c:401927165"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1873051",
-          "upstream_family": "LiveScore",
-          "name": "Tanzania vs Nigeria",
-          "home": "Tanzania",
-          "away": "Nigeria",
-          "home_team_id": "6187",
-          "away_team_id": "9258",
-          "competition": "Qualification: Group L",
-          "competition_id": "137",
-          "kickoff": "2026-11-17T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "4",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:japan-vs-paraguay|international friendly games|2026-11-17",
-      "card_id": "japan-vs-paraguay",
-      "name": "Japan Vs Paraguay",
-      "competition": "International Friendly Games",
-      "kickoff": "2026-11-17T13:10:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401916336",
-          "upstream_family": "ESPN",
-          "name": "Japan vs Paraguay",
-          "home": "Japan",
-          "away": "Paraguay",
-          "home_team_id": "627",
-          "away_team_id": "210",
-          "competition": "International Friendly",
-          "competition_id": "3922",
-          "kickoff": "2026-11-17T13:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "74'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "74'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401916336~c:401916336"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1913902",
-          "upstream_family": "LiveScore",
-          "name": "Japan vs Paraguay",
-          "home": "Japan",
-          "away": "Paraguay",
-          "home_team_id": "6326",
-          "away_team_id": "8995",
-          "competition": "Friendlies",
-          "competition_id": "537",
-          "kickoff": "2026-11-17T13:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:kuwait-vs-honduras|international friendly games|2026-11-17",
-      "card_id": "kuwait-vs-honduras",
-      "name": "Kuwait Vs Honduras",
-      "competition": "International Friendly Games",
-      "kickoff": "2026-11-17T16:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401931956",
-          "upstream_family": "ESPN",
-          "name": "Kuwait vs Honduras",
-          "home": "Kuwait",
-          "away": "Honduras",
-          "home_team_id": "841",
-          "away_team_id": "215",
-          "competition": "International Friendly",
-          "competition_id": "3922",
-          "kickoff": "2026-11-17T16:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 17th at 11:30 AM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401931956~c:401931956"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1913937",
-          "upstream_family": "LiveScore",
-          "name": "Kuwait vs Honduras",
-          "home": "Kuwait",
-          "away": "Honduras",
-          "home_team_id": "7887",
-          "away_team_id": "9209",
-          "competition": "Friendlies",
-          "competition_id": "537",
-          "kickoff": "2026-11-17T16:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
     },
     {
       "fixture_id": "provider:australia-vs-england|one day international|2026-11-18",
@@ -4280,6 +3989,658 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
+    },
+    {
+      "fixture_id": "provider:south-africa-vs-bangladesh|icc world test championship|2026-11-18",
+      "card_id": "south-africa-vs-bangladesh",
+      "name": "South Africa Vs Bangladesh",
+      "competition": "ICC World Test Championship",
+      "kickoff": "2026-11-18T08:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED"
+    },
+    {
+      "fixture_id": "provider:burundi-vs-zambia|africa cup of nations qual|2026-11-17",
+      "card_id": "burundi-vs-zambia",
+      "name": "Burundi Vs Zambia",
+      "competition": "Africa Cup of Nations Qual.",
+      "kickoff": "2026-11-17T13:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401927169",
+          "upstream_family": "ESPN",
+          "name": "Burundi vs Zambia",
+          "home": "Burundi",
+          "away": "Zambia",
+          "home_team_id": "5779",
+          "away_team_id": "4277",
+          "competition": "Africa Cup of Nations Qualifying",
+          "competition_id": "8315",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8315~e:401927169~c:401927169"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1873016",
+          "upstream_family": "LiveScore",
+          "name": "Burundi vs Zambia",
+          "home": "Burundi",
+          "away": "Zambia",
+          "home_team_id": "6796",
+          "away_team_id": "9128",
+          "competition": "Qualification: Group I",
+          "competition_id": "137",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "4",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT"
+    },
+    {
+      "fixture_id": "provider:ethiopia-vs-mozambique|africa cup of nations qual|2026-11-17",
+      "card_id": "ethiopia-vs-mozambique",
+      "name": "Ethiopia Vs Mozambique",
+      "competition": "Africa Cup of Nations Qual.",
+      "kickoff": "2026-11-17T13:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401927168",
+          "upstream_family": "ESPN",
+          "name": "Ethiopia vs Mozambique",
+          "home": "Ethiopia",
+          "away": "Mozambique",
+          "home_team_id": "5777",
+          "away_team_id": "8939",
+          "competition": "Africa Cup of Nations Qualifying",
+          "competition_id": "8315",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8315~e:401927168~c:401927168"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1873028",
+          "upstream_family": "LiveScore",
+          "name": "Ethiopia vs Mozambique",
+          "home": "Ethiopia",
+          "away": "Mozambique",
+          "home_team_id": "9008",
+          "away_team_id": "9067",
+          "competition": "Qualification: Group J",
+          "competition_id": "137",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "4",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT"
+    },
+    {
+      "fixture_id": "provider:lesotho-vs-gabon|africa cup of nations qual|2026-11-17",
+      "card_id": "lesotho-vs-gabon",
+      "name": "Lesotho Vs Gabon",
+      "competition": "Africa Cup of Nations Qual.",
+      "kickoff": "2026-11-17T13:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401927181",
+          "upstream_family": "ESPN",
+          "name": "Lesotho vs Gabon",
+          "home": "Lesotho",
+          "away": "Gabon",
+          "home_team_id": "6640",
+          "away_team_id": "4231",
+          "competition": "Africa Cup of Nations Qualifying",
+          "competition_id": "8315",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8315~e:401927181~c:401927181"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1872915",
+          "upstream_family": "LiveScore",
+          "name": "Lesotho vs Gabon",
+          "home": "Lesotho",
+          "away": "Gabon",
+          "home_team_id": "9257",
+          "away_team_id": "9259",
+          "competition": "Qualification: Group A",
+          "competition_id": "137",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "Group Stage Group A",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT"
+    },
+    {
+      "fixture_id": "provider:malawi-vs-egypt|africa cup of nations qual|2026-11-17",
+      "card_id": "malawi-vs-egypt",
+      "name": "Malawi Vs Egypt",
+      "competition": "Africa Cup of Nations Qual.",
+      "kickoff": "2026-11-17T13:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401927179",
+          "upstream_family": "ESPN",
+          "name": "Malawi vs Egypt",
+          "home": "Malawi",
+          "away": "Egypt",
+          "home_team_id": "4325",
+          "away_team_id": "2620",
+          "competition": "Africa Cup of Nations Qualifying",
+          "competition_id": "8315",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8315~e:401927179~c:401927179"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1872927",
+          "upstream_family": "LiveScore",
+          "name": "Malawi vs Egypt",
+          "home": "Malawi",
+          "away": "Egypt",
+          "home_team_id": "9360",
+          "away_team_id": "9145",
+          "competition": "Qualification: Group B",
+          "competition_id": "137",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "4",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT"
+    },
+    {
+      "fixture_id": "provider:south-sudan-vs-angola|africa cup of nations qual|2026-11-17",
+      "card_id": "south-sudan-vs-angola",
+      "name": "South Sudan Vs Angola",
+      "competition": "Africa Cup of Nations Qual.",
+      "kickoff": "2026-11-17T13:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401927178",
+          "upstream_family": "ESPN",
+          "name": "South Sudan vs Angola",
+          "home": "South Sudan",
+          "away": "Angola",
+          "home_team_id": "14075",
+          "away_team_id": "653",
+          "competition": "Africa Cup of Nations Qualifying",
+          "competition_id": "8315",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8315~e:401927178~c:401927178"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1872928",
+          "upstream_family": "LiveScore",
+          "name": "South Sudan vs Angola",
+          "home": "South Sudan",
+          "away": "Angola",
+          "home_team_id": "6878",
+          "away_team_id": "9260",
+          "competition": "Qualification: Group B",
+          "competition_id": "137",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "Group Stage Group B",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT"
+    },
+    {
+      "fixture_id": "provider:tanzania-vs-nigeria|africa cup of nations qual|2026-11-17",
+      "card_id": "tanzania-vs-nigeria",
+      "name": "Tanzania Vs Nigeria",
+      "competition": "Africa Cup of Nations Qual.",
+      "kickoff": "2026-11-17T13:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401927165",
+          "upstream_family": "ESPN",
+          "name": "Tanzania vs Nigeria",
+          "home": "Tanzania",
+          "away": "Nigeria",
+          "home_team_id": "5778",
+          "away_team_id": "657",
+          "competition": "Africa Cup of Nations Qualifying",
+          "competition_id": "8315",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8315~e:401927165~c:401927165"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1873051",
+          "upstream_family": "LiveScore",
+          "name": "Tanzania vs Nigeria",
+          "home": "Tanzania",
+          "away": "Nigeria",
+          "home_team_id": "6187",
+          "away_team_id": "9258",
+          "competition": "Qualification: Group L",
+          "competition_id": "137",
+          "kickoff": "2026-11-17T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "4",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT"
+    },
+    {
+      "fixture_id": "provider:japan-vs-paraguay|international friendly games|2026-11-17",
+      "card_id": "japan-vs-paraguay",
+      "name": "Japan Vs Paraguay",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-11-17T13:10:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401916336",
+          "upstream_family": "ESPN",
+          "name": "Japan vs Paraguay",
+          "home": "Japan",
+          "away": "Paraguay",
+          "home_team_id": "627",
+          "away_team_id": "210",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-11-17T13:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "90'+4'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "90'+4'",
+          "espn_status_description": "Second Half",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401916336~c:401916336"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1913902",
+          "upstream_family": "LiveScore",
+          "name": "Japan vs Paraguay",
+          "home": "Japan",
+          "away": "Paraguay",
+          "home_team_id": "6326",
+          "away_team_id": "8995",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-11-17T13:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT"
     }
   ]
 }

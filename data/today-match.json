@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-17T15:45:00.259842+00:00",
-  "count": 16,
+  "updated_at": "2026-11-17T16:05:07.111377+00:00",
+  "count": 14,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -157,7 +157,7 @@
       "sport_class_reason": "league map",
       "sport_class_evidence": "ICC World Test Championship",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_5bd4495af66c467edd90124806038b3d",
       "protected_source": true,
       "requires_credentials": true,
@@ -166,13 +166,13 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-17T13:44:45.965283+00:00",
       "authority_near_misses": [
         {
@@ -197,7 +197,11 @@
           "kickoff_delta_minutes": 0.0,
           "status": "UNKNOWN"
         }
-      ]
+      ],
+      "end_pending": true,
+      "end_pending_confirmations": 9,
+      "ended_seen_at": "2026-11-17T16:04:58.930138+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "south-africa-vs-bangladesh",
@@ -359,7 +363,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-17T16:04:58.930138+00:00"
     },
     {
       "id": "wbbl",
@@ -578,7 +590,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_b1bd71c4cecba8066973e7dd4e3cb7d7",
       "protected_source": true,
       "requires_credentials": true,
@@ -587,14 +599,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-17T13:44:45.965283+00:00"
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-17T13:44:45.965283+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 9,
+      "ended_seen_at": "2026-11-17T16:04:58.930138+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "npl",
@@ -620,7 +636,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
@@ -643,6 +659,35 @@
           "resolution": "SD",
           "resolution_height": 576,
           "playback_id": "ctv_6c8253c2c143816eba4b3f296aa19977",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_ce4d09169653a3234ac0ca9e26f5a9e3",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -701,16 +746,52 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "npl--fancode2",
+          "name": "FANCODE2",
+          "normalized_name": "fancode2",
+          "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQAV3dcOxi7602i_xcqoTE6eoiGVCPJFo6uZwtDkDK-g&s=10",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "npl--fancode2--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "npl--fancode2--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_911ac4ee8c8714f86d1db7b7",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ce4d09169653a3234ac0ca9e26f5a9e3",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 1,
+      "channel_count": 2,
       "default_channel_id": "npl--fancode",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 3,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 2,
+        "channels": 2,
+        "variants": 3,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -732,7 +813,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-17T11:15:00+00:00",
       "start_at": "2026-11-17T11:15:00+00:00",
-      "end_time": "2026-11-17T16:44:47+00:00",
+      "end_time": "2026-11-17T17:04:52+00:00",
       "end_time_source": "assumed",
       "competition": "Nepal Premier League",
       "fixture_id": "provider:npl|nepal premier league|2026-11-17",
@@ -959,7 +1040,7 @@
       "resolution_height": 720,
       "start_time": "2026-11-17T13:45:00+00:00",
       "start_at": "2026-11-17T13:45:00+00:00",
-      "end_time": "2026-11-17T16:44:47+00:00",
+      "end_time": "2026-11-17T17:04:52+00:00",
       "end_time_source": "assumed",
       "competition": "ABU DHABI T10 LEAGUE",
       "fixture_id": "provider:abu-dhabi-t10-league|abu dhabi t10 league|2026-11-17",
@@ -1339,940 +1420,9 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-17T15:05:02.985346+00:00"
-    },
-    {
-      "id": "burundi-vs-zambia",
-      "name": "Burundi Vs Zambia",
-      "primary_stream_key": "f1166eaa87c86c567ae9bfc563e8191273da5b75329d5d60530f394ab536d6b2",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/4750/image",
-      "category": "today_match",
-      "url": "https://www.rtmpcdn.com/live/8ac411a1-461d-42c3-a06c-56554c7ed9e7.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "burundi-vs-zambia--stream-tv",
-          "name": "STREAM TV",
-          "normalized_name": "stream-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/4750/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "burundi-vs-zambia--stream-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "burundi-vs-zambia--stream-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_0cac0f7bcd3ac702563966f1",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_bc2b64e21c39cd4f957cc35f80ca52e2",
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "burundi-vs-zambia--stream-tv",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "start_time": "2026-11-17T13:00:00+00:00",
-      "start_at": "2026-11-17T13:00:00+00:00",
-      "end_time": "2026-11-17T15:44:56+00:00",
-      "end_time_source": "assumed",
-      "competition": "Africa Cup of Nations Qual.",
-      "fixture_id": "provider:burundi-vs-zambia|africa cup of nations qual|2026-11-17",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-17T13:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=83' (STATUS_SECOND_HALF, event 401927169)",
-        "LiveScore livescore=FT (6, event 1873016)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401927169"
-      },
-      "authority_status": "LIVE",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/gru5fp1593280015.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yvh0al1553349957.png",
-      "playback_id": "ctv_e9e3289fe58118488704aec6fee71f6c",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-11-17T15:05:02.985346+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=83' (STATUS_SECOND_HALF, event 401927169); LiveScore livescore=FT (6, event 1873016)",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-11-17T15:44:54.103351+00:00"
-    },
-    {
-      "id": "ethiopia-vs-mozambique",
-      "name": "Ethiopia Vs Mozambique",
-      "primary_stream_key": "d3ab8b3af97194ee1d463f6b6691edd14ccf689c4452645b08b88fd1d7794873",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/8036/image",
-      "category": "today_match",
-      "url": "https://bl.rutube.ru/livestream/05550e441b09aeec53e60de66b6c47bf/index.m3u8?s=jJ8GHzeJIzYZUoWBKmzdFw&e=2094509894&scheme=https",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "hls",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "ethiopia-vs-mozambique--bein-sports",
-          "name": "beIN SPORTS",
-          "normalized_name": "bein-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/8036/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "ethiopia-vs-mozambique--bein-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "ethiopia-vs-mozambique--bein-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_3dad730f10b306eed32422f1",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_87d61bb6d513e42a8f023cd2fbdd0ae0",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "ethiopia-vs-mozambique--bein-sports",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-17T13:00:00+00:00",
-      "start_at": "2026-11-17T13:00:00+00:00",
-      "end_time": "2026-11-17T16:24:47+00:00",
-      "end_time_source": "assumed",
-      "competition": "Africa Cup of Nations Qual.",
-      "fixture_id": "provider:ethiopia-vs-mozambique|africa cup of nations qual|2026-11-17",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-17T13:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=85' (STATUS_SECOND_HALF, event 401927168)",
-        "LiveScore livescore=FT (6, event 1873028)"
-      ],
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/5byztx1728749764.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/jpbvy51742102860.png",
-      "playback_id": "ctv_eea3a9d565651911e1953c3388013f3a",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401927168); LiveScore livescore=FT (6, event 1873028)",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-11-17T15:44:54.103351+00:00",
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-11-17T15:44:54.103351+00:00"
-    },
-    {
-      "id": "lesotho-vs-gabon",
-      "name": "Lesotho Vs Gabon",
-      "primary_stream_key": "046fb1a09bf2da0d06531a069cadd5a5b1bad34f5dbffbd37a4787d5ff14defe",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/8033/image",
-      "category": "today_match",
-      "url": "https://www.rtmpcdn.com/live/59af5074-339a-4afd-9440-8cf4365d4035.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "lesotho-vs-gabon--quality",
-          "name": "QUALITY",
-          "normalized_name": "quality",
-          "logo": "https://img.sofascore.com/api/v1/team/8033/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "lesotho-vs-gabon--quality--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "lesotho-vs-gabon--quality--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_91650a69b5c1fb05d8cedc16",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_3b979faa7a0f3aa3aff443228551f9c4",
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "lesotho-vs-gabon--quality",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "start_time": "2026-11-17T13:00:00+00:00",
-      "start_at": "2026-11-17T13:00:00+00:00",
-      "end_time": "2026-11-17T15:44:56+00:00",
-      "end_time_source": "assumed",
-      "competition": "Africa Cup of Nations Qual.",
-      "fixture_id": "provider:lesotho-vs-gabon|africa cup of nations qual|2026-11-17",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-17T13:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=84' (STATUS_SECOND_HALF, event 401927181)",
-        "LiveScore livescore=FT (6, event 1872915)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401927181"
-      },
-      "authority_status": "LIVE",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/dp8xjj1553372349.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/7y283y1732340182.png",
-      "playback_id": "ctv_7ea8a2857e471db76bf8e099d3fb9395",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-11-17T15:05:02.985346+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=84' (STATUS_SECOND_HALF, event 401927181); LiveScore livescore=FT (6, event 1872915)",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-11-17T15:44:54.103351+00:00"
-    },
-    {
-      "id": "malawi-vs-egypt",
-      "name": "Malawi Vs Egypt",
-      "primary_stream_key": "4013208d8df819e093432c9ea63508ab46bbbc8943ea38e2d1589e282ac07acb",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/8043/image",
-      "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "malawi-vs-egypt--bein-espnaol",
-          "name": "beIN ESPNAOL",
-          "normalized_name": "bein-espnaol",
-          "logo": "https://img.sofascore.com/api/v1/team/8043/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "malawi-vs-egypt--bein-espnaol--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "malawi-vs-egypt--bein-espnaol--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_71a3c182e2f198df56443040",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_a060d592399d52e6a791db61a307a41c",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "malawi-vs-egypt--bein-espnaol",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-17T13:00:00+00:00",
-      "start_at": "2026-11-17T13:00:00+00:00",
-      "end_time": "2026-11-17T16:24:47+00:00",
-      "end_time_source": "assumed",
-      "competition": "Africa Cup of Nations Qual.",
-      "fixture_id": "provider:malawi-vs-egypt|africa cup of nations qual|2026-11-17",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-17T13:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=87' (STATUS_SECOND_HALF, event 401927179)",
-        "LiveScore livescore=FT (6, event 1872927)"
-      ],
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/dr3txb1718412985.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/uheyzo1742102234.png",
-      "playback_id": "ctv_a060d592399d52e6a791db61a307a41c",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      },
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=87' (STATUS_SECOND_HALF, event 401927179); LiveScore livescore=FT (6, event 1872927)",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-11-17T15:44:54.103351+00:00",
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-11-17T15:44:54.103351+00:00"
-    },
-    {
-      "id": "south-sudan-vs-angola",
-      "name": "South Sudan Vs Angola",
-      "primary_stream_key": "df0f01d625609a72bdbbbcaea42ebb5f217de4fb542d0df0830c09c2637179d3",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/88508/image",
-      "category": "today_match",
-      "url": "https://www.rtmpcdn.com/live/5a65e2d5-ac96-4791-aa28-0284b664fb1e.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "south-sudan-vs-angola--stream-tv",
-          "name": "STREAM TV",
-          "normalized_name": "stream-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/88508/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "south-sudan-vs-angola--stream-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "south-sudan-vs-angola--stream-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_46096656b70d00d289d361ba",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_05133da5fd18d39789709d4ed15b834c",
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "south-sudan-vs-angola--stream-tv",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "start_time": "2026-11-17T13:00:00+00:00",
-      "start_at": "2026-11-17T13:00:00+00:00",
-      "end_time": "2026-11-17T15:44:56+00:00",
-      "end_time_source": "assumed",
-      "competition": "Africa Cup of Nations Qual.",
-      "fixture_id": "provider:south-sudan-vs-angola|africa cup of nations qual|2026-11-17",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-17T13:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=82' (STATUS_SECOND_HALF, event 401927178)",
-        "LiveScore livescore=FT (6, event 1872928)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401927178"
-      },
-      "authority_status": "LIVE",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/mo5t971553350704.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bm2gzt1553208021.png",
-      "playback_id": "ctv_599244f89b80ac950e992efc9d35b16c",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-11-17T15:05:02.985346+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=82' (STATUS_SECOND_HALF, event 401927178); LiveScore livescore=FT (6, event 1872928)",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-11-17T15:44:54.103351+00:00"
-    },
-    {
-      "id": "tanzania-vs-nigeria",
-      "name": "Tanzania Vs Nigeria",
-      "primary_stream_key": "550e9766ba9a43d1fa5c456f0a7a4c6271f35a92366181d26e406512cc07da65",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/4835/image",
-      "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "tanzania-vs-nigeria--bein-sports",
-          "name": "beIN SPORTS",
-          "normalized_name": "bein-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/4835/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "tanzania-vs-nigeria--bein-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "tanzania-vs-nigeria--bein-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_38fc5bd211dad30f14a30d19",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_e089390201ab6124c72667120868d74f",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "tanzania-vs-nigeria--bein-sports",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-17T13:00:00+00:00",
-      "start_at": "2026-11-17T13:00:00+00:00",
-      "end_time": "2026-11-17T16:24:47+00:00",
-      "end_time_source": "assumed",
-      "competition": "Africa Cup of Nations Qual.",
-      "fixture_id": "provider:tanzania-vs-nigeria|africa cup of nations qual|2026-11-17",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-17T13:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=77' (STATUS_SECOND_HALF, event 401927165)",
-        "LiveScore livescore=FT (6, event 1873051)"
-      ],
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/uovpkm1742103070.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/qruyxr1455466056.png",
-      "playback_id": "ctv_e089390201ab6124c72667120868d74f",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      },
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=77' (STATUS_SECOND_HALF, event 401927165); LiveScore livescore=FT (6, event 1873051)",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-11-17T15:44:54.103351+00:00",
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-11-17T15:44:54.103351+00:00"
-    },
-    {
-      "id": "japan-vs-paraguay",
-      "name": "Japan Vs Paraguay",
-      "primary_stream_key": "c9456243335b3e164c5635aa72d694dcd97480c2f47b415e05782d7f237ba1d3",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/4770/image",
-      "category": "today_match",
-      "url": "https://live2.jorvakstreamcache.com/live/channel6.m3u8?",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "hls",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "japan-vs-paraguay--stream-tv",
-          "name": "STREAM TV",
-          "normalized_name": "stream-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/4770/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "japan-vs-paraguay--stream-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "japan-vs-paraguay--stream-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_fd13ab0c6ab55b6654a56048",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_5740e4014fad19eb90354d21185b147e",
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "japan-vs-paraguay--stream-tv",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "start_time": "2026-11-17T13:10:00+00:00",
-      "start_at": "2026-11-17T13:10:00+00:00",
-      "end_time": "2026-11-17T16:24:47+00:00",
-      "end_time_source": "assumed",
-      "competition": "International Friendly Games",
-      "fixture_id": "provider:japan-vs-paraguay|international friendly games|2026-11-17",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-17T13:10:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=74' (STATUS_SECOND_HALF, event 401916336)",
-        "LiveScore livescore=FT (6, event 1913902)"
-      ],
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ffsyxz1591989843.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/khgav41553419195.png",
-      "playback_id": "ctv_32331ebb0296788c86f7338573807081",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=74' (STATUS_SECOND_HALF, event 401916336); LiveScore livescore=FT (6, event 1913902)",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-11-17T15:44:54.103351+00:00",
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-11-17T15:44:54.103351+00:00"
     },
     {
       "id": "india-vs-pakistan",
@@ -2364,7 +1514,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-17T14:00:00+00:00",
       "start_at": "2026-11-17T14:00:00+00:00",
-      "end_time": "2026-11-17T16:44:47+00:00",
+      "end_time": "2026-11-17T17:04:52+00:00",
       "end_time_source": "assumed",
       "competition": "SAFF Championship",
       "fixture_id": "provider:india-vs-pakistan|saff championship|2026-11-17",
@@ -2379,18 +1529,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401934455)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401934455)",
+        "LiveScore livescore=FT (6, event 1917655)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401934455"
-      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401934455); LiveScore livescore=FT (6, event 1917655)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_24115c906f4c633c9783f38f5723722b"
@@ -2463,7 +1612,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=34' (STATUS_FIRST_HALF, event 401932718)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401932718)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2479,10 +1628,628 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-17T14:04:55.155132+00:00",
       "authority_status": "LIVE"
+    },
+    {
+      "id": "saudi-arabia-vs-uzbekistan",
+      "name": "Saudi Arabia Vs Uzbekistan",
+      "primary_stream_key": "f866c1e7cc96a70d297dffdb32072380a0a52574c0b3ea61185c3fbe880edbaa",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/4834/image",
+      "category": "today_match",
+      "url": "https://www.rtmpcdn.com/live/f9223cd3-8aee-4d4a-ae67-2bc407aaf2cc.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "saudi-arabia-vs-uzbekistan--disney",
+          "name": "DISNEY",
+          "normalized_name": "disney",
+          "logo": "https://img.sofascore.com/api/v1/team/4834/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "saudi-arabia-vs-uzbekistan--disney--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "saudi-arabia-vs-uzbekistan--disney--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_e8ec322580690b73c94c000a",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_b9e476fa0293a89219c009355ca1a202",
+              "stream_type": "hls"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "saudi-arabia-vs-uzbekistan--disney",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "start_time": "2026-11-17T15:30:00+00:00",
+      "start_at": "2026-11-17T15:30:00+00:00",
+      "end_time": "2026-11-17T18:00:00+00:00",
+      "end_time_source": "sport",
+      "competition": "International Friendly Games",
+      "fixture_id": "provider:saudi-arabia-vs-uzbekistan|international friendly games|2026-11-17",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-17T15:30:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401931495)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401931495"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/24xwpq1594125742.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/u5bgze1597943605.png",
+      "playback_id": "ctv_b9e476fa0293a89219c009355ca1a202"
+    },
+    {
+      "id": "gambia-vs-côte-divoire",
+      "name": "Gambia Vs Côte d'Ivoire",
+      "primary_stream_key": "550e9766ba9a43d1fa5c456f0a7a4c6271f35a92366181d26e406512cc07da65",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/4762/image",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "gambia-vs-c-te-divoire--bein-sports",
+          "name": "beIN SPORTS",
+          "normalized_name": "bein-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/4762/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "gambia-vs-c-te-divoire--bein-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "gambia-vs-c-te-divoire--bein-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_38fc5bd211dad30f14a30d19",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_e089390201ab6124c72667120868d74f",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "gambia-vs-c-te-divoire--bein-sports",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-17T16:00:00+00:00",
+      "start_at": "2026-11-17T16:00:00+00:00",
+      "end_time": "2026-11-17T18:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Africa Cup of Nations Qual.",
+      "fixture_id": "provider:gambia-vs-côte-d-ivoire|africa cup of nations qual|2026-11-17",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-17T16:00:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_e089390201ab6124c72667120868d74f",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "kenya-vs-south-africa",
+      "name": "Kenya Vs South Africa",
+      "primary_stream_key": "4013208d8df819e093432c9ea63508ab46bbbc8943ea38e2d1589e282ac07acb",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/4773/image",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "kenya-vs-south-africa--bein-sports",
+          "name": "beIN SPORTS",
+          "normalized_name": "bein-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/4773/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "kenya-vs-south-africa--bein-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "kenya-vs-south-africa--bein-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_71a3c182e2f198df56443040",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_a060d592399d52e6a791db61a307a41c",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "kenya-vs-south-africa--bein-sports",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-17T16:00:00+00:00",
+      "start_at": "2026-11-17T16:00:00+00:00",
+      "end_time": "2026-11-17T18:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Africa Cup of Nations Qual.",
+      "fixture_id": "provider:kenya-vs-south-africa|africa cup of nations qual|2026-11-17",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-17T16:00:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401927175)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401927175"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/r5ew131705942099.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xjz9j91553368824.png",
+      "playback_id": "ctv_a060d592399d52e6a791db61a307a41c",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "sierra-leone-vs-dr-congo",
+      "name": "Sierra Leone Vs DR Congo",
+      "primary_stream_key": "8f206eaf4b141b3b01faa9c171d1f3a69538fddb016de4085b1a848ebad2cefb",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/4737/image",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "sierra-leone-vs-dr-congo--bein-sports",
+          "name": "beIN SPORTS",
+          "normalized_name": "bein-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/4737/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "sierra-leone-vs-dr-congo--bein-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "sierra-leone-vs-dr-congo--bein-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_a59fab2a54cb70ab15eedf8e",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_2c7e77512615e82d232a667cbb0cd1e6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "sierra-leone-vs-dr-congo--bein-sports",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-17T16:00:00+00:00",
+      "start_at": "2026-11-17T16:00:00+00:00",
+      "end_time": "2026-11-17T18:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Africa Cup of Nations Qual.",
+      "fixture_id": "provider:sierra-leone-vs-dr-congo|africa cup of nations qual|2026-11-17",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-17T16:00:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/s5xkvt1609717477.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/s85jjw1728749022.png",
+      "playback_id": "ctv_2c7e77512615e82d232a667cbb0cd1e6",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "kuwait-vs-honduras",
+      "name": "Kuwait Vs Honduras",
+      "primary_stream_key": "27481e637d1c29f9f767771ae8a91a588cc26439044f3cdd959cb964614898c2",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/5368/image",
+      "category": "today_match",
+      "url": "https://kwtspta.cdn.mangomolo.com/sp/smil:sp.stream.smil/chunklist.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "kuwait-vs-honduras--stream-tv",
+          "name": "STREAM TV",
+          "normalized_name": "stream-tv",
+          "logo": "https://img.sofascore.com/api/v1/team/5368/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "kuwait-vs-honduras--stream-tv--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "kuwait-vs-honduras--stream-tv--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_a87f070abd7f9a7baafc19a5",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_55f1929239d1d3eaff4aa1c761731d91",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "hls"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "kuwait-vs-honduras--stream-tv",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-17T16:00:00+00:00",
+      "start_at": "2026-11-17T16:00:00+00:00",
+      "end_time": "2026-11-17T18:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "International Friendly Games",
+      "fixture_id": "provider:kuwait-vs-honduras|international friendly games|2026-11-17",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-17T16:00:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401931956)",
+        "LiveScore livescore=NS (1, event 1913937)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401931956",
+        "livescore": "1913937"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ep080d1597861076.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wuu4fp1718413719.png",
+      "playback_id": "ctv_55f1929239d1d3eaff4aa1c761731d91"
     }
   ]
 }
