@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T12:44:53.137017+00:00",
+  "generated_at": "2026-11-17T13:04:57.877326+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,9 +12,12 @@
       "requests_ok": 6,
       "fixtures": 318,
       "unknown_statuses": [
+        "10|HT",
         "132|Stumps - day 1",
         "218|Play suspended",
-        "2|44'"
+        "2|3'",
+        "2|4'",
+        "2|5'"
       ],
       "attempts": [
         {
@@ -111,13 +114,14 @@
     "fixtures": 68,
     "verdicts": {
       "UNVERIFIED": 42,
-      "CONFLICT": 3,
-      "VERIFIED": 23
+      "PARTIAL_AUTHORITY": 1,
+      "CONFLICT": 4,
+      "VERIFIED": 21
     },
-    "verified": 23,
-    "partial_authority": 0,
+    "verified": 21,
+    "partial_authority": 1,
     "unverified": 42,
-    "conflict": 3,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 41,
@@ -129,12 +133,11 @@
       }
     },
     "matched_by_two_independent_authorities": 22,
-    "authority_agreements": 20,
+    "authority_agreements": 18,
     "authority_disagreements": 0,
-    "card_status_conflicts": 3,
+    "card_status_conflicts": 4,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 2,
-      "card says LIVE, authority says FINISHED": 1,
+      "card says LIVE, authority says UPCOMING": 4,
       "kickoff": 2
     },
     "identity_near_misses": 6,
@@ -145,9 +148,12 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "132|Stumps - day 1",
         "218|Play suspended",
-        "2|44'"
+        "2|3'",
+        "2|4'",
+        "2|5'"
       ],
       "espn-header": []
     }
@@ -275,17 +281,17 @@
           "competition_id": "3922",
           "kickoff": "2026-11-17T12:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "5'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 17th at 7:00 AM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "5'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3922~e:401930880~c:401930880"
@@ -305,8 +311,8 @@
           "competition_id": "537",
           "kickoff": "2026-11-17T12:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "44'",
-          "status_code": "2",
+          "status_raw": "HT",
+          "status_code": "10",
           "status": "UNKNOWN",
           "sport": "football",
           "round": "Friendlies 1",
@@ -321,12 +327,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -335,9 +339,9 @@
       "name": "Ethiopia Vs Mozambique",
       "competition": "Africa Cup of Nations Qual.",
       "kickoff": "2026-11-17T13:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -394,9 +398,9 @@
           "competition_id": "137",
           "kickoff": "2026-11-17T13:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "5'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "4",
           "format": "",
@@ -410,10 +414,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -481,8 +487,8 @@
           "competition_id": "537",
           "kickoff": "2026-11-17T12:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "44'",
-          "status_code": "2",
+          "status_raw": "HT",
+          "status_code": "10",
           "status": "UNKNOWN",
           "sport": "football",
           "round": "1",
@@ -511,9 +517,9 @@
       "name": "Malawi Vs Egypt",
       "competition": "Africa Cup of Nations Qual.",
       "kickoff": "2026-11-17T13:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -570,11 +576,11 @@
           "competition_id": "137",
           "kickoff": "2026-11-17T13:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "4'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
-          "round": "4",
+          "round": "Group Stage Group B",
           "format": "",
           "gender": ""
         }
@@ -586,10 +592,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -759,9 +767,9 @@
       "name": "Tanzania Vs Nigeria",
       "competition": "Africa Cup of Nations Qual.",
       "kickoff": "2026-11-17T13:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -834,10 +842,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -924,14 +934,14 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:singapore-vs-brazil|international friendly games|2026-11-17",
-      "card_id": "singapore-vs-brazil",
-      "name": "Singapore Vs Brazil",
+      "fixture_id": "provider:japan-vs-paraguay|international friendly games|2026-11-17",
+      "card_id": "japan-vs-paraguay",
+      "name": "Japan Vs Paraguay",
       "competition": "International Friendly Games",
-      "kickoff": "2026-11-17T10:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
+      "kickoff": "2026-11-17T13:10:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -947,50 +957,50 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "401916335",
+          "event_id": "401916336",
           "upstream_family": "ESPN",
-          "name": "Singapore vs Brazil",
-          "home": "Singapore",
-          "away": "Brazil",
-          "home_team_id": "4384",
-          "away_team_id": "205",
+          "name": "Japan vs Paraguay",
+          "home": "Japan",
+          "away": "Paraguay",
+          "home_team_id": "627",
+          "away_team_id": "210",
           "competition": "International Friendly",
           "competition_id": "3922",
-          "kickoff": "2026-11-17T10:00:00+00:00",
+          "kickoff": "2026-11-17T13:10:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Tue, November 17th at 8:10 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
           "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401916335~c:401916335"
+          "authority_uid": "s:600~l:3922~e:401916336~c:401916336"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1908631",
+          "event_id": "1913902",
           "upstream_family": "LiveScore",
-          "name": "Singapore vs Brazil",
-          "home": "Singapore",
-          "away": "Brazil",
-          "home_team_id": "9038",
-          "away_team_id": "9010",
+          "name": "Japan vs Paraguay",
+          "home": "Japan",
+          "away": "Paraguay",
+          "home_team_id": "6326",
+          "away_team_id": "8995",
           "competition": "Friendlies",
           "competition_id": "537",
-          "kickoff": "2026-11-17T10:00:00+00:00",
+          "kickoff": "2026-11-17T13:10:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "1",
           "format": "",
@@ -1004,12 +1014,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -1105,8 +1113,8 @@
       "name": "ABU DHABI T10 LEAGUE",
       "competition": "ABU DHABI T10 LEAGUE",
       "kickoff": "2026-11-17T13:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1315,9 +1323,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1443,9 +1451,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1558,9 +1566,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1675,9 +1683,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1717,9 +1725,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2161,9 +2169,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2202,9 +2210,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2244,9 +2252,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2512,8 +2520,8 @@
       "name": "India Vs Pakistan",
       "competition": "SAFF Championship",
       "kickoff": "2026-11-17T14:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -2608,9 +2616,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2810,9 +2818,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2851,9 +2859,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3088,9 +3096,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3129,9 +3137,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3244,9 +3252,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3413,8 +3421,8 @@
       "name": "Qatar Vs South Korea",
       "competition": "International Friendly Games",
       "kickoff": "2026-11-17T14:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -3596,9 +3604,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3785,9 +3793,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4162,93 +4170,92 @@
   ],
   "retired_or_unpublished": [
     {
-      "fixture_id": "provider:adelaide-strikers-vs-sydney-sixers-women|women big bash league 2026 25th|2026-11-17",
-      "card_id": "adelaide-strikers-women-vs-sydney-sixers-women",
-      "name": "Adelaide Strikers Women vs Sydney Sixers Women",
-      "competition": "Womens Big Bash League 2026 - 25th Match",
-      "kickoff": "2026-11-17T12:05:01+00:00",
+      "fixture_id": "provider:singapore-vs-brazil|international friendly games|2026-11-17",
+      "card_id": "singapore-vs-brazil",
+      "name": "Singapore Vs Brazil",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-11-17T10:00:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-primevideo-sports"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "PrimeVideo"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1543968",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401916335",
           "upstream_family": "ESPN",
-          "name": "Adelaide Strikers Women vs Sydney Sixers Women",
-          "home": "Adelaide Strikers Women",
-          "away": "Sydney Sixers Women",
-          "home_team_id": "896431",
-          "away_team_id": "896403",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-17T08:10:00+00:00",
-          "kickoff_delta_minutes": -235.0,
-          "status_raw": "Result",
-          "status_code": "Result",
+          "name": "Singapore vs Brazil",
+          "home": "Singapore",
+          "away": "Brazil",
+          "home_team_id": "4384",
+          "away_team_id": "205",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-11-17T10:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
           "status": "FINISHED",
-          "sport": "cricket",
-          "round": "25th Match (D/N)",
+          "sport": "football",
+          "round": "",
           "format": "",
-          "gender": "women",
+          "gender": "",
           "espn_state": "post",
           "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-17T23:59:00Z",
-          "authority_uid": "s:200~e:1543968~c:1543968"
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401916335~c:401916335"
         },
         "livescore": {
           "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1813021",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1908631",
           "upstream_family": "LiveScore",
-          "name": "Adelaide Strikers W vs Sydney Sixers W",
-          "home": "Adelaide Strikers W",
-          "away": "Sydney Sixers W",
-          "home_team_id": "86304",
-          "away_team_id": "86301",
-          "competition": "Women's Big Bash League",
-          "competition_id": "25707",
-          "kickoff": "2026-11-17T08:10:00+00:00",
-          "kickoff_delta_minutes": -235.0,
+          "name": "Singapore vs Brazil",
+          "home": "Singapore",
+          "away": "Brazil",
+          "home_team_id": "9038",
+          "away_team_id": "9010",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-11-17T10:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
           "status_raw": "FT",
           "status_code": "6",
           "status": "FINISHED",
-          "sport": "cricket",
-          "round": "Match 25",
-          "format": "Womens Domestic Twenty20",
-          "gender": "women"
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
+      "authority_upstreams": [
         "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 2,
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-17T12:05, espn-header 2026-11-17T08:10 (-235.0 min)",
-        "kickoff: ours 2026-11-17T12:05, livescore 2026-11-17T08:10 (-235.0 min)"
+        "card says LIVE, authority says FINISHED"
       ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT"
     }
   ]
 }
