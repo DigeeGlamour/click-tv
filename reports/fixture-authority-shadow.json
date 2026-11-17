@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T09:45:14.328041+00:00",
+  "generated_at": "2026-11-17T10:04:57.266825+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,8 +12,9 @@
       "requests_ok": 6,
       "fixtures": 318,
       "unknown_statuses": [
+        "172|Lunch - day 3",
         "180|Tea - day 1",
-        "220|Drinks"
+        "2|3'"
       ],
       "attempts": [
         {
@@ -110,12 +111,13 @@
     "fixtures": 68,
     "verdicts": {
       "UNVERIFIED": 43,
-      "VERIFIED": 25
+      "CONFLICT": 1,
+      "VERIFIED": 24
     },
-    "verified": 25,
+    "verified": 24,
     "partial_authority": 0,
     "unverified": 43,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 43,
@@ -127,11 +129,12 @@
       }
     },
     "matched_by_two_independent_authorities": 19,
-    "authority_agreements": 19,
+    "authority_agreements": 18,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "kickoff": 4
+      "kickoff": 4,
+      "card says LIVE, authority says UPCOMING": 1
     },
     "identity_near_misses": 11,
     "independent_authority_count_distribution": {
@@ -141,8 +144,9 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "172|Lunch - day 3",
         "180|Tea - day 1",
-        "220|Drinks"
+        "2|3'"
       ],
       "espn-header": []
     }
@@ -280,7 +284,7 @@
       "card_id": "adelaide-strikers-women-vs-sydney-sixers-women",
       "name": "Adelaide Strikers Women vs Sydney Sixers Women",
       "competition": "Womens Big Bash League 2026 - 25th Match",
-      "kickoff": "2026-11-17T09:45:14+00:00",
+      "kickoff": "2026-11-17T10:04:57+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -311,7 +315,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "21284",
           "kickoff": "2026-11-17T08:10:00+00:00",
-          "kickoff_delta_minutes": -95.2,
+          "kickoff_delta_minutes": -115.0,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -341,7 +345,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "25707",
           "kickoff": "2026-11-17T08:10:00+00:00",
-          "kickoff_delta_minutes": -95.2,
+          "kickoff_delta_minutes": -115.0,
           "status_raw": "Play in progress",
           "status_code": "33",
           "status": "LIVE",
@@ -359,8 +363,8 @@
       ],
       "near_miss_count": 2,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-17T09:45, espn-header 2026-11-17T08:10 (-95.2 min)",
-        "kickoff: ours 2026-11-17T09:45, livescore 2026-11-17T08:10 (-95.2 min)"
+        "kickoff: ours 2026-11-17T10:04, espn-header 2026-11-17T08:10 (-115.0 min)",
+        "kickoff: ours 2026-11-17T10:04, livescore 2026-11-17T08:10 (-115.0 min)"
       ],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
@@ -460,9 +464,9 @@
       "name": "Singapore Vs Brazil",
       "competition": "International Friendly Games",
       "kickoff": "2026-11-17T10:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -519,9 +523,9 @@
           "competition_id": "537",
           "kickoff": "2026-11-17T10:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "3'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "1",
           "format": "",
@@ -535,10 +539,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -591,12 +597,14 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-willow-event"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "SM-Aggregate",
+        "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -795,8 +803,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -923,8 +931,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1038,8 +1046,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1155,8 +1163,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1197,8 +1205,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1796,8 +1804,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1960,8 +1968,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2002,8 +2010,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2279,8 +2287,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2760,8 +2768,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2801,8 +2809,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3075,8 +3083,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3116,8 +3124,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3231,8 +3239,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3496,8 +3504,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3809,8 +3817,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
