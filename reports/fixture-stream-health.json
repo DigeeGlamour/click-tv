@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-11-18T11:24:43.345495+00:00",
+  "generated_at": "2026-11-18T11:44:52.698742+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
-    "fixtures": 48,
-    "published_fixtures": 42,
+    "fixtures": 53,
+    "published_fixtures": 47,
     "fixtures_with_verified_stream": 7,
-    "fixtures_with_zero_verified": 41,
-    "published_without_stream": 39,
+    "fixtures_with_zero_verified": 46,
+    "published_without_stream": 44,
     "fallback_available": 3,
     "targeted_fixtures": 6,
     "targeted_attempts": 30,
@@ -18,11 +18,11 @@
     "fixtures_left_with_nothing": 4,
     "distinct_failure_codes": 5,
     "unrecognised_candidate_groups": 54,
-    "unrecognised_failed_routes": 119
+    "unrecognised_failed_routes": 120
   },
   "failure_codes": {
+    "http_404": 48,
     "browser_unreachable": 48,
-    "http_404": 47,
     "http_403": 16,
     "timeout": 16,
     "dns": 2,
@@ -33,9 +33,9 @@
   "failure_code_fixtures": {
     "http_403": 4,
     "browser_unreachable": 4,
-    "dns": 1,
+    "http_404": 1,
     "http_400": 1,
-    "http_404": 1
+    "dns": 1
   },
   "fixtures": [
     {
@@ -83,6 +83,33 @@
         "timeout",
         "http_403",
         "http_404",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "india-vs-pakistan",
+      "fixture_key": "india-vs-pakistan",
+      "fixture_name": "India Vs Pakistan",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 6,
+      "verified_stream_count": 1,
+      "failed_stream_count": 5,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "http_403",
         "browser_unreachable"
       ],
       "fallback_available": false,
@@ -193,32 +220,6 @@
         "verification_failed",
         "http_403",
         "http_404",
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "india-vs-pakistan",
-      "fixture_key": "india-vs-pakistan",
-      "fixture_name": "India Vs Pakistan",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 6,
-      "verified_stream_count": 2,
-      "failed_stream_count": 4,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403",
         "browser_unreachable"
       ],
       "fallback_available": false,
@@ -1265,8 +1266,8 @@
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data",
-        "srhady-willow-event",
-        "srhady-primevideo-sports"
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
       "candidate_stream_count": 8,
       "verified_stream_count": 7,
@@ -1616,7 +1617,10 @@
       "recognised_fixture": true,
       "source_id": "srhady-willow-event",
       "source_ids": [
-        "srhady-willow-event"
+        "srhady-willow-event",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1710,12 +1714,13 @@
       "targeted": false
     },
     {
-      "fixture_id": "provider:bk-häcken-vs-manchester-city-women|uefa women champions league 2026 27|2026-11-18",
-      "fixture_key": "bk-hacken-women-vs-manchester-city-women",
-      "fixture_name": "BK Häcken Women vs Manchester City Women",
+      "fixture_id": "provider:bk-häcken-ff-vs-manchester-city|uefa women champions league|2026-11-18",
+      "fixture_key": "bk-hacken-ff-vs-manchester-city",
+      "fixture_name": "BK Häcken FF Vs Manchester City",
       "recognised_fixture": true,
-      "source_id": "sm-fancode",
+      "source_id": "sm-sports-data",
       "source_ids": [
+        "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
@@ -1813,8 +1818,8 @@
       "source_id": "srhady-willow-event",
       "source_ids": [
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
@@ -1834,17 +1839,36 @@
       "targeted": false
     },
     {
-      "fixture_id": "provider:chelsea-f-c-vs-paris-saint-germain-women|uefa women champions league 2026 27|2026-11-18",
-      "fixture_key": "chelsea-f-c-women-vs-paris-saint-germain-women",
-      "fixture_name": "Chelsea F C Women vs Paris Saint Germain Women",
+      "fixture_id": "provider:coritiba-vs-santos|campeonato brasileiro s rie a|2026-11-18",
+      "fixture_key": "coritiba-vs-santos",
+      "fixture_name": "Coritiba Vs Santos",
       "recognised_fixture": true,
-      "source_id": "sm-fancode",
+      "source_id": "sm-sports-data",
       "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 0,
+      "verified_stream_count": 0,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "provider:cruzeiro-vs-palmeiras|campeonato brasileiro s rie a|2026-11-18",
+      "fixture_key": "cruzeiro-vs-palmeiras",
+      "fixture_name": "Cruzeiro Vs Palmeiras",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2030,6 +2054,34 @@
       "targeted": false
     },
     {
+      "fixture_id": "provider:juventus-vs-oud-heverlee-leuven|uefa women champions league|2026-11-18",
+      "fixture_key": "juventus-vs-oud-heverlee-leuven",
+      "fixture_name": "Juventus Vs Oud Heverlee Leuven",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "candidate_stream_count": 0,
+      "verified_stream_count": 0,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "provider:kathmandu-gorkhas-vs-chitwan-rhinos|nepal premier league season 3 2026|2026-11-18",
       "fixture_key": "kathmandu-gorkhas-vs-chitwan-rhinos",
       "fixture_name": "Kathmandu Gorkhas vs Chitwan Rhinos",
@@ -2037,10 +2089,7 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2199,6 +2248,34 @@
       "targeted": true
     },
     {
+      "fixture_id": "provider:new-caledonia-u17-vs-ecuador-u17|u17 world championship|2026-11-19",
+      "fixture_key": "new-caledonia-u17-vs-ecuador-u17",
+      "fixture_name": "New Caledonia U17 Vs Ecuador U17",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "candidate_stream_count": 0,
+      "verified_stream_count": 0,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "new-zealand-vs-india",
       "fixture_key": "new-zealand-vs-india",
       "fixture_name": "New Zealand Vs India",
@@ -2329,11 +2406,34 @@
       "source_id": "srhady-willow-event",
       "source_ids": [
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
+      ],
+      "candidate_stream_count": 0,
+      "verified_stream_count": 0,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "provider:remo-vs-chapecoense|campeonato brasileiro s rie a|2026-11-18",
+      "fixture_key": "remo-vs-chapecoense",
+      "fixture_name": "Remo Vs Chapecoense",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2394,6 +2494,34 @@
       "last_attempt_bucket": "2026-11-18T09:05Z",
       "first_link_at": "",
       "targeted": true
+    },
+    {
+      "fixture_id": "provider:south-korea-u17-vs-uganda-u17|u17 world championship|2026-11-19",
+      "fixture_key": "south-korea-u17-vs-uganda-u17",
+      "fixture_name": "South Korea U17 Vs Uganda U17",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "candidate_stream_count": 0,
+      "verified_stream_count": 0,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
     },
     {
       "fixture_id": "provider:sri-lanka-a-vs-afghanistan-a|acc men asia cup rising stars 2026 2nd|2026-11-19",
