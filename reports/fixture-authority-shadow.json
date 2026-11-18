@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T23:25:23.827638+00:00",
+  "generated_at": "2026-11-18T23:44:52.296849+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,11 +12,12 @@
       "requests_ok": 6,
       "fixtures": 315,
       "unknown_statuses": [
-        "10|HT",
         "133|Stumps - day 2",
         "135|Stumps - day 4",
-        "2|24'",
-        "2|45+7'"
+        "2|15'",
+        "2|42'",
+        "3|47'",
+        "3|59'"
       ],
       "attempts": [
         {
@@ -112,14 +113,15 @@
     "upcoming": 38,
     "fixtures": 45,
     "verdicts": {
-      "CONFLICT": 4,
-      "VERIFIED": 8,
-      "UNVERIFIED": 33
+      "PARTIAL_AUTHORITY": 1,
+      "CONFLICT": 5,
+      "UNVERIFIED": 33,
+      "VERIFIED": 6
     },
-    "verified": 8,
-    "partial_authority": 0,
+    "verified": 6,
+    "partial_authority": 1,
     "unverified": 33,
-    "conflict": 4,
+    "conflict": 5,
     "matched_by_authority": {
       "espn-header": {
         "matched": 12,
@@ -131,11 +133,11 @@
       }
     },
     "matched_by_two_independent_authorities": 9,
-    "authority_agreements": 8,
+    "authority_agreements": 6,
     "authority_disagreements": 0,
-    "card_status_conflicts": 4,
+    "card_status_conflicts": 5,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 2,
+      "card says LIVE, authority says UPCOMING": 3,
       "card says LIVE, authority says FINISHED": 2
     },
     "identity_near_misses": 5,
@@ -146,11 +148,12 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "133|Stumps - day 2",
         "135|Stumps - day 4",
-        "2|24'",
-        "2|45+7'"
+        "2|15'",
+        "2|42'",
+        "3|47'",
+        "3|59'"
       ],
       "espn-header": []
     }
@@ -233,17 +236,17 @@
           "competition_id": "630",
           "kickoff": "2026-11-18T22:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "30'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, November 18th at 5:30 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "30'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841315~c:401841315"
@@ -263,11 +266,11 @@
           "competition_id": "155",
           "kickoff": "2026-11-18T22:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "45+7'",
-          "status_code": "2",
+          "status_raw": "47'",
+          "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
-          "round": "35",
+          "round": "Regular Season",
           "format": "",
           "gender": ""
         }
@@ -279,12 +282,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -293,9 +294,9 @@
       "name": "Cruzeiro Vs Palmeiras",
       "competition": "Campeonato Brasileiro Série A",
       "kickoff": "2026-11-18T23:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -352,9 +353,9 @@
           "competition_id": "155",
           "kickoff": "2026-11-18T23:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "15'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "35",
           "format": "",
@@ -368,10 +369,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -380,9 +383,9 @@
       "name": "Flamengo Vs Athletico",
       "competition": "Campeonato Brasileiro Série A",
       "kickoff": "2026-11-18T23:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -439,9 +442,9 @@
           "competition_id": "155",
           "kickoff": "2026-11-18T23:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "15'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "35",
           "format": "",
@@ -455,10 +458,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -822,6 +827,93 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:grêmio-vs-bahia|campeonato brasileiro s rie a|2026-11-19",
+      "card_id": "grêmio-vs-bahia",
+      "name": "Grêmio Vs Bahia",
+      "competition": "Campeonato Brasileiro Série A",
+      "kickoff": "2026-11-19T00:30:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401841312",
+          "upstream_family": "ESPN",
+          "name": "Grêmio vs Bahia",
+          "home": "Grêmio",
+          "away": "Bahia",
+          "home_team_id": "6273",
+          "away_team_id": "9967",
+          "competition": "Brazilian Serie A",
+          "competition_id": "630",
+          "kickoff": "2026-11-19T00:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, November 18th at 7:30 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:630~e:401841312~c:401841312"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1708775",
+          "upstream_family": "LiveScore",
+          "name": "Gremio vs Bahia",
+          "home": "Gremio",
+          "away": "Bahia",
+          "home_team_id": "5001",
+          "away_team_id": "4507",
+          "competition": "Serie A",
+          "competition_id": "155",
+          "kickoff": "2026-11-19T00:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "35",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1395,93 +1487,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:grêmio-vs-bahia|campeonato brasileiro s rie a|2026-11-19",
-      "card_id": "grêmio-vs-bahia",
-      "name": "Grêmio Vs Bahia",
-      "competition": "Campeonato Brasileiro Série A",
-      "kickoff": "2026-11-19T00:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401841312",
-          "upstream_family": "ESPN",
-          "name": "Grêmio vs Bahia",
-          "home": "Grêmio",
-          "away": "Bahia",
-          "home_team_id": "6273",
-          "away_team_id": "9967",
-          "competition": "Brazilian Serie A",
-          "competition_id": "630",
-          "kickoff": "2026-11-19T00:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, November 18th at 7:30 PM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:630~e:401841312~c:401841312"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1708775",
-          "upstream_family": "LiveScore",
-          "name": "Gremio vs Bahia",
-          "home": "Gremio",
-          "away": "Bahia",
-          "home_team_id": "5001",
-          "away_team_id": "4507",
-          "competition": "Serie A",
-          "competition_id": "155",
-          "kickoff": "2026-11-19T00:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "35",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2557,42 +2562,6 @@
       "kickoff": "2026-11-18T08:00:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:abu-dhabi-t10-league|abu dhabi t10 league|2026-11-18",
-      "card_id": "abu-dhabi-t10-league",
-      "name": "ABU DHABI T10 LEAGUE",
-      "competition": "ABU DHABI T10 LEAGUE",
-      "kickoff": "2026-11-18T13:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
