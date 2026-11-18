@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T14:04:54.103479+00:00",
+  "generated_at": "2026-11-18T14:25:01.333869+00:00",
   "today_match_count": 7,
   "upcoming_count": 40,
   "today_missing_logo": [],
@@ -8,13 +8,13 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 166,
-  "provider_rejected": 165,
+  "provider_fixture": 165,
+  "provider_rejected": 166,
   "provider_rejected_reasons": {
     "provider_dead_status": 137,
     "status_neither_live_nor_upcoming": 1,
     "kickoff_missing_and_not_live": 1,
-    "upcoming_kickoff_already_passed": 26
+    "upcoming_kickoff_already_passed": 27
   },
   "provider_rejected_by_source": {
     "sm-sports-data": {
@@ -32,6 +32,10 @@
     },
     "srhady-willow-event": {
       "kickoff_missing_and_not_live": 1,
+      "total": 1
+    },
+    "sm-fancode": {
+      "upcoming_kickoff_already_passed": 1,
       "total": 1
     }
   },
@@ -433,6 +437,15 @@
       "start_time": "2026-10-29T08:10:00+00:00"
     },
     {
+      "name": "Netherlands Women vs Zimbabwe Women",
+      "competition": "ICC Women's Emerging Nations Trophy, 2026",
+      "sport": "cricket",
+      "source_id": "sm-fancode",
+      "status": "UPCOMING",
+      "reason": "upcoming_kickoff_already_passed",
+      "start_time": "2026-11-18T09:15:00+00:00"
+    },
+    {
       "name": "PFC Nasaf vs Kuwait SC",
       "competition": "AFC Champions League Two 2026-27",
       "sport": "football",
@@ -566,29 +579,20 @@
       "status": "ENDED",
       "reason": "provider_dead_status",
       "start_time": "2026-11-17T16:00:00+00:00"
-    },
-    {
-      "name": "Israel Vs Austria",
-      "competition": "UEFA Nations League",
-      "sport": "football",
-      "source_id": "sm-sports-data",
-      "status": "ENDED",
-      "reason": "provider_dead_status",
-      "start_time": "2026-11-17T19:45:00+00:00"
     }
   ],
   "ambiguous_suppressed": 0,
   "unverified_suppressed": 0,
   "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
-  "provider_rejected_fixtures_truncated": 40,
+  "provider_rejected_fixtures_truncated": 41,
   "streams_attached": 0,
   "fixtures_with_stream": 3,
   "pool_offered": 0,
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 166,
+    "total": 165,
     "discarded": 54,
     "examples": [
       {
@@ -1031,7 +1035,7 @@
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 15,
-    "conflict": 1,
+    "conflict": 0,
     "unmatched": 30,
     "start_window": 0,
     "start_window_fixtures": [],
@@ -1043,8 +1047,7 @@
     },
     "by_confidence": {
       "HIGH": 10,
-      "LOW": 6,
-      "CONFLICT": 1
+      "LOW": 6
     },
     "applied_fixtures": [
       {
@@ -1060,8 +1063,8 @@
           "ESPN espn-header=Result (Result, event 1528705)",
           "LiveScore livescore=FT (6, event 1757839)"
         ],
-        "authority_finished_seen_at": "2026-11-18T14:04:45.263749+00:00",
-        "remove_after": "2026-11-18T14:24:45.263749+00:00",
+        "authority_finished_seen_at": "2026-11-18T14:24:43.541302+00:00",
+        "remove_after": "2026-11-18T14:44:43.541302+00:00",
         "was_playable": true,
         "lifecycle_state_before": ""
       }
@@ -1072,16 +1075,6 @@
         "reason": "authority says FINISHED while the card still carries a route",
         "status": "FINISHED",
         "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
-        "name": "Netherlands Women vs Zimbabwe Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1557561); LiveScore livescore=FT (6, event 1913239)",
-        "status": "",
-        "confidence": "CONFLICT",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1126,7 +1119,7 @@
     "no_verdict": 2
   },
   "live_protection": {
-    "carried_forward": 1,
+    "carried_forward": 2,
     "released_ended": 0,
     "released_ended_ids": [],
     "retired_terminal": [],
@@ -1136,13 +1129,14 @@
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
     "probe_alive": 0,
-    "probe_dead": 1,
+    "probe_dead": 2,
     "probe_inconclusive": 0,
-    "end_pending": 0,
+    "end_pending": 1,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 1
+      "LIVE": 1,
+      "END_PENDING": 1
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -1198,12 +1192,12 @@
     "cache_hits": 11,
     "cached_entries": 1689,
     "provider": {
-      "requests": 13,
-      "hits": 11,
+      "requests": 22,
+      "hits": 20,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 22,
+      "skipped_rate_limited": 13,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1225,12 +1219,12 @@
   "competition_labels_clarified": [],
   "sport_filter": {
     "at_merge": {
-      "total": 52,
-      "published": 47,
+      "total": 51,
+      "published": 46,
       "rejected": 5,
       "quarantined": 0,
       "states": {
-        "confirmed_cricket": 37,
+        "confirmed_cricket": 36,
         "confirmed_other": 5,
         "confirmed_football": 10
       },
@@ -1244,12 +1238,12 @@
           "published": 12
         },
         "sm-fancode": {
-          "total": 18,
-          "cricket": 10,
+          "total": 17,
+          "cricket": 9,
           "football": 6,
           "quarantined": 0,
           "rejected": 2,
-          "published": 16
+          "published": 15
         },
         "srhady-primevideo-sports": {
           "total": 1,
@@ -1481,7 +1475,7 @@
   },
   "sport_pipeline": {
     "raw_events": 331,
-    "cricket_kept": 37,
+    "cricket_kept": 36,
     "football_kept": 10,
     "other_discarded": 59,
     "unresolved": 0,
@@ -1515,9 +1509,9 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 0,
+      "provider_or_authority": 1,
       "estimate": 0,
-      "none": 7
+      "none": 6
     }
   },
   "fixture_stream_health": {
