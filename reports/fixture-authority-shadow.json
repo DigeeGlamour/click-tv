@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T04:24:53.967640+00:00",
+  "generated_at": "2026-11-18T04:44:57.802583+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,10 +12,8 @@
       "requests_ok": 6,
       "fixtures": 319,
       "unknown_statuses": [
-        "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "3|61'",
-        "3|90+5'"
+        "3|81'"
       ],
       "attempts": [
         {
@@ -107,19 +105,19 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 3,
-    "upcoming": 41,
+    "today_match": 4,
+    "upcoming": 40,
     "fixtures": 44,
     "verdicts": {
-      "CONFLICT": 1,
-      "PARTIAL_AUTHORITY": 2,
+      "CONFLICT": 2,
       "UNVERIFIED": 31,
-      "VERIFIED": 10
+      "VERIFIED": 10,
+      "PARTIAL_AUTHORITY": 1
     },
     "verified": 10,
-    "partial_authority": 2,
+    "partial_authority": 1,
     "unverified": 31,
-    "conflict": 1,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
         "matched": 14,
@@ -132,10 +130,10 @@
     },
     "matched_by_two_independent_authorities": 9,
     "authority_agreements": 7,
-    "authority_disagreements": 1,
+    "authority_disagreements": 2,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "authorities disagree": 1,
+      "authorities disagree": 2,
       "kickoff": 2
     },
     "identity_near_misses": 5,
@@ -146,10 +144,8 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "3|61'",
-        "3|90+5'"
+        "3|81'"
       ],
       "espn-header": []
     }
@@ -321,7 +317,7 @@
           "competition_id": "19267",
           "kickoff": "2026-11-18T02:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "54'",
+          "status_raw": "74'",
           "status_code": "STATUS_SECOND_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -330,7 +326,7 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "54'",
+          "espn_status_detail": "74'",
           "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
@@ -351,9 +347,9 @@
           "competition_id": "26584",
           "kickoff": "2026-11-18T02:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "90+5'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "Quarter Finals",
           "format": "",
@@ -367,10 +363,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -378,7 +376,7 @@
       "card_id": "pakistan-vs-sri-lanka",
       "name": "Pakistan vs Sri Lanka",
       "competition": "Sri Lanka tour of Pakistan 2026 - 2nd Test",
-      "kickoff": "2026-11-18T04:24:53+00:00",
+      "kickoff": "2026-11-18T04:44:57+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -409,7 +407,7 @@
           "competition": "Sri Lanka tour of Pakistan 2026/27",
           "competition_id": "24707",
           "kickoff": "2026-11-17T04:30:00+00:00",
-          "kickoff_delta_minutes": -1434.9,
+          "kickoff_delta_minutes": -1455.0,
           "status_raw": "Stumps",
           "status_code": "Stumps",
           "status": "LIVE",
@@ -439,10 +437,10 @@
           "competition": "Pakistan v Sri Lanka",
           "competition_id": "26206",
           "kickoff": "2026-11-17T04:30:00+00:00",
-          "kickoff_delta_minutes": -1434.9,
-          "status_raw": "Stumps - day 1",
-          "status_code": "132",
-          "status": "UNKNOWN",
+          "kickoff_delta_minutes": -1455.0,
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "2nd Test",
           "format": "Test",
@@ -457,12 +455,103 @@
       ],
       "near_miss_count": 2,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-18T04:24, espn-header 2026-11-17T04:30 (-1434.9 min)",
-        "kickoff: ours 2026-11-18T04:24, livescore 2026-11-17T04:30 (-1434.9 min)"
+        "kickoff: ours 2026-11-18T04:44, espn-header 2026-11-17T04:30 (-1455.0 min)",
+        "kickoff: ours 2026-11-18T04:44, livescore 2026-11-17T04:30 (-1455.0 min)"
       ],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:papua-new-guinea-vs-united-arab-emirates-women|icc women emerging nations trophy 2026|2026-11-18",
+      "card_id": "papua-new-guinea-women-vs-united-arab-emirates-women",
+      "name": "Papua New Guinea Women vs United Arab Emirates Women",
+      "competition": "ICC Women's Emerging Nations Trophy, 2026",
+      "kickoff": "2026-11-18T05:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1557559",
+          "upstream_family": "ESPN",
+          "name": "United Arab Emirates Women vs Papua New Guinea Women",
+          "home": "United Arab Emirates Women",
+          "away": "Papua New Guinea Women",
+          "home_team_id": "299039",
+          "away_team_id": "312282",
+          "competition": "ICC Women's Emerging Nations Trophy",
+          "competition_id": "24142",
+          "kickoff": "2026-11-18T05:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "17th Match, Group A",
+          "format": "T20",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-19T23:59:00Z",
+          "authority_uid": "s:200~e:1557559~c:1557559"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1913245",
+          "upstream_family": "LiveScore",
+          "name": "Papua New Guinea W vs United Arab Emirates W",
+          "home": "Papua New Guinea W",
+          "away": "United Arab Emirates W",
+          "home_team_id": "236434",
+          "away_team_id": "236433",
+          "competition": "ICC Women's Emerging Nations Trophy 2026",
+          "competition_id": "26709",
+          "kickoff": "2026-11-18T05:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Match 17",
+          "format": "Womens Twenty20",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -950,8 +1039,8 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
         "sportlive-fancode-backup",
+        "sm-fancode",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
@@ -1271,8 +1360,8 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
         "sportlive-fancode-backup",
+        "sm-fancode",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
@@ -1966,8 +2055,8 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
         "sportlive-fancode-backup",
+        "sm-fancode",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
@@ -1993,97 +2082,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:papua-new-guinea-vs-united-arab-emirates-women|icc women emerging nations trophy 2026|2026-11-18",
-      "card_id": "papua-new-guinea-women-vs-united-arab-emirates-women",
-      "name": "Papua New Guinea Women vs United Arab Emirates Women",
-      "competition": "ICC Women's Emerging Nations Trophy, 2026",
-      "kickoff": "2026-11-18T05:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1557559",
-          "upstream_family": "ESPN",
-          "name": "United Arab Emirates Women vs Papua New Guinea Women",
-          "home": "United Arab Emirates Women",
-          "away": "Papua New Guinea Women",
-          "home_team_id": "299039",
-          "away_team_id": "312282",
-          "competition": "ICC Women's Emerging Nations Trophy",
-          "competition_id": "24142",
-          "kickoff": "2026-11-18T05:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "17th Match, Group A",
-          "format": "T20",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-19T23:59:00Z",
-          "authority_uid": "s:200~e:1557559~c:1557559"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1913245",
-          "upstream_family": "LiveScore",
-          "name": "Papua New Guinea W vs United Arab Emirates W",
-          "home": "Papua New Guinea W",
-          "away": "United Arab Emirates W",
-          "home_team_id": "236434",
-          "away_team_id": "236433",
-          "competition": "ICC Women's Emerging Nations Trophy 2026",
-          "competition_id": "26709",
-          "kickoff": "2026-11-18T05:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "Match 17",
-          "format": "Womens Twenty20",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2588,77 +2586,6 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
-    }
-  ],
-  "retired_or_unpublished": [
-    {
-      "fixture_id": "provider:el-salvador-vs-saint-martin|concacaf nations league|2026-11-18",
-      "card_id": "el-salvador-vs-saint-martin",
-      "name": "El Salvador Vs Saint Martin",
-      "competition": "CONCACAF Nations League",
-      "kickoff": "2026-11-18T01:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "El Salvador vs St. Martin",
-              "event_id": "401929764",
-              "agreed_side": "el salvador",
-              "ours": "saint martin",
-              "theirs": "st martin"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1905060",
-          "upstream_family": "LiveScore",
-          "name": "El Salvador vs Saint Martin",
-          "home": "El Salvador",
-          "away": "Saint Martin",
-          "home_team_id": "4873",
-          "away_team_id": "9051",
-          "competition": "Play-In",
-          "competition_id": "57",
-          "kickoff": "2026-11-18T01:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "final",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
     }
   ]
 }
