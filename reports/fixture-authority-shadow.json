@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T02:24:36.491918+00:00",
+  "generated_at": "2026-11-18T02:35:26.437802+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -14,8 +14,9 @@
       "unknown_statuses": [
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "2|35'",
-        "3|60'"
+        "2|4'",
+        "2|45+1'",
+        "3|71'"
       ],
       "attempts": [
         {
@@ -62,8 +63,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 5,
-      "fixtures": 189,
+      "requests_ok": 6,
+      "fixtures": 216,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -81,8 +82,8 @@
         {
           "sport": "cricket",
           "date": "2026-11-19",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 27
         },
         {
           "sport": "football",
@@ -107,53 +108,64 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 2,
+    "today_match": 3,
     "upcoming": 43,
-    "fixtures": 45,
+    "fixtures": 46,
     "verdicts": {
+      "PARTIAL_AUTHORITY": 2,
+      "CONFLICT": 2,
       "VERIFIED": 11,
-      "CONFLICT": 1,
-      "UNVERIFIED": 33
+      "UNVERIFIED": 31
     },
     "verified": 11,
-    "partial_authority": 0,
-    "unverified": 33,
-    "conflict": 1,
+    "partial_authority": 2,
+    "unverified": 31,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 8,
-        "unmatched": 37
+        "unmatched": 32,
+        "matched": 14
       },
       "livescore": {
-        "matched": 12,
+        "matched": 13,
         "unmatched": 33
       }
     },
-    "matched_by_two_independent_authorities": 5,
-    "authority_agreements": 5,
+    "matched_by_two_independent_authorities": 9,
+    "authority_agreements": 8,
     "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
       "card says LIVE, authority says FINISHED": 1,
       "kickoff": 2
     },
-    "identity_near_misses": 6,
+    "identity_near_misses": 7,
     "independent_authority_count_distribution": {
-      "0": 33,
-      "1": 7,
-      "2": 5
+      "0": 31,
+      "1": 6,
+      "2": 9
     },
     "unknown_authority_statuses": {
       "livescore": [
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "2|35'",
-        "3|60'"
+        "2|4'",
+        "2|45+1'",
+        "3|71'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "El Salvador Vs Saint Martin",
+      "authority": "espn-header",
+      "authority_name": "El Salvador vs St. Martin",
+      "agreed_side": "el salvador",
+      "ours": "saint martin",
+      "theirs": "st martin"
+    },
     {
       "fixture": "USA Vs Haiti",
       "authority": "espn-header",
@@ -205,14 +217,82 @@
   ],
   "fixtures": [
     {
+      "fixture_id": "provider:el-salvador-vs-saint-martin|concacaf nations league|2026-11-18",
+      "card_id": "el-salvador-vs-saint-martin",
+      "name": "El Salvador Vs Saint Martin",
+      "competition": "CONCACAF Nations League",
+      "kickoff": "2026-11-18T01:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "El Salvador vs St. Martin",
+              "event_id": "401929764",
+              "agreed_side": "el salvador",
+              "ours": "saint martin",
+              "theirs": "st martin"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1905060",
+          "upstream_family": "LiveScore",
+          "name": "El Salvador vs Saint Martin",
+          "home": "El Salvador",
+          "away": "Saint Martin",
+          "home_team_id": "4873",
+          "away_team_id": "9051",
+          "competition": "Play-In",
+          "competition_id": "57",
+          "kickoff": "2026-11-18T01:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "71'",
+          "status_code": "3",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "final",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:mexico-vs-jamaica|concacaf nations league|2026-11-18",
       "card_id": "mexico-vs-jamaica",
       "name": "Mexico Vs Jamaica",
       "competition": "CONCACAF Nations League",
       "kickoff": "2026-11-18T02:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -269,9 +349,9 @@
           "competition_id": "26584",
           "kickoff": "2026-11-18T02:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "4'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "Quarter Finals",
           "format": "",
@@ -285,10 +365,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -298,7 +380,7 @@
       "competition": "CONCACAF Nations League",
       "kickoff": "2026-11-18T00:00:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -367,8 +449,8 @@
       "name": "Australia Vs England",
       "competition": "One Day International",
       "kickoff": "2026-11-18T03:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -446,6 +528,43 @@
       "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:south-africa-vs-bangladesh|icc world test championship|2026-11-18",
+      "card_id": "south-africa-vs-bangladesh",
+      "name": "South Africa Vs Bangladesh",
+      "competition": "ICC World Test Championship",
+      "kickoff": "2026-11-18T08:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -536,10 +655,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -615,10 +734,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -780,10 +899,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -897,10 +1016,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -909,7 +1028,34 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543970",
+          "upstream_family": "ESPN",
+          "name": "Brisbane Heat Women vs Sydney Thunder Women",
+          "home": "Brisbane Heat Women",
+          "away": "Sydney Thunder Women",
+          "home_team_id": "896397",
+          "away_team_id": "896401",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-19T08:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "27th Match (D/N)",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-19T23:59:00Z",
+          "authority_uid": "s:200~e:1543970~c:1543970"
         },
         "livescore": {
           "result": "matched",
@@ -936,13 +1082,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -961,10 +1108,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1027,7 +1174,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1561279",
+          "upstream_family": "ESPN",
+          "name": "Emirates Eagles vs United Tigers",
+          "home": "Emirates Eagles",
+          "away": "United Tigers",
+          "home_team_id": "1561246",
+          "away_team_id": "1561248",
+          "competition": "Abu Dhabi T10",
+          "competition_id": "18522",
+          "kickoff": "2026-11-19T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "30th Match (D/N)",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-20T23:59:00Z",
+          "authority_uid": "s:200~e:1561279~c:1561279"
         },
         "livescore": {
           "result": "matched",
@@ -1054,13 +1228,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1079,10 +1254,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1120,10 +1295,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1162,10 +1337,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1174,7 +1349,34 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543969",
+          "upstream_family": "ESPN",
+          "name": "Hobart Hurricanes Women vs Perth Scorchers Women",
+          "home": "Hobart Hurricanes Women",
+          "away": "Perth Scorchers Women",
+          "home_team_id": "896433",
+          "away_team_id": "896405",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-19T04:40:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "26th Match",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-19T23:59:00Z",
+          "authority_uid": "s:200~e:1543969~c:1543969"
         },
         "livescore": {
           "result": "matched",
@@ -1201,13 +1403,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1374,10 +1577,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1489,10 +1692,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1530,10 +1733,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1628,7 +1831,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1539442",
+          "upstream_family": "ESPN",
+          "name": "New Zealand vs India",
+          "home": "New Zealand",
+          "away": "India",
+          "home_team_id": "5",
+          "away_team_id": "6",
+          "competition": "India tour of New Zealand 2026/27",
+          "competition_id": "24469",
+          "kickoff": "2026-11-18T22:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "1st Test",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-23T23:59:00Z",
+          "authority_uid": "s:200~e:1539442~c:1539442"
         },
         "livescore": {
           "result": "matched",
@@ -1654,16 +1884,18 @@
           "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [
         "LiveScore"
       ],
       "near_miss_count": 1,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "upcoming"
     },
     {
@@ -1680,10 +1912,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1721,10 +1953,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1800,8 +2032,8 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1931,10 +2163,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2009,43 +2241,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:south-africa-vs-bangladesh|icc world test championship|2026-11-18",
-      "card_id": "south-africa-vs-bangladesh",
-      "name": "South Africa Vs Bangladesh",
-      "competition": "ICC World Test Championship",
-      "kickoff": "2026-11-18T08:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:south-asia-vs-australasia|test twenty championship 2026|2026-11-18",
       "card_id": "south-asia-vs-australasia",
       "name": "South Asia vs Australasia",
@@ -2059,10 +2254,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2322,10 +2517,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2370,7 +2565,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1561277",
+          "upstream_family": "ESPN",
+          "name": "Arabian Aces vs UAE Bulls",
+          "home": "Arabian Aces",
+          "away": "UAE Bulls",
+          "home_team_id": "1561247",
+          "away_team_id": "1511694",
+          "competition": "Abu Dhabi T10",
+          "competition_id": "18522",
+          "kickoff": "2026-11-19T11:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "28th Match",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-20T23:59:00Z",
+          "authority_uid": "s:200~e:1561277~c:1561277"
         },
         "livescore": {
           "result": "unmatched",
@@ -2385,14 +2607,16 @@
           ]
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2453,7 +2677,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1561278",
+          "upstream_family": "ESPN",
+          "name": "Royal Desert Champions vs Yas Lions",
+          "home": "Royal Desert Champions",
+          "away": "Yas Lions",
+          "home_team_id": "1561249",
+          "away_team_id": "1561245",
+          "competition": "Abu Dhabi T10",
+          "competition_id": "18522",
+          "kickoff": "2026-11-19T13:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "29th Match (D/N)",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-20T23:59:00Z",
+          "authority_uid": "s:200~e:1561278~c:1561278"
         },
         "livescore": {
           "result": "matched",
@@ -2480,16 +2731,55 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
+    }
+  ],
+  "retired_or_unpublished": [
+    {
+      "fixture_id": "provider:américa-de-cali-vs-internacional-de-bogotá|copa colombia|2026-11-06",
+      "card_id": "américa-de-cali-vs-internacional-de-bogotá",
+      "name": "América de Cali Vs Internacional de Bogotá",
+      "competition": "Copa Colombia",
+      "kickoff": "2026-11-06T01:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED"
     }
   ]
 }
