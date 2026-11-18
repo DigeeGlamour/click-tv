@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-18T12:05:05.906068+00:00",
-  "today_match_count": 7,
+  "generated_at": "2026-11-18T12:25:01.678117+00:00",
+  "today_match_count": 6,
   "upcoming_count": 40,
   "today_missing_logo": [],
   "upcoming_missing_logo": [],
@@ -583,7 +583,7 @@
   "direct_channel_unusable": 0,
   "provider_rejected_fixtures_truncated": 40,
   "streams_attached": 0,
-  "fixtures_with_stream": 3,
+  "fixtures_with_stream": 2,
   "pool_offered": 0,
   "pool_attached": 0,
   "pool_unclaimed": 0,
@@ -1005,9 +1005,9 @@
   "authority_status": {
     "applied": 1,
     "pending_confirmation": 0,
-    "live": 1,
+    "live": 0,
     "recorded": 14,
-    "conflict": 0,
+    "conflict": 1,
     "unmatched": 30,
     "start_window": 0,
     "start_window_fixtures": [],
@@ -1015,11 +1015,11 @@
     "kickoff_corrections": [],
     "by_status": {
       "FINISHED": 1,
-      "LIVE": 1,
       "UPCOMING": 14
     },
     "by_confidence": {
-      "HIGH": 11,
+      "HIGH": 10,
+      "CONFLICT": 1,
       "LOW": 5
     },
     "applied_fixtures": [
@@ -1052,28 +1052,79 @@
           "ESPN",
           "LiveScore"
         ]
+      },
+      {
+        "name": "Netherlands Women vs Zimbabwe Women",
+        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1557561); LiveScore livescore=FT (6, event 1913239)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
       }
     ]
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
-    "live": 1,
+    "live": 0,
     "recorded": 0,
-    "conflict": 0,
+    "conflict": 1,
     "unmatched": 4,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 1
+      "FINISHED": 1
     },
     "by_confidence": {
-      "HIGH": 1
+      "HIGH": 1,
+      "CONFLICT": 1
     },
-    "applied_fixtures": [],
-    "conflicts": []
+    "applied_fixtures": [
+      {
+        "name": "Australia Vs England",
+        "fixture_id": "provider:australia-vs-england|one day international|2026-11-18",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1528705)",
+          "LiveScore livescore=FT (6, event 1757839)"
+        ],
+        "authority_finished_seen_at": "2026-11-18T12:04:52.172128+00:00",
+        "remove_after": "2026-11-18T12:24:52.172128+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
+      }
+    ],
+    "conflicts": [
+      {
+        "name": "Australia Vs England",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Netherlands Women vs Zimbabwe Women",
+        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1557561); LiveScore livescore=FT (6, event 1913239)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "fixture_status_api": {
     "asked": 2,
@@ -1083,7 +1134,7 @@
     "no_verdict": 2
   },
   "live_protection": {
-    "carried_forward": 1,
+    "carried_forward": 2,
     "released_ended": 0,
     "released_ended_ids": [],
     "retired_terminal": [],
@@ -1099,15 +1150,15 @@
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 1
+      "LIVE": 2
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 0,
-    "total": 1717,
+    "added": 1,
+    "total": 1718,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
@@ -1152,22 +1203,24 @@
     "poster_filled": 0,
     "badge_filled": 18,
     "badge_used_as_logo": 0,
-    "cache_hits": 9,
+    "cache_hits": 11,
     "cached_entries": 1689,
     "provider": {
-      "requests": 18,
-      "hits": 16,
+      "requests": 10,
+      "hits": 8,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 18,
+      "skipped_rate_limited": 24,
       "thesportsdb_key": "public_test_key"
     }
   },
   "resurrection_blocked": {
-    "today": 0,
+    "today": 1,
     "upcoming": 0,
-    "names": []
+    "names": [
+      "Australia Vs England"
+    ]
   },
   "fixture_titles_tidied": [
     {
@@ -1293,22 +1346,14 @@
       "leaks": []
     },
     "today_match": {
-      "total": 7,
-      "published": 7,
+      "total": 6,
+      "published": 6,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_cricket": 7
+        "confirmed_cricket": 6
       },
       "by_source": {
-        "sm-sports-data": {
-          "total": 3,
-          "cricket": 3,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 3
-        },
         "sm-fancode": {
           "total": 3,
           "cricket": 3,
@@ -1316,6 +1361,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 3
+        },
+        "sm-sports-data": {
+          "total": 2,
+          "cricket": 2,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 2
         },
         "vk1817-fancode-mirror": {
           "total": 2,
@@ -1415,10 +1468,10 @@
     "football_kept": 9,
     "other_discarded": 56,
     "unresolved": 0,
-    "today_final": 7,
+    "today_final": 6,
     "upcoming_final": 40,
     "published_states": {
-      "confirmed_cricket": 38,
+      "confirmed_cricket": 37,
       "confirmed_football": 9
     },
     "other_sport_leak": 0,
@@ -1432,31 +1485,45 @@
     "future": 0,
     "newest_kickoff": "2026-08-27T23:00:00+00:00",
     "oldest_kickoff": "2026-07-21T13:45:00+00:00",
-    "days_since_newest": 82.5,
+    "days_since_newest": 82.6,
     "schedulable_now": 0
   },
   "undeliverable_routes_dropped": 0,
   "early_links_held": 2,
   "end_decisions": {
-    "authority_finished": 0,
+    "authority_finished": 1,
     "estimate_expired": 0,
     "stale_or_aged": 0,
     "unplayable": 0,
-    "dropped_fixtures": [],
+    "dropped_fixtures": [
+      {
+        "id": "australia-vs-england",
+        "fixture_id": "provider:australia-vs-england|one day international|2026-11-18",
+        "name": "Australia Vs England",
+        "reason": "authority_finished",
+        "source_ids": [
+          "sm-sports-data"
+        ],
+        "schedule_status": "LIVE_NOW",
+        "lifecycle_state": "",
+        "start_time": "2026-11-18T03:30:00+00:00",
+        "verification_status": "verified_global"
+      }
+    ],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 1,
+      "provider_or_authority": 0,
       "estimate": 0,
       "none": 6
     }
   },
   "fixture_stream_health": {
     "fixtures": 53,
-    "published_fixtures": 47,
+    "published_fixtures": 46,
     "fixtures_with_verified_stream": 7,
     "fixtures_with_zero_verified": 46,
     "published_without_stream": 44,
-    "fallback_available": 3,
+    "fallback_available": 2,
     "targeted_fixtures": 6,
     "targeted_attempts": 30,
     "fixtures_with_a_first_link_time": 2,
@@ -1471,27 +1538,27 @@
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 47,
-    "verified": 14,
+    "fixtures": 46,
+    "verified": 13,
     "partial_authority": 1,
     "unverified": 31,
     "conflict": 1,
-    "matched_by_two_independent_authorities": 11,
-    "authority_agreements": 11,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "matched_by_two_independent_authorities": 10,
+    "authority_agreements": 9,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 0,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 0
+    "not_published": 1
   },
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 47,
-    "fixtures_with_stream": 3,
+    "published_fixtures": 46,
+    "fixtures_with_stream": 2,
     "fixtures_playable_via_catalogue": 0,
-    "fixtures_with_fresh_stream": 3,
+    "fixtures_with_fresh_stream": 2,
     "fixtures_with_carried_stream": 0,
-    "today_with_stream": 3,
+    "today_with_stream": 2,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
     "state": "ok",
