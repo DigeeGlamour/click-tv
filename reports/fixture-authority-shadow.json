@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T13:25:23.162642+00:00",
+  "generated_at": "2026-11-18T13:45:03.269084+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,11 +12,12 @@
       "requests_ok": 6,
       "fixtures": 321,
       "unknown_statuses": [
-        "10|HT",
         "133|Stumps - day 2",
-        "183|Tea - day 4",
-        "2|25'",
-        "3|63'"
+        "2|45'",
+        "3|46'",
+        "3|54'",
+        "3|56'",
+        "3|86'"
       ],
       "attempts": [
         {
@@ -108,55 +109,66 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 6,
+    "today_match": 7,
     "upcoming": 40,
-    "fixtures": 46,
+    "fixtures": 47,
     "verdicts": {
       "UNVERIFIED": 31,
-      "CONFLICT": 1,
+      "CONFLICT": 2,
       "VERIFIED": 13,
       "PARTIAL_AUTHORITY": 1
     },
     "verified": 13,
     "partial_authority": 1,
     "unverified": 31,
-    "conflict": 1,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 30,
-        "matched": 16
+        "matched": 17
       },
       "livescore": {
-        "unmatched": 34,
+        "unmatched": 35,
         "matched": 12
       }
     },
     "matched_by_two_independent_authorities": 10,
     "authority_agreements": 9,
     "authority_disagreements": 1,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
       "kickoff": 2,
+      "sport": 1,
+      "card says LIVE, authority says UPCOMING": 1,
       "authorities disagree": 1
     },
-    "identity_near_misses": 4,
+    "identity_near_misses": 5,
     "independent_authority_count_distribution": {
       "0": 31,
-      "1": 5,
+      "1": 6,
       "2": 10
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "133|Stumps - day 2",
-        "183|Tea - day 4",
-        "2|25'",
-        "3|63'"
+        "2|45'",
+        "3|46'",
+        "3|54'",
+        "3|56'",
+        "3|86'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "UAE Bulls vs United Tigers",
+      "authority": "livescore",
+      "authority_name": "Delhi Bulls vs United Tigers",
+      "agreed_side": "united tigers",
+      "ours": "uae bulls",
+      "theirs": "delhi bulls"
+    },
     {
       "fixture": "Arsenal Women vs OL Lyonnes",
       "authority": "livescore",
@@ -263,8 +275,8 @@
           "competition_id": "24707",
           "kickoff": "2026-11-17T04:30:00+00:00",
           "kickoff_delta_minutes": -1440.0,
-          "status_raw": "Live",
-          "status_code": "Live",
+          "status_raw": "Stumps",
+          "status_code": "Stumps",
           "status": "LIVE",
           "sport": "cricket",
           "round": "2nd Test",
@@ -273,7 +285,7 @@
           "espn_state": "in",
           "espn_status": "in",
           "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_status_description": "Stumps",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-22T23:59:00Z",
           "authority_uid": "s:200~e:1550712~c:1550712"
@@ -353,6 +365,86 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:uae-bulls-vs-united-tigers|abu dhabi t10 league 2026 26th|2026-11-18",
+      "card_id": "uae-bulls-vs-united-tigers",
+      "name": "UAE Bulls vs United Tigers",
+      "competition": "Abu Dhabi T10 League 2026 - 26th Match",
+      "kickoff": "2026-11-18T13:45:03+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "PrimeVideo",
+        "Willow"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1561275",
+          "upstream_family": "ESPN",
+          "name": "UAE Bulls vs United Tigers",
+          "home": "UAE Bulls",
+          "away": "United Tigers",
+          "home_team_id": "1511694",
+          "away_team_id": "1561248",
+          "competition": "Abu Dhabi T10",
+          "competition_id": "18522",
+          "kickoff": "2026-11-18T13:45:00+00:00",
+          "kickoff_delta_minutes": -0.1,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "26th Match (D/N)",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-19T23:59:00Z",
+          "authority_uid": "s:200~e:1561275~c:1561275"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Delhi Bulls vs United Tigers",
+              "event_id": "1906322",
+              "agreed_side": "united tigers",
+              "ours": "uae bulls",
+              "theirs": "delhi bulls"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "sport: ours football, espn-header cricket",
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -612,8 +704,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -691,8 +783,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -857,8 +949,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -975,8 +1067,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1328,8 +1420,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1369,8 +1461,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1559,8 +1651,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1726,8 +1818,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1906,8 +1998,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1947,8 +2039,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2026,8 +2118,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2156,8 +2248,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2458,8 +2550,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2757,17 +2849,17 @@
           "competition_id": "24273",
           "kickoff": "2026-11-18T03:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
+          "status_raw": "Result",
+          "status_code": "Result",
+          "status": "FINISHED",
           "sport": "cricket",
           "round": "3rd ODI (D/N)",
           "format": "ODI",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "Final",
+          "espn_status_description": "Result",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-19T23:59:00Z",
           "authority_uid": "s:200~e:1528705~c:1528705"
@@ -2804,10 +2896,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+        "card says LIVE, authority says FINISHED"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT"
     }
   ]
