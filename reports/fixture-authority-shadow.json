@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-18T05:24:55.320306+00:00",
+  "generated_at": "2026-11-18T05:45:16.615415+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,7 +12,8 @@
       "requests_ok": 6,
       "fixtures": 319,
       "unknown_statuses": [
-        "134|Stumps - day 3"
+        "134|Stumps - day 3",
+        "220|Drinks"
       ],
       "attempts": [
         {
@@ -104,46 +105,47 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 4,
+    "today_match": 3,
     "upcoming": 40,
-    "fixtures": 44,
+    "fixtures": 43,
     "verdicts": {
-      "CONFLICT": 3,
+      "CONFLICT": 1,
       "UNVERIFIED": 31,
-      "VERIFIED": 9,
-      "PARTIAL_AUTHORITY": 1
+      "PARTIAL_AUTHORITY": 2,
+      "VERIFIED": 9
     },
     "verified": 9,
-    "partial_authority": 1,
+    "partial_authority": 2,
     "unverified": 31,
-    "conflict": 3,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 14,
+        "matched": 13,
         "unmatched": 30
       },
       "livescore": {
-        "matched": 11,
+        "matched": 10,
         "unmatched": 33
       }
     },
-    "matched_by_two_independent_authorities": 9,
+    "matched_by_two_independent_authorities": 8,
     "authority_agreements": 6,
-    "authority_disagreements": 3,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "authorities disagree": 3,
+      "authorities disagree": 1,
       "kickoff": 2
     },
     "identity_near_misses": 5,
     "independent_authority_count_distribution": {
       "0": 31,
       "1": 4,
-      "2": 9
+      "2": 8
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "134|Stumps - day 3"
+        "134|Stumps - day 3",
+        "220|Drinks"
       ],
       "espn-header": []
     }
@@ -293,12 +295,16 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "PrimeVideo",
+        "SM-Aggregate",
+        "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 3,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -436,9 +442,9 @@
           "competition_id": "26709",
           "kickoff": "2026-11-18T05:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Drinks",
+          "status_code": "220",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "Match 17",
           "format": "Womens Twenty20",
@@ -452,101 +458,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
-      ],
-      "authority_agreement": "DISAGREE",
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:mexico-vs-jamaica|concacaf nations league|2026-11-18",
-      "card_id": "mexico-vs-jamaica",
-      "name": "Mexico Vs Jamaica",
-      "competition": "CONCACAF Nations League",
-      "kickoff": "2026-11-18T02:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401929763",
-          "upstream_family": "ESPN",
-          "name": "Mexico vs Jamaica",
-          "home": "Mexico",
-          "away": "Jamaica",
-          "home_team_id": "203",
-          "away_team_id": "1038",
-          "competition": "Concacaf Nations League",
-          "competition_id": "19267",
-          "kickoff": "2026-11-18T02:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "90'+4'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "90'+4'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:19267~e:401929763~c:401929763"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1903662",
-          "upstream_family": "LiveScore",
-          "name": "Mexico vs Jamaica",
-          "home": "Mexico",
-          "away": "Jamaica",
-          "home_team_id": "9025",
-          "away_team_id": "9154",
-          "competition": "League A: Quarter Finals",
-          "competition_id": "26584",
-          "kickoff": "2026-11-18T02:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Quarter Finals",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -675,9 +590,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -754,9 +669,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -919,9 +834,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1036,9 +951,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1128,9 +1043,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1274,9 +1189,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1315,9 +1230,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1357,9 +1272,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1597,9 +1512,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1712,9 +1627,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1753,9 +1668,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1932,9 +1847,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1973,9 +1888,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2052,9 +1967,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2094,9 +2009,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2357,9 +2272,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2581,6 +2496,96 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
+    }
+  ],
+  "retired_or_unpublished": [
+    {
+      "fixture_id": "provider:mexico-vs-jamaica|concacaf nations league|2026-11-18",
+      "card_id": "mexico-vs-jamaica",
+      "name": "Mexico Vs Jamaica",
+      "competition": "CONCACAF Nations League",
+      "kickoff": "2026-11-18T02:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401929763",
+          "upstream_family": "ESPN",
+          "name": "Mexico vs Jamaica",
+          "home": "Mexico",
+          "away": "Jamaica",
+          "home_team_id": "203",
+          "away_team_id": "1038",
+          "competition": "Concacaf Nations League",
+          "competition_id": "19267",
+          "kickoff": "2026-11-18T02:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "13'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "13'",
+          "espn_status_description": "First Half",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:19267~e:401929763~c:401929763"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1903662",
+          "upstream_family": "LiveScore",
+          "name": "Mexico vs Jamaica",
+          "home": "Mexico",
+          "away": "Jamaica",
+          "home_team_id": "9025",
+          "away_team_id": "9154",
+          "competition": "League A: Quarter Finals",
+          "competition_id": "26584",
+          "kickoff": "2026-11-18T02:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "Quarter Finals",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT"
     }
   ]
 }
