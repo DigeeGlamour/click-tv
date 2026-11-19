@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-19T22:25:16.755858+00:00",
+  "updated_at": "2026-11-19T22:45:09.180154+00:00",
   "count": 7,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -118,7 +118,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-19T20:45:11.634895+00:00"
     },
@@ -376,7 +376,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-19T19:45:03.961003+00:00"
     },
@@ -634,7 +634,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 10,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-19T19:25:06.785447+00:00",
       "authority_near_misses": [
@@ -647,7 +647,7 @@
           "competition": "Abu Dhabi T10",
           "kickoff": "2026-11-19T16:00:00+00:00",
           "kickoff_delta_minutes": -185.3,
-          "status": "FINISHED"
+          "status": "LIVE"
         },
         {
           "authority": "livescore",
@@ -776,7 +776,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=68' (STATUS_SECOND_HALF, event 401916976)"
+        "ESPN espn-header=47' (STATUS_SECOND_HALF, event 401916976)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -792,7 +792,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-19T22:45:03.135241+00:00"
     },
     {
       "id": "arsenal-wfc-vs-ol-lyonnes",
@@ -1027,7 +1035,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/7gjm9g1599747848.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/oh4pw11747937818.png",
       "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
@@ -1037,7 +1045,14 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-19T22:45:03.135241+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-19T22:45:03.135241+00:00"
     },
     {
       "id": "vasco-da-gama-vs-internacional",
@@ -1070,35 +1085,6 @@
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_dba2eb5537be6cf056ceb35ef20457a6",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
           "requires_headers": false,
           "inherit_manifest_query": false,
           "verification_mode": "global",
@@ -1115,6 +1101,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_a728d53c7382c88791a799075ed845f0",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_dba2eb5537be6cf056ceb35ef20457a6",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1267,9 +1282,9 @@
       "end_time_source": "sport",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:vasco-da-gama-vs-internacional|campeonato brasileiro s rie a|2026-11-19",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-19T22:30:00+00:00",
@@ -1279,22 +1294,17 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841308)",
-        "LiveScore livescore=NS (1, event 1708752)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841308)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "401841308",
-        "livescore": "1708752"
+        "espn-header": "401841308"
       },
-      "start_window_claimed": "LIVE_NOW",
-      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 4 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ynqlxo1630521109.png",
@@ -1405,9 +1415,9 @@
       "end_time_source": "sport",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:vitória-vs-red-bull-bragantino|campeonato brasileiro s rie a|2026-11-19",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-19T22:30:00+00:00",
@@ -1428,8 +1438,6 @@
       "authority_event_ids": {
         "espn-header": "401841317"
       },
-      "start_window_claimed": "LIVE_NOW",
-      "authority_start_conflict": "a source called this LIVE_NOW while ESPN and our own schedule both put kickoff 4 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_0cc0ddf7f1ffe74f3fad86528526f87c",
