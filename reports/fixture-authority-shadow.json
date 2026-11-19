@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T14:45:43.039567+00:00",
+  "generated_at": "2026-11-19T15:05:09.867346+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,16 +10,17 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 389,
+      "fixtures": 388,
       "unknown_statuses": [
-        "10|HT",
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "2|45'",
-        "3|53'",
-        "3|86'",
-        "3|87'",
-        "9|106'"
+        "2|3'",
+        "2|4'",
+        "2|5'",
+        "3|47'",
+        "3|57'",
+        "3|72'",
+        "4|Pen"
       ],
       "attempts": [
         {
@@ -56,7 +57,7 @@
           "sport": "football",
           "date": "2026-11-20",
           "result": "ok",
-          "fixtures": 213
+          "fixtures": 212
         }
       ]
     },
@@ -112,33 +113,32 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 17,
-    "upcoming": 38,
-    "fixtures": 55,
+    "upcoming": 37,
+    "fixtures": 54,
     "verdicts": {
       "UNVERIFIED": 43,
-      "CONFLICT": 1,
-      "VERIFIED": 11
+      "PARTIAL_AUTHORITY": 1,
+      "VERIFIED": 10
     },
-    "verified": 11,
-    "partial_authority": 0,
+    "verified": 10,
+    "partial_authority": 1,
     "unverified": 43,
-    "conflict": 1,
+    "conflict": 0,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 39,
-        "matched": 16
+        "matched": 15
       },
       "livescore": {
         "unmatched": 44,
-        "matched": 11
+        "matched": 10
       }
     },
-    "matched_by_two_independent_authorities": 8,
-    "authority_agreements": 7,
+    "matched_by_two_independent_authorities": 7,
+    "authority_agreements": 6,
     "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1,
       "kickoff": 7,
       "sport": 3
     },
@@ -146,18 +146,19 @@
     "independent_authority_count_distribution": {
       "0": 43,
       "1": 4,
-      "2": 8
+      "2": 7
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "2|45'",
-        "3|53'",
-        "3|86'",
-        "3|87'",
-        "9|106'"
+        "2|3'",
+        "2|4'",
+        "2|5'",
+        "3|47'",
+        "3|57'",
+        "3|72'",
+        "4|Pen"
       ],
       "espn-header": []
     }
@@ -417,17 +418,17 @@
           "competition_id": "5697",
           "kickoff": "2026-11-19T14:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "5'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, November 19th at 9:00 AM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "5'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:5697~e:401873514~c:401873514"
@@ -447,8 +448,8 @@
           "competition_id": "26299",
           "kickoff": "2026-11-19T14:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "45'",
-          "status_code": "2",
+          "status_raw": "47'",
+          "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
           "round": "1",
@@ -463,12 +464,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -476,7 +475,7 @@
       "card_id": "yas-lions-vs-royal-desert-champions",
       "name": "Yas Lions vs Royal Desert Champions",
       "competition": "Abu Dhabi T10 League 2026 - 29th Match",
-      "kickoff": "2026-11-19T14:45:43+00:00",
+      "kickoff": "2026-11-19T15:05:09+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -484,12 +483,14 @@
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-primevideo-sports"
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
       "upstream_families": [
-        "PrimeVideo"
+        "PrimeVideo",
+        "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -505,7 +506,7 @@
           "competition": "Abu Dhabi T10",
           "competition_id": "18522",
           "kickoff": "2026-11-19T13:45:00+00:00",
-          "kickoff_delta_minutes": -60.7,
+          "kickoff_delta_minutes": -80.2,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -535,9 +536,9 @@
           "competition": "Abu Dhabi T10 League",
           "competition_id": "26618",
           "kickoff": "2026-11-19T13:45:00+00:00",
-          "kickoff_delta_minutes": -60.7,
-          "status_raw": "Between innings",
-          "status_code": "157",
+          "kickoff_delta_minutes": -80.2,
+          "status_raw": "Play in progress",
+          "status_code": "33",
           "status": "LIVE",
           "sport": "cricket",
           "round": "Match 29",
@@ -553,9 +554,9 @@
       ],
       "near_miss_count": 2,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-19T14:45, espn-header 2026-11-19T13:45 (-60.7 min)",
+        "kickoff: ours 2026-11-19T15:05, espn-header 2026-11-19T13:45 (-80.2 min)",
         "sport: ours football, espn-header cricket",
-        "kickoff: ours 2026-11-19T14:45, livescore 2026-11-19T13:45 (-60.7 min)",
+        "kickoff: ours 2026-11-19T15:05, livescore 2026-11-19T13:45 (-80.2 min)",
         "sport: ours football, livescore cricket"
       ],
       "authority_agreement": "NONE",
@@ -653,10 +654,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -934,17 +935,17 @@
           "competition_id": "18522",
           "kickoff": "2026-11-19T11:30:00+00:00",
           "kickoff_delta_minutes": -175.4,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
           "sport": "cricket",
           "round": "28th Match",
           "format": "ODI",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-21T23:59:00Z",
           "authority_uid": "s:200~e:1561277~c:1561277"
@@ -1208,10 +1209,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1337,10 +1338,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1397,93 +1398,6 @@
           "status": "UPCOMING",
           "sport": "football",
           "round": "9",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:argentina-u17-vs-australia-u17|u17 world championship|2026-11-19",
-      "card_id": "argentina-u17-vs-australia-u17",
-      "name": "Argentina U17 Vs Australia U17",
-      "competition": "U17 World Championship",
-      "kickoff": "2026-11-19T16:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401873511",
-          "upstream_family": "ESPN",
-          "name": "Argentina U17 vs Australia U17",
-          "home": "Argentina U17",
-          "away": "Australia U17",
-          "home_team_id": "8412",
-          "away_team_id": "17972",
-          "competition": "FIFA Under-17 World Cup",
-          "competition_id": "5697",
-          "kickoff": "2026-11-19T16:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, November 19th at 11:00 AM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:5697~e:401873511~c:401873511"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1885742",
-          "upstream_family": "LiveScore",
-          "name": "Argentina U17 vs Australia U17",
-          "home": "Argentina U17",
-          "away": "Australia U17",
-          "home_team_id": "9865",
-          "away_team_id": "9882",
-          "competition": "Group C",
-          "competition_id": "26301",
-          "kickoff": "2026-11-19T16:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
           "format": "",
           "gender": ""
         }
@@ -1790,8 +1704,8 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2054,8 +1968,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2093,10 +2007,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2262,10 +2176,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2342,8 +2256,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2616,10 +2530,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2856,10 +2770,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2897,11 +2811,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sportlive-fancode-backup",
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
