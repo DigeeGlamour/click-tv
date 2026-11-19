@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-19T02:04:47.926624+00:00",
-  "today_match_count": 5,
+  "generated_at": "2026-11-19T02:24:56.376016+00:00",
+  "today_match_count": 3,
   "upcoming_count": 38,
   "today_missing_logo": [],
   "upcoming_missing_logo": [],
@@ -8,7 +8,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 184,
+  "provider_fixture": 189,
   "provider_rejected": 104,
   "provider_rejected_reasons": {
     "provider_dead_status": 70,
@@ -596,7 +596,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 184,
+    "total": 189,
     "discarded": 69,
     "examples": [
       {
@@ -1105,7 +1105,7 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 1,
+    "applied": 0,
     "pending_confirmation": 0,
     "live": 1,
     "recorded": 0,
@@ -1116,48 +1116,17 @@
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "FINISHED": 1,
       "LIVE": 1
     },
     "by_confidence": {
-      "HIGH": 1,
       "CONFLICT": 2,
       "LOW": 1
     },
-    "applied_fixtures": [
-      {
-        "name": "Coritiba Vs Santos",
-        "fixture_id": "provider:coritiba-vs-santos|campeonato brasileiro s rie a|2026-11-18",
-        "status": "FINISHED",
-        "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ],
-        "evidence": [
-          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401841315)",
-          "LiveScore livescore=FT (6, event 1708777)"
-        ],
-        "authority_finished_seen_at": "2026-11-19T01:25:01.622118+00:00",
-        "remove_after": "2026-11-19T01:45:01.622118+00:00",
-        "was_playable": true,
-        "lifecycle_state_before": "END_PENDING"
-      }
-    ],
+    "applied_fixtures": [],
     "conflicts": [
       {
-        "name": "Coritiba Vs Santos",
-        "reason": "authority says FINISHED while the card still carries a route",
-        "status": "FINISHED",
-        "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
         "name": "Cruzeiro Vs Palmeiras",
-        "reason": "independent authorities disagree: ESPN espn-header=70' (STATUS_SECOND_HALF, event 401841314); LiveScore livescore=FT (6, event 1708768)",
+        "reason": "independent authorities disagree: ESPN espn-header=74' (STATUS_SECOND_HALF, event 401841314); LiveScore livescore=FT (6, event 1708768)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1167,7 +1136,7 @@
       },
       {
         "name": "Flamengo Vs Athletico",
-        "reason": "independent authorities disagree: ESPN espn-header=70' (STATUS_SECOND_HALF, event 401841313); LiveScore livescore=FT (6, event 1708748)",
+        "reason": "independent authorities disagree: ESPN espn-header=73' (STATUS_SECOND_HALF, event 401841313); LiveScore livescore=FT (6, event 1708748)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1178,22 +1147,29 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 2,
-    "finished": 3,
+    "asked": 0,
+    "finished": 2,
     "unplayable": 0,
-    "cache_hits": 1,
+    "cache_hits": 2,
     "no_verdict": 0
   },
   "live_protection": {
-    "carried_forward": 2,
-    "released_ended": 1,
+    "carried_forward": 0,
+    "released_ended": 2,
     "released_ended_ids": [
-      "coritiba-vs-santos"
+      "cruzeiro-vs-palmeiras",
+      "flamengo-vs-athletico"
     ],
     "retired_terminal": [
       {
-        "id": "coritiba-vs-santos",
-        "name": "Coritiba Vs Santos",
+        "id": "cruzeiro-vs-palmeiras",
+        "name": "Cruzeiro Vs Palmeiras",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "flamengo-vs-athletico",
+        "name": "Flamengo Vs Athletico",
         "provenance": "authority_finished",
         "reason": "authoritative finished status"
       }
@@ -1206,27 +1182,26 @@
     "probe_alive": 2,
     "probe_dead": 0,
     "probe_inconclusive": 0,
-    "end_pending": 2,
+    "end_pending": 0,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "ENDED": 1,
-      "END_PENDING": 2
+      "ENDED": 2
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 1,
-    "total": 1730,
+    "added": 2,
+    "total": 1732,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 1
+    "decided_this_scan": 2
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1267,12 +1242,12 @@
     "cache_hits": 16,
     "cached_entries": 1698,
     "provider": {
-      "requests": 10,
-      "hits": 8,
+      "requests": 12,
+      "hits": 10,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 13,
+      "skipped_rate_limited": 11,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1312,20 +1287,20 @@
           "published": 8
         },
         "srhady-primevideo-sports": {
-          "total": 4,
-          "cricket": 1,
+          "total": 3,
+          "cricket": 0,
           "football": 1,
           "quarantined": 1,
           "rejected": 1,
-          "published": 2
+          "published": 1
         },
         "srhady-willow-event": {
-          "total": 21,
-          "cricket": 21,
+          "total": 20,
+          "cricket": 20,
           "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 21
+          "published": 20
         },
         "sm-fancode": {
           "total": 18,
@@ -1446,24 +1421,16 @@
       "leaks": []
     },
     "today_match": {
-      "total": 5,
-      "published": 5,
+      "total": 3,
+      "published": 3,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 4,
+        "confirmed_football": 2,
         "confirmed_cricket": 1
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 4,
-          "cricket": 1,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 4
-        },
-        "srhady-primevideo-sports": {
           "total": 2,
           "cricket": 1,
           "football": 1,
@@ -1471,10 +1438,10 @@
           "rejected": 0,
           "published": 2
         },
-        "srhady-willow-event": {
+        "srhady-primevideo-sports": {
           "total": 1,
-          "cricket": 1,
-          "football": 0,
+          "cricket": 0,
+          "football": 1,
           "quarantined": 0,
           "rejected": 0,
           "published": 1
@@ -1564,15 +1531,15 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 288,
+    "raw_events": 293,
     "cricket_kept": 33,
     "football_kept": 8,
     "other_discarded": 77,
     "unresolved": 1,
-    "today_final": 5,
+    "today_final": 3,
     "upcoming_final": 38,
     "published_states": {
-      "confirmed_football": 10,
+      "confirmed_football": 8,
       "confirmed_cricket": 33
     },
     "other_sport_leak": 0,
@@ -1599,50 +1566,50 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 2,
+      "provider_or_authority": 0,
       "estimate": 0,
       "none": 3
     }
   },
   "fixture_stream_health": {
-    "fixtures": 54,
-    "published_fixtures": 43,
-    "fixtures_with_verified_stream": 13,
+    "fixtures": 52,
+    "published_fixtures": 41,
+    "fixtures_with_verified_stream": 11,
     "fixtures_with_zero_verified": 41,
     "published_without_stream": 38,
-    "fallback_available": 4,
-    "targeted_fixtures": 4,
-    "targeted_attempts": 4,
-    "fixtures_with_a_first_link_time": 4,
-    "candidate_routes": 76,
-    "verified_routes": 47,
-    "failed_routes": 29,
+    "fallback_available": 2,
+    "targeted_fixtures": 2,
+    "targeted_attempts": 2,
+    "fixtures_with_a_first_link_time": 2,
+    "candidate_routes": 77,
+    "verified_routes": 43,
+    "failed_routes": 34,
     "fixtures_touched_by_a_route_failure": 11,
     "fixtures_left_with_nothing": 5,
     "distinct_failure_codes": 5,
-    "unrecognised_candidate_groups": 43,
+    "unrecognised_candidate_groups": 45,
     "unrecognised_failed_routes": 68
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 43,
+    "fixtures": 41,
     "verified": 8,
     "partial_authority": 2,
     "unverified": 31,
-    "conflict": 2,
-    "matched_by_two_independent_authorities": 7,
+    "conflict": 0,
+    "matched_by_two_independent_authorities": 5,
     "authority_agreements": 4,
-    "authority_disagreements": 2,
+    "authority_disagreements": 0,
     "card_status_conflicts": 0,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 1
+    "not_published": 2
   },
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 43,
+    "published_fixtures": 41,
     "fixtures_with_stream": 3,
-    "fixtures_playable_via_catalogue": 2,
+    "fixtures_playable_via_catalogue": 0,
     "fixtures_with_fresh_stream": 3,
     "fixtures_with_carried_stream": 0,
     "today_with_stream": 3,
