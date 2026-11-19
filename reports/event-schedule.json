@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T22:05:35.234967+00:00",
+  "generated_at": "2026-11-19T22:25:19.073061+00:00",
   "today_match_count": 8,
   "upcoming_count": 39,
   "today_missing_logo": [],
@@ -8,18 +8,18 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 177,
-  "provider_rejected": 93,
+  "provider_fixture": 176,
+  "provider_rejected": 94,
   "provider_rejected_reasons": {
-    "provider_dead_status": 58,
+    "provider_dead_status": 59,
     "status_neither_live_nor_upcoming": 1,
     "kickoff_missing_and_not_live": 6,
     "upcoming_kickoff_already_passed": 28
   },
   "provider_rejected_by_source": {
     "sm-sports-data": {
-      "provider_dead_status": 58,
-      "total": 58
+      "provider_dead_status": 59,
+      "total": 59
     },
     "srhady-crichd-footy-live": {
       "upcoming_kickoff_already_passed": 5,
@@ -97,6 +97,15 @@
       "status": "UPCOMING",
       "reason": "upcoming_kickoff_already_passed",
       "start_time": "2026-09-23T19:00:00+00:00"
+    },
+    {
+      "name": "Club Atlético Peñarol Vs Cerro Largo",
+      "competition": "Liga AUF Uruguaya",
+      "sport": "football",
+      "source_id": "sm-sports-data",
+      "status": "ENDED",
+      "reason": "provider_dead_status",
+      "start_time": "2026-11-19T19:30:00+00:00"
     },
     {
       "name": "Egypt U17 Vs Greece U17",
@@ -505,7 +514,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 177,
+    "total": 176,
     "discarded": 63,
     "examples": [
       {
@@ -995,11 +1004,33 @@
     "applied": 0,
     "pending_confirmation": 0,
     "live": 1,
-    "recorded": 12,
+    "recorded": 10,
     "conflict": 0,
     "unmatched": 31,
-    "start_window": 0,
-    "start_window_fixtures": [],
+    "start_window": 2,
+    "start_window_fixtures": [
+      {
+        "id": "vasco-da-gama-vs-internacional",
+        "name": "Vasco da Gama Vs Internacional",
+        "claimed": "LIVE_NOW",
+        "now_says": "STARTING_SOON",
+        "conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 4 minute(s) away",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "id": "vitória-vs-red-bull-bragantino",
+        "name": "Vitória Vs Red Bull Bragantino",
+        "claimed": "LIVE_NOW",
+        "now_says": "STARTING_SOON",
+        "conflict": "a source called this LIVE_NOW while ESPN and our own schedule both put kickoff 4 minute(s) away",
+        "upstream_families": [
+          "ESPN"
+        ]
+      }
+    ],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
@@ -1014,10 +1045,10 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 1,
+    "applied": 0,
     "pending_confirmation": 0,
     "live": 1,
-    "recorded": 0,
+    "recorded": 2,
     "conflict": 0,
     "unmatched": 4,
     "start_window": 0,
@@ -1025,63 +1056,28 @@
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "FINISHED": 1,
-      "LIVE": 1
+      "LIVE": 1,
+      "UPCOMING": 2
     },
     "by_confidence": {
-      "LOW": 2
+      "LOW": 2,
+      "HIGH": 1
     },
-    "applied_fixtures": [
-      {
-        "name": "Paris FC Vs HB Køge",
-        "fixture_id": "provider:paris-fc-vs-hb-køge|uefa women champions league|2026-11-19",
-        "status": "FINISHED",
-        "confidence": "LOW",
-        "upstream_families": [
-          "ESPN"
-        ],
-        "evidence": [
-          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401916977)"
-        ],
-        "authority_finished_seen_at": "2026-11-19T21:45:08.447980+00:00",
-        "remove_after": "2026-11-19T22:05:08.447980+00:00",
-        "was_playable": true,
-        "lifecycle_state_before": "END_PENDING"
-      }
-    ],
-    "conflicts": [
-      {
-        "name": "Paris FC Vs HB Køge",
-        "reason": "authority says FINISHED while the card still carries a route",
-        "status": "FINISHED",
-        "confidence": "LOW",
-        "upstream_families": [
-          "ESPN"
-        ]
-      }
-    ]
+    "applied_fixtures": [],
+    "conflicts": []
   },
   "fixture_status_api": {
-    "asked": 3,
+    "asked": 2,
     "finished": 0,
     "unplayable": 0,
     "cache_hits": 0,
-    "no_verdict": 3
+    "no_verdict": 2
   },
   "live_protection": {
     "carried_forward": 3,
-    "released_ended": 1,
-    "released_ended_ids": [
-      "paris-fc-vs-hb-køge"
-    ],
-    "retired_terminal": [
-      {
-        "id": "paris-fc-vs-hb-køge",
-        "name": "Paris FC Vs HB Køge",
-        "provenance": "feed_strong_end",
-        "reason": "authoritative finished status"
-      }
-    ],
+    "released_ended": 0,
+    "released_ended_ids": [],
+    "retired_terminal": [],
     "released_listing_expired": 0,
     "released_dead_link": 0,
     "released_stale": 0,
@@ -1094,15 +1090,14 @@
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 3,
-      "ENDED": 1
+      "LIVE": 3
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 1,
+    "added": 0,
     "total": 1747,
     "refused": 0,
     "refused_names": [],
@@ -1110,7 +1105,7 @@
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 1
+    "decided_this_scan": 0
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1148,15 +1143,15 @@
     "poster_filled": 0,
     "badge_filled": 28,
     "badge_used_as_logo": 0,
-    "cache_hits": 15,
+    "cache_hits": 16,
     "cached_entries": 1705,
     "provider": {
-      "requests": 21,
-      "hits": 19,
+      "requests": 10,
+      "hits": 8,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 13,
+      "skipped_rate_limited": 23,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1483,7 +1478,7 @@
     "card_status_conflicts": 0,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 1
+    "not_published": 0
   },
   "stream_health": {
     "sources_in_outage": [],
