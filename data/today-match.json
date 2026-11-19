@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-19T06:45:06.421300+00:00",
+  "updated_at": "2026-11-19T07:04:52.638467+00:00",
   "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -195,20 +195,20 @@
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
         },
         {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        },
-        {
           "source_id": "srhady-willow-event",
           "source_name": "Willow Event Sports",
           "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
+        },
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
         }
       ],
       "source_ids": [
         "sm-sports-data",
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
+        "srhady-willow-event",
+        "srhady-primevideo-sports"
       ],
       "drm": {
         "type": "clearkey",
@@ -370,7 +370,14 @@
           "hdnea"
         ],
         "drm": false
-      }
+      },
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-19T07:04:49.285633+00:00"
     },
     {
       "id": "1st-test-day-1-19-nov-2026",
@@ -649,7 +656,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_b0b66f5919a0e8d1df38033c8b1cd2e1",
       "protected_source": true,
       "requires_credentials": true,
@@ -659,12 +666,18 @@
           "hdnea"
         ],
         "drm": false
-      }
+      },
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-19T07:04:49.285633+00:00"
     },
     {
       "id": "hobart-hurricanes-women-vs-perth-scorchers-women",
       "name": "Hobart Hurricanes Women vs Perth Scorchers Women",
-      "primary_stream_key": "24a5cb8cb00daa4db16d2bd9784a0fec2a4c57d3e750e4f8a561c05bc33d80b3",
+      "primary_stream_key": "e71d4e06595dbbe40fafa46288bae0e5d16f9aa03ffe0aad3919d7080502c16f",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.54e76bb1-d553-4d0c-8464-65fc8947c2a1/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
@@ -689,35 +702,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_cfca3709f45bfb290eb742afb8a6996b",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -737,6 +721,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_0179fc472bca036b8386e5e4b8900b5a",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_87231e4e362e985235fb742f10db874d",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -830,19 +843,6 @@
               "id": "hobart-hurricanes-women-vs-perth-scorchers-women--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_e85042f29f3b96c47d00333f",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_87231e4e362e985235fb742f10db874d",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "hobart-hurricanes-women-vs-perth-scorchers-women--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_2a7b0f91a2202d6bb1361c34",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -853,7 +853,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "hobart-hurricanes-women-vs-perth-scorchers-women--prime-video--3",
+              "id": "hobart-hurricanes-women-vs-perth-scorchers-women--prime-video--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_29a4e6cf7cc68e07a56bdb20",
@@ -861,6 +861,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_0179fc472bca036b8386e5e4b8900b5a",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "hobart-hurricanes-women-vs-perth-scorchers-women--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_e85042f29f3b96c47d00333f",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_87231e4e362e985235fb742f10db874d",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -933,16 +946,10 @@
           "source_id": "srhady-primevideo-sports",
           "source_name": "Prime Video Free Sports",
           "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        },
-        {
-          "source_id": "srhady-willow-event",
-          "source_name": "Willow Event Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
         }
       ],
       "source_ids": [
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
+        "srhady-primevideo-sports"
       ],
       "drm": {
         "type": "clearkey",
@@ -950,9 +957,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-19T06:44:51+00:00",
-      "start_at": "2026-11-19T06:44:51+00:00",
-      "end_time": "2026-11-19T10:44:51+00:00",
+      "start_time": "2026-11-19T07:04:44+00:00",
+      "start_at": "2026-11-19T07:04:44+00:00",
+      "end_time": "2026-11-19T11:04:44+00:00",
       "end_time_source": "sport",
       "competition": "Womens Big Bash League 2026 - 26th Match",
       "fixture_id": "provider:hobart-hurricanes-vs-perth-scorchers-women|women big bash league 2026 26th|2026-11-19",
@@ -974,7 +981,7 @@
           "name": "Hobart Hurricanes Women vs Perth Scorchers Women",
           "competition": "Women's Big Bash League",
           "kickoff": "2026-11-19T04:40:00+00:00",
-          "kickoff_delta_minutes": -124.8,
+          "kickoff_delta_minutes": -144.7,
           "status": "LIVE"
         },
         {
@@ -985,7 +992,7 @@
           "name": "Hobart Hurricanes W vs Perth Scorchers W",
           "competition": "Women's Big Bash League",
           "kickoff": "2026-11-19T04:40:00+00:00",
-          "kickoff_delta_minutes": -124.8,
+          "kickoff_delta_minutes": -144.7,
           "status": "LIVE"
         }
       ],
@@ -993,7 +1000,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vdcla41492606553.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ithlp51546681732.png",
-      "playback_id": "ctv_87231e4e362e985235fb742f10db874d",
+      "playback_id": "ctv_cfca3709f45bfb290eb742afb8a6996b",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1249,7 +1256,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 13,
+      "carried_forward_misses": 14,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-19T02:44:55.798513+00:00"
     }
