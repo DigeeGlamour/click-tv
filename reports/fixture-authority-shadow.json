@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T01:25:01.622118+00:00",
+  "generated_at": "2026-11-19T01:44:38.338401+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,13 +10,13 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 392,
+      "fixtures": 390,
       "unknown_statuses": [
-        "10|HT",
         "133|Stumps - day 2",
         "135|Stumps - day 4",
-        "3|90+3'",
-        "3|90+4'"
+        "220|Drinks",
+        "3|54'",
+        "3|55'"
       ],
       "attempts": [
         {
@@ -47,7 +47,7 @@
           "sport": "football",
           "date": "2026-11-19",
           "result": "ok",
-          "fixtures": 59
+          "fixtures": 57
         },
         {
           "sport": "football",
@@ -112,15 +112,15 @@
     "upcoming": 38,
     "fixtures": 44,
     "verdicts": {
-      "PARTIAL_AUTHORITY": 4,
+      "CONFLICT": 4,
+      "PARTIAL_AUTHORITY": 1,
       "UNVERIFIED": 31,
-      "CONFLICT": 1,
       "VERIFIED": 8
     },
     "verified": 8,
-    "partial_authority": 4,
+    "partial_authority": 1,
     "unverified": 31,
-    "conflict": 1,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
         "matched": 11,
@@ -131,26 +131,27 @@
         "unmatched": 33
       }
     },
-    "matched_by_two_independent_authorities": 6,
-    "authority_agreements": 5,
-    "authority_disagreements": 0,
+    "matched_by_two_independent_authorities": 8,
+    "authority_agreements": 4,
+    "authority_disagreements": 3,
     "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "card says LIVE, authority says FINISHED": 1
+      "authorities disagree": 3,
+      "card says LIVE, authority says UPCOMING": 1
     },
     "identity_near_misses": 3,
     "independent_authority_count_distribution": {
       "0": 31,
-      "1": 7,
-      "2": 6
+      "1": 5,
+      "2": 8
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "133|Stumps - day 2",
         "135|Stumps - day 4",
-        "3|90+3'",
-        "3|90+4'"
+        "220|Drinks",
+        "3|54'",
+        "3|55'"
       ],
       "espn-header": []
     }
@@ -217,8 +218,8 @@
           "competition_id": "630",
           "kickoff": "2026-11-18T23:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "54'",
-          "status_code": "STATUS_SECOND_HALF",
+          "status_raw": "33'",
+          "status_code": "STATUS_FIRST_HALF",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -226,16 +227,16 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "54'",
-          "espn_status_description": "Second Half",
+          "espn_status_detail": "33'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841314~c:401841314"
         },
         "livescore": {
           "result": "matched",
-          "matched_by": "ambiguous",
-          "verified": false,
+          "matched_by": "same_fixture",
+          "verified": true,
           "event_id": "1708768",
           "upstream_family": "LiveScore",
           "name": "Cruzeiro vs Palmeiras",
@@ -247,9 +248,9 @@
           "competition_id": "155",
           "kickoff": "2026-11-18T23:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "90+4'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "35",
           "format": "",
@@ -257,17 +258,18 @@
         }
       },
       "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 1,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -305,8 +307,8 @@
           "competition_id": "630",
           "kickoff": "2026-11-18T23:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "53'",
-          "status_code": "STATUS_SECOND_HALF",
+          "status_raw": "34'",
+          "status_code": "STATUS_FIRST_HALF",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -314,16 +316,16 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "53'",
-          "espn_status_description": "Second Half",
+          "espn_status_detail": "34'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841313~c:401841313"
         },
         "livescore": {
           "result": "matched",
-          "matched_by": "ambiguous",
-          "verified": false,
+          "matched_by": "same_fixture",
+          "verified": true,
           "event_id": "1708748",
           "upstream_family": "LiveScore",
           "name": "Flamengo vs Athletico Paranaense",
@@ -335,27 +337,28 @@
           "competition_id": "155",
           "kickoff": "2026-11-18T23:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "90+3'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
-          "round": "35",
+          "round": "Regular Season",
           "format": "",
           "gender": ""
         }
       },
       "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 1,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -393,17 +396,17 @@
           "competition_id": "630",
           "kickoff": "2026-11-19T00:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "15'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "15'",
-          "espn_status_description": "First Half",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, November 18th at 7:30 PM EST",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841312~c:401841312"
@@ -423,8 +426,8 @@
           "competition_id": "155",
           "kickoff": "2026-11-19T00:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "HT",
-          "status_code": "10",
+          "status_raw": "54'",
+          "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
           "round": "35",
@@ -439,10 +442,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -459,8 +464,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
+        "srhady-willow-event",
+        "srhady-primevideo-sports"
       ],
       "upstream_families": [
         "PrimeVideo",
@@ -484,8 +489,8 @@
           "competition_id": "24469",
           "kickoff": "2026-11-18T22:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Lunch",
-          "status_code": "Lunch",
+          "status_raw": "Live",
+          "status_code": "Live",
           "status": "LIVE",
           "sport": "cricket",
           "round": "1st Test",
@@ -494,7 +499,7 @@
           "espn_state": "in",
           "espn_status": "in",
           "espn_status_detail": "Live",
-          "espn_status_description": "Lunch",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-23T23:59:00Z",
           "authority_uid": "s:200~e:1539442~c:1539442"
@@ -514,9 +519,9 @@
           "competition_id": "25493",
           "kickoff": "2026-11-18T22:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Drinks",
+          "status_code": "220",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "1st Test",
           "format": "Test",
@@ -542,7 +547,7 @@
       "card_id": "texas-a-m-international-at-colorado-christian",
       "name": "Texas A M International at Colorado Christian",
       "competition": "",
-      "kickoff": "2026-11-19T01:25:01+00:00",
+      "kickoff": "2026-11-19T01:44:38+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -609,18 +614,18 @@
           "competition_id": "630",
           "kickoff": "2026-11-18T22:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
+          "status_raw": "66'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "66'",
+          "espn_status_description": "Second Half",
+          "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841315~c:401841315"
         },
@@ -656,10 +661,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
       ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -678,8 +683,8 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -779,8 +784,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -870,8 +875,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -986,8 +991,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -1188,8 +1193,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -1279,8 +1284,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -1320,8 +1325,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -1620,8 +1625,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -1662,8 +1667,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -1754,8 +1759,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -1833,8 +1838,8 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -1987,8 +1992,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -2104,8 +2109,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -2265,8 +2270,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -2343,8 +2348,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
@@ -2421,8 +2426,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
