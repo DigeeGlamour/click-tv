@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-20T00:07:55.290819+00:00",
+  "updated_at": "2026-11-20T01:05:27.323681+00:00",
   "count": 6,
-  "filtered_stale": 1,
+  "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -259,7 +259,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 15,
+      "carried_forward_misses": 18,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-19T19:45:03.961003+00:00"
     },
@@ -487,7 +487,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-19T22:30:00+00:00",
       "start_at": "2026-11-19T22:30:00+00:00",
-      "end_time": "2026-11-20T01:05:11+00:00",
+      "end_time": "2026-11-20T02:05:15+00:00",
       "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:vasco-da-gama-vs-internacional|campeonato brasileiro s rie a|2026-11-19",
@@ -502,32 +502,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_near_misses": [
-        {
-          "authority": "livescore",
-          "matched_by": "ambiguous",
-          "event_id": "1708752",
-          "upstream_family": "LiveScore",
-          "name": "Vasco da Gama vs Internacional",
-          "competition": "Serie A",
-          "kickoff": "2026-11-19T22:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status": "UNKNOWN"
-        }
-      ],
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401841308)"
+        "ESPN espn-header=53' (STATUS_SECOND_HALF, event 401841308)",
+        "LiveScore livescore=FT (6, event 1708752)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401841308"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=53' (STATUS_SECOND_HALF, event 401841308); LiveScore livescore=FT (6, event 1708752)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ynqlxo1630521109.png",
@@ -634,7 +619,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-19T22:30:00+00:00",
       "start_at": "2026-11-19T22:30:00+00:00",
-      "end_time": "2026-11-20T01:05:11+00:00",
+      "end_time": "2026-11-20T02:05:15+00:00",
       "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:vitória-vs-red-bull-bragantino|campeonato brasileiro s rie a|2026-11-19",
@@ -655,7 +640,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401841317)"
+        "ESPN espn-header=47' (STATUS_SECOND_HALF, event 401841317)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -665,127 +650,6 @@
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_0cc0ddf7f1ffe74f3fad86528526f87c",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
-    },
-    {
-      "id": "são-paulo-vs-fluminense",
-      "name": "São Paulo Vs Fluminense",
-      "primary_stream_key": "e238f787b0c9b1b34e3aed1d4a2e9111fdbed5772425ddf3938e9f18843d5c18",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/1981/image",
-      "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "s-o-paulo-vs-fluminense--premiere2",
-          "name": "PREMIERE2",
-          "normalized_name": "premiere2",
-          "logo": "https://img.sofascore.com/api/v1/team/1981/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "s-o-paulo-vs-fluminense--premiere2--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "s-o-paulo-vs-fluminense--premiere2--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_24a2a419a4a73368cef75f4b",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_39cbda4c7e79a02e4f41308c09c15d68",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "s-o-paulo-vs-fluminense--premiere2",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-20T00:30:00+00:00",
-      "start_at": "2026-11-20T00:30:00+00:00",
-      "end_time": "2026-11-20T03:00:00+00:00",
-      "end_time_source": "sport",
-      "competition": "Campeonato Brasileiro Série A",
-      "fixture_id": "provider:são-paulo-vs-fluminense|campeonato brasileiro s rie a|2026-11-20",
-      "status": "STARTING_SOON",
-      "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-20T00:30:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/sxpupx1473538135.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/stvvwp1473538082.png",
-      "playback_id": "ctv_39cbda4c7e79a02e4f41308c09c15d68",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -885,9 +749,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-20T00:05:11+00:00",
-      "start_at": "2026-11-20T00:05:11+00:00",
-      "end_time": "2026-11-20T02:35:11+00:00",
+      "start_time": "2026-11-20T00:25:24+00:00",
+      "start_at": "2026-11-20T00:25:24+00:00",
+      "end_time": "2026-11-20T02:55:24+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:mls-countdown|2026-11-20",
       "status": "LIVE_NOW",
@@ -902,6 +766,147 @@
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_5bd0bc5231b460764e33250c231197aa",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-20T00:45:17.479172+00:00"
+    },
+    {
+      "id": "são-paulo-vs-fluminense",
+      "name": "São Paulo Vs Fluminense",
+      "primary_stream_key": "e238f787b0c9b1b34e3aed1d4a2e9111fdbed5772425ddf3938e9f18843d5c18",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/1981/image",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "s-o-paulo-vs-fluminense--premiere2",
+          "name": "PREMIERE2",
+          "normalized_name": "premiere2",
+          "logo": "https://img.sofascore.com/api/v1/team/1981/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "s-o-paulo-vs-fluminense--premiere2--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "s-o-paulo-vs-fluminense--premiere2--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_24a2a419a4a73368cef75f4b",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_39cbda4c7e79a02e4f41308c09c15d68",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "s-o-paulo-vs-fluminense--premiere2",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-20T00:30:00+00:00",
+      "start_at": "2026-11-20T00:30:00+00:00",
+      "end_time": "2026-11-20T03:00:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Campeonato Brasileiro Série A",
+      "fixture_id": "provider:são-paulo-vs-fluminense|campeonato brasileiro s rie a|2026-11-20",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-20T00:30:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841309)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401841309"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/sxpupx1473538135.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/stvvwp1473538082.png",
+      "playback_id": "ctv_39cbda4c7e79a02e4f41308c09c15d68",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1001,9 +1006,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-20T00:05:11+00:00",
-      "start_at": "2026-11-20T00:05:11+00:00",
-      "end_time": "2026-11-20T02:35:11+00:00",
+      "start_time": "2026-11-20T01:05:15+00:00",
+      "start_at": "2026-11-20T01:05:15+00:00",
+      "end_time": "2026-11-20T03:35:15+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:mls-la-previa|2026-11-20",
       "status": "LIVE_NOW",
