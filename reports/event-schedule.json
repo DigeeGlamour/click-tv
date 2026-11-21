@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T07:24:45.988408+00:00",
+  "generated_at": "2026-11-21T07:45:01.318742+00:00",
   "today_match_count": 7,
   "upcoming_count": 80,
   "today_missing_logo": [],
@@ -8,7 +8,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 185,
+  "provider_fixture": 175,
   "provider_rejected": 124,
   "provider_rejected_reasons": {
     "provider_dead_status": 94,
@@ -30,15 +30,15 @@
       "total": 22,
       "status_neither_live_nor_upcoming": 1
     },
+    "srhady-willow-event": {
+      "kickoff_missing_and_not_live": 1,
+      "total": 1
+    },
     "sm-fancode": {
       "upcoming_kickoff_already_passed": 1,
       "total": 1
     },
     "kajju-sonyliv-backup": {
-      "kickoff_missing_and_not_live": 1,
-      "total": 1
-    },
-    "srhady-willow-event": {
       "kickoff_missing_and_not_live": 1,
       "total": 1
     }
@@ -487,8 +487,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 185,
-    "discarded": 29,
+    "total": 175,
+    "discarded": 25,
     "examples": [
       {
         "name": "Formula 1",
@@ -507,12 +507,12 @@
         "evidence": "golf"
       },
       {
-        "name": "Queensland PGA Championship, Third Round",
-        "source": "srhady-primevideo-sports",
-        "competition": "",
+        "name": "Melbourne United Vs New Zealand Breakers",
+        "source": "sm-sports-data",
+        "competition": "NBL",
         "sport_type": "",
-        "reason": "golf gazetteer",
-        "evidence": "pga"
+        "reason": "basketball gazetteer",
+        "evidence": "basketball"
       },
       {
         "name": "Tasmania Jackjumpers Vs Illawarra Hawks",
@@ -532,19 +532,11 @@
       },
       {
         "name": "Hong Kong Vs Tonga",
-        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, drmliv",
+        "source": "sm-sports-data, sportlive-fancode-backup, sm-fancode, sayanp",
         "competition": "Nations Cup",
         "sport_type": "",
         "reason": "rugby gazetteer",
         "evidence": "rugby"
-      },
-      {
-        "name": "Melbourne United Vs New Zealand Breakers",
-        "source": "sm-sports-data",
-        "competition": "NBL",
-        "sport_type": "",
-        "reason": "basketball gazetteer",
-        "evidence": "basketball"
       },
       {
         "name": "Qualifying vs Las Vegas Strip Circuit (2026)",
@@ -571,14 +563,6 @@
         "evidence": "golf"
       },
       {
-        "name": "Queensland PGA Championship, Third Round",
-        "source": "srhady-primevideo-sports",
-        "competition": "",
-        "sport_type": "",
-        "reason": "golf gazetteer",
-        "evidence": "pga"
-      },
-      {
         "name": "TENNIS | EVENTO",
         "source": "sm-sports-data",
         "competition": "TENNIS | EVENTO",
@@ -603,14 +587,6 @@
         "evidence": "golf"
       },
       {
-        "name": "Queensland PGA Championship, Third Round",
-        "source": "srhady-primevideo-sports",
-        "competition": "",
-        "sport_type": "",
-        "reason": "golf gazetteer",
-        "evidence": "pga"
-      },
-      {
         "name": "TENNIS | EVENTO",
         "source": "sm-sports-data",
         "competition": "TENNIS | EVENTO",
@@ -633,14 +609,6 @@
         "sport_type": "",
         "reason": "golf gazetteer",
         "evidence": "golf"
-      },
-      {
-        "name": "Queensland PGA Championship, Third Round",
-        "source": "srhady-primevideo-sports",
-        "competition": "",
-        "sport_type": "",
-        "reason": "golf gazetteer",
-        "evidence": "pga"
       },
       {
         "name": "TENNIS | EVENTO",
@@ -728,44 +696,64 @@
   "authority_status": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 1,
+    "live": 0,
     "recorded": 48,
-    "conflict": 0,
+    "conflict": 1,
     "unmatched": 37,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 48,
-      "LIVE": 1
+      "UPCOMING": 48
     },
     "by_confidence": {
-      "HIGH": 31,
-      "LOW": 18
+      "LOW": 18,
+      "CONFLICT": 1,
+      "HIGH": 30
     },
     "applied_fixtures": [],
-    "conflicts": []
+    "conflicts": [
+      {
+        "name": "Brisbane Roar Vs Melbourne City",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401913228); LiveScore livescore=FT (6, event 1884866)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "authority_status_carried": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 1,
+    "live": 0,
     "recorded": 0,
-    "conflict": 0,
+    "conflict": 1,
     "unmatched": 5,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
-    "by_status": {
-      "LIVE": 1
-    },
+    "by_status": {},
     "by_confidence": {
-      "LOW": 1
+      "CONFLICT": 1
     },
     "applied_fixtures": [],
-    "conflicts": []
+    "conflicts": [
+      {
+        "name": "Brisbane Roar Vs Melbourne City",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401913228); LiveScore livescore=FT (6, event 1884866)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "fixture_status_api": {
     "asked": 2,
@@ -818,7 +806,7 @@
   },
   "channel_names": {
     "stamped": 0,
-    "unresolved": 85,
+    "unresolved": 84,
     "names": {}
   },
   "streamed_provider": {
@@ -903,14 +891,14 @@
   ],
   "sport_filter": {
     "at_merge": {
-      "total": 91,
+      "total": 90,
       "published": 86,
-      "rejected": 5,
+      "rejected": 4,
       "quarantined": 0,
       "states": {
         "confirmed_cricket": 39,
         "confirmed_football": 47,
-        "confirmed_other": 5
+        "confirmed_other": 4
       },
       "by_source": {
         "sm-sports-data": {
@@ -922,11 +910,11 @@
           "published": 52
         },
         "srhady-primevideo-sports": {
-          "total": 3,
+          "total": 2,
           "cricket": 2,
           "football": 0,
           "quarantined": 0,
-          "rejected": 1,
+          "rejected": 0,
           "published": 2
         },
         "srhady-willow-event": {
@@ -937,14 +925,6 @@
           "rejected": 0,
           "published": 25
         },
-        "sm-fancode": {
-          "total": 18,
-          "cricket": 6,
-          "football": 12,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
-        },
         "sportlive-fancode-backup": {
           "total": 23,
           "cricket": 10,
@@ -953,13 +933,13 @@
           "rejected": 0,
           "published": 23
         },
-        "drmlive-fancode-mirror": {
-          "total": 23,
-          "cricket": 10,
-          "football": 13,
+        "sm-fancode": {
+          "total": 18,
+          "cricket": 6,
+          "football": 12,
           "quarantined": 0,
           "rejected": 0,
-          "published": 23
+          "published": 18
         },
         "sayanpal-fancode-mirror": {
           "total": 23,
@@ -976,17 +956,17 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 18
+        },
+        "drmlive-fancode-mirror": {
+          "total": 23,
+          "cricket": 10,
+          "football": 13,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 23
         }
       },
       "rejected_examples": [
-        {
-          "name": "ECHL Hockey New Mexico Goatheads vs Tahoe Knight Monsters",
-          "source": "srhady-primevideo-sports",
-          "competition": "",
-          "sport_type": "hockey",
-          "reason": "source sport field",
-          "evidence": "hockey"
-        },
         {
           "name": "MotorGP",
           "source": "sm-sports-data",
@@ -1104,14 +1084,6 @@
           "rejected": 0,
           "published": 24
         },
-        "sm-fancode": {
-          "total": 17,
-          "cricket": 5,
-          "football": 12,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 17
-        },
         "sportlive-fancode-backup": {
           "total": 23,
           "cricket": 10,
@@ -1120,13 +1092,13 @@
           "rejected": 0,
           "published": 23
         },
-        "drmlive-fancode-mirror": {
-          "total": 23,
-          "cricket": 10,
-          "football": 13,
+        "sm-fancode": {
+          "total": 17,
+          "cricket": 5,
+          "football": 12,
           "quarantined": 0,
           "rejected": 0,
-          "published": 23
+          "published": 17
         },
         "sayanpal-fancode-mirror": {
           "total": 23,
@@ -1143,6 +1115,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 17
+        },
+        "drmlive-fancode-mirror": {
+          "total": 23,
+          "cricket": 10,
+          "football": 13,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 23
         }
       },
       "rejected_examples": [],
@@ -1154,7 +1134,7 @@
   "sport_quarantined": [],
   "sport_leaks": [],
   "sport_never_dropped": {
-    "refused": 34,
+    "refused": 29,
     "wrongly_refused": [
       {
         "name": "Melbourne United Vs New Zealand Breakers",
@@ -1165,10 +1145,10 @@
     ]
   },
   "sport_pipeline": {
-    "raw_events": 309,
+    "raw_events": 299,
     "cricket_kept": 39,
     "football_kept": 47,
-    "other_discarded": 34,
+    "other_discarded": 29,
     "unresolved": 0,
     "today_final": 7,
     "upcoming_final": 80,
@@ -1206,34 +1186,34 @@
     }
   },
   "fixture_stream_health": {
-    "fixtures": 98,
+    "fixtures": 97,
     "published_fixtures": 87,
-    "fixtures_with_verified_stream": 19,
+    "fixtures_with_verified_stream": 18,
     "fixtures_with_zero_verified": 79,
     "published_without_stream": 81,
     "fallback_available": 5,
     "targeted_fixtures": 5,
     "targeted_attempts": 11,
     "fixtures_with_a_first_link_time": 4,
-    "candidate_routes": 69,
-    "verified_routes": 45,
-    "failed_routes": 24,
+    "candidate_routes": 63,
+    "verified_routes": 41,
+    "failed_routes": 22,
     "fixtures_touched_by_a_route_failure": 11,
     "fixtures_left_with_nothing": 5,
-    "distinct_failure_codes": 8,
-    "unrecognised_candidate_groups": 42,
-    "unrecognised_failed_routes": 76
+    "distinct_failure_codes": 7,
+    "unrecognised_candidate_groups": 41,
+    "unrecognised_failed_routes": 78
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 87,
     "verified": 48,
-    "partial_authority": 1,
+    "partial_authority": 0,
     "unverified": 38,
-    "conflict": 0,
-    "matched_by_two_independent_authorities": 32,
-    "authority_agreements": 31,
-    "authority_disagreements": 0,
+    "conflict": 1,
+    "matched_by_two_independent_authorities": 31,
+    "authority_agreements": 30,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
