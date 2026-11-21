@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T01:24:26.773934+00:00",
+  "generated_at": "2026-11-21T01:44:49.652239+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,15 +10,14 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 1657,
+      "fixtures": 1655,
       "unknown_statuses": [
         "133|Stumps - day 2",
-        "2|24'",
-        "2|26'",
-        "3|66'",
-        "3|88'",
-        "3|90+2'",
-        "9|111'"
+        "2|4'",
+        "2|44'",
+        "2|45+1'",
+        "3|86'",
+        "4|Pen"
       ],
       "attempts": [
         {
@@ -49,7 +48,7 @@
           "sport": "football",
           "date": "2026-11-21",
           "result": "ok",
-          "fixtures": 833
+          "fixtures": 831
         },
         {
           "sport": "football",
@@ -65,8 +64,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 4,
-      "fixtures": 515,
+      "requests_ok": 5,
+      "fixtures": 551,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -78,8 +77,8 @@
         {
           "sport": "cricket",
           "date": "2026-11-21",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 36
         },
         {
           "sport": "cricket",
@@ -110,55 +109,71 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 6,
+    "today_match": 7,
     "upcoming": 43,
-    "fixtures": 49,
+    "fixtures": 50,
     "verdicts": {
-      "UNVERIFIED": 33,
+      "UNVERIFIED": 34,
       "CONFLICT": 1,
       "VERIFIED": 15
     },
     "verified": 15,
     "partial_authority": 0,
-    "unverified": 33,
+    "unverified": 34,
     "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 41,
-        "matched": 8
+        "unmatched": 39,
+        "matched": 11
       },
       "livescore": {
-        "unmatched": 32,
+        "unmatched": 33,
         "matched": 17
       }
     },
-    "matched_by_two_independent_authorities": 6,
-    "authority_agreements": 6,
-    "authority_disagreements": 0,
+    "matched_by_two_independent_authorities": 9,
+    "authority_agreements": 8,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "kickoff": 3
+      "kickoff": 4,
+      "authorities disagree": 1
     },
-    "identity_near_misses": 7,
+    "identity_near_misses": 9,
     "independent_authority_count_distribution": {
-      "0": 33,
-      "1": 10,
-      "2": 6
+      "0": 34,
+      "1": 7,
+      "2": 9
     },
     "unknown_authority_statuses": {
       "livescore": [
         "133|Stumps - day 2",
-        "2|24'",
-        "2|26'",
-        "3|66'",
-        "3|88'",
-        "3|90+2'",
-        "9|111'"
+        "2|4'",
+        "2|44'",
+        "2|45+1'",
+        "3|86'",
+        "4|Pen"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Club Puebla Vs Atlético San Luis",
+      "authority": "espn-header",
+      "authority_name": "Puebla vs Atlético de San Luis",
+      "agreed_side": "puebla",
+      "ours": "atletico san luis",
+      "theirs": "atletico de san luis"
+    },
+    {
+      "fixture": "Club Puebla Vs Atlético San Luis",
+      "authority": "livescore",
+      "authority_name": "Puebla vs Atletico de San Luis",
+      "agreed_side": "puebla",
+      "ours": "atletico san luis",
+      "theirs": "atletico de san luis"
+    },
     {
       "fixture": "FC Porto Vs USC Paredes",
       "authority": "espn-header",
@@ -255,11 +270,66 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:club-puebla-vs-atlético-san-luis|liga mx apertura|2026-11-21",
+      "card_id": "club-puebla-vs-atlético-san-luis",
+      "name": "Club Puebla Vs Atlético San Luis",
+      "competition": "Liga MX, Apertura",
+      "kickoff": "2026-11-21T01:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Puebla vs Atlético de San Luis",
+              "event_id": "401877054",
+              "agreed_side": "puebla",
+              "ours": "atletico san luis",
+              "theirs": "atletico de san luis"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Puebla vs Atletico de San Luis",
+              "event_id": "1799074",
+              "agreed_side": "puebla",
+              "ours": "atletico san luis",
+              "theirs": "atletico de san luis"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:hobart-hurricanes-vs-sydney-thunder-women|women big bash league 2026 29th|2026-11-21",
       "card_id": "hobart-hurricanes-women-vs-sydney-thunder-women",
       "name": "Hobart Hurricanes Women vs Sydney Thunder Women",
       "competition": "Womens Big Bash League 2026 - 29th Match",
-      "kickoff": "2026-11-21T01:24:26+00:00",
+      "kickoff": "2026-11-21T01:44:49+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -277,7 +347,34 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543972",
+          "upstream_family": "ESPN",
+          "name": "Hobart Hurricanes Women vs Sydney Thunder Women",
+          "home": "Hobart Hurricanes Women",
+          "away": "Sydney Thunder Women",
+          "home_team_id": "896433",
+          "away_team_id": "896401",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-21T01:00:00+00:00",
+          "kickoff_delta_minutes": -44.8,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "29th Match",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-21T23:59:00Z",
+          "authority_uid": "s:200~e:1543972~c:1543972"
         },
         "livescore": {
           "result": "matched",
@@ -293,7 +390,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "25707",
           "kickoff": "2026-11-21T01:00:00+00:00",
-          "kickoff_delta_minutes": -24.4,
+          "kickoff_delta_minutes": -44.8,
           "status_raw": "Play in progress",
           "status_code": "33",
           "status": "LIVE",
@@ -304,62 +401,28 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-21T01:24, livescore 2026-11-21T01:00 (-24.4 min)"
+        "kickoff: ours 2026-11-21T01:44, espn-header 2026-11-21T01:00 (-44.8 min)",
+        "kickoff: ours 2026-11-21T01:44, livescore 2026-11-21T01:00 (-44.8 min)",
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
       ],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:new-zealand-vs-india|one day international|2026-11-20",
+      "fixture_id": "provider:new-zealand-vs-india|india tour of new zealand 2026 1st test|2026-11-21",
       "card_id": "new-zealand-vs-india",
-      "name": "New Zealand Vs India",
-      "competition": "One Day International",
-      "kickoff": "2026-11-20T22:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:india-a-vs-nepal|acc men asia cup rising stars 2026 4th|2026-11-20",
-      "card_id": "india-a-vs-nepal",
-      "name": "India A vs Nepal",
-      "competition": "ACC Mens Asia Cup Rising Stars 2026 - 4th Match",
-      "kickoff": "2026-11-20T19:25:13+00:00",
+      "name": "New Zealand vs India",
+      "competition": "India tour of New Zealand 2026 - 1st Test",
+      "kickoff": "2026-11-21T01:44:49+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -539,6 +602,45 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:india-a-vs-nepal|acc men asia cup rising stars 2026 4th|2026-11-20",
+      "card_id": "india-a-vs-nepal",
+      "name": "India A vs Nepal",
+      "competition": "ACC Mens Asia Cup Rising Stars 2026 - 4th Match",
+      "kickoff": "2026-11-20T19:25:13+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "PrimeVideo",
+        "Willow"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:australia-vs-england|t20 international|2026-11-21",
       "card_id": "australia-vs-england",
       "name": "Australia Vs England",
@@ -559,7 +661,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1528706",
+          "upstream_family": "ESPN",
+          "name": "Australia vs England",
+          "home": "Australia",
+          "away": "England",
+          "home_team_id": "2",
+          "away_team_id": "1",
+          "competition": "England tour of Australia 2026/27",
+          "competition_id": "24273",
+          "kickoff": "2026-11-21T08:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "1st T20I (D/N)",
+          "format": "T20",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-22T23:59:00Z",
+          "authority_uid": "s:200~e:1528706~c:1528706"
         },
         "livescore": {
           "result": "matched",
@@ -586,13 +715,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -685,10 +815,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -736,10 +866,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -800,10 +930,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -850,93 +980,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:club-tijuana-vs-atlante-fc|liga mx apertura|2026-11-21",
-      "card_id": "club-tijuana-vs-atlante-fc",
-      "name": "Club Tijuana Vs Atlante FC",
-      "competition": "Liga MX, Apertura",
-      "kickoff": "2026-11-21T03:10:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401877052",
-          "upstream_family": "ESPN",
-          "name": "Tijuana vs Atlante",
-          "home": "Tijuana",
-          "away": "Atlante",
-          "home_team_id": "10125",
-          "away_team_id": "226",
-          "competition": "Mexican Liga BBVA MX",
-          "competition_id": "760",
-          "kickoff": "2026-11-21T03:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, November 20th at 10:10 PM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:760~e:401877052~c:401877052"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1799077",
-          "upstream_family": "LiveScore",
-          "name": "Tijuana vs Atlante",
-          "home": "Tijuana",
-          "away": "Atlante",
-          "home_team_id": "411",
-          "away_team_id": "4242",
-          "competition": "Liga MX: Apertura",
-          "competition_id": "759",
-          "kickoff": "2026-11-21T03:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "17",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:danube-titans-vs-oca-invincibles-women|oman women d20 2026|2026-11-21",
       "card_id": "danube-titans-women-vs-oca-invincibles-women",
       "name": "Danube Titans Women vs OCA Invincibles Women",
@@ -950,10 +993,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -991,10 +1034,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1227,6 +1270,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:fc-juárez-vs-atlas-fc|liga mx apertura|2026-11-21",
+      "card_id": "fc-juárez-vs-atlas-fc",
+      "name": "FC Juárez Vs Atlas FC",
+      "competition": "Liga MX, Apertura",
+      "kickoff": "2026-11-21T03:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401877053",
+          "upstream_family": "ESPN",
+          "name": "FC Juárez vs Atlas",
+          "home": "FC Juárez",
+          "away": "Atlas",
+          "home_team_id": "17851",
+          "away_team_id": "216",
+          "competition": "Mexican Liga BBVA MX",
+          "competition_id": "760",
+          "kickoff": "2026-11-21T03:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, November 20th at 10:00 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:760~e:401877053~c:401877053"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1799078",
+          "upstream_family": "LiveScore",
+          "name": "FC Juarez vs Atlas",
+          "home": "FC Juarez",
+          "away": "Atlas",
+          "home_team_id": "3573",
+          "away_team_id": "3626",
+          "competition": "Liga MX: Apertura",
+          "competition_id": "759",
+          "kickoff": "2026-11-21T03:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "17",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:gulf-giants-vs-mi-emirates|international league t20 2026 5th|2026-11-24",
       "card_id": "gulf-giants-vs-mi-emirates",
       "name": "Gulf Giants vs Mi Emirates",
@@ -1351,8 +1481,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1412,10 +1542,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1471,10 +1601,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1723,9 +1853,9 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "sayanpal-fancode-mirror",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1786,10 +1916,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1836,10 +1966,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1877,10 +2007,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1940,10 +2070,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2040,10 +2170,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2155,10 +2285,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2246,10 +2376,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2337,10 +2467,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2613,10 +2743,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2624,7 +2754,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543973",
+          "upstream_family": "ESPN",
+          "name": "Sydney Sixers Women vs Perth Scorchers Women",
+          "home": "Sydney Sixers Women",
+          "away": "Perth Scorchers Women",
+          "home_team_id": "896403",
+          "away_team_id": "896405",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-21T04:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "30th Match",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-21T23:59:00Z",
+          "authority_uid": "s:200~e:1543973~c:1543973"
         },
         "livescore": {
           "result": "matched",
@@ -2651,13 +2808,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2776,22 +2934,22 @@
   ],
   "retired_or_unpublished": [
     {
-      "fixture_id": "provider:united-states-fencing-tournament|2026-11-20",
-      "card_id": "united-states-fencing-tournament",
-      "name": "United States Fencing Tournament",
-      "competition": "",
-      "kickoff": "2026-11-20T20:25:16+00:00",
+      "fixture_id": "provider:new-zealand-vs-india|one day international|2026-11-20",
+      "card_id": "new-zealand-vs-india",
+      "name": "New Zealand Vs India",
+      "competition": "One Day International",
+      "kickoff": "2026-11-20T22:00:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-primevideo-sports"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "PrimeVideo"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -2807,76 +2965,6 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:arabian-aces-vs-uae-bulls|abu dhabi t10 league 2026 qualifier|2026-11-20",
-      "card_id": "arabian-aces-vs-uae-bulls",
-      "name": "Arabian Aces vs UAE Bulls",
-      "competition": "Abu Dhabi T10 League 2026 - Qualifier",
-      "kickoff": "2026-11-20T20:44:49+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
-      ],
-      "upstream_families": [
-        "PrimeVideo",
-        "Willow"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1561280",
-          "upstream_family": "ESPN",
-          "name": "Arabian Aces vs UAE Bulls",
-          "home": "Arabian Aces",
-          "away": "UAE Bulls",
-          "home_team_id": "1561247",
-          "away_team_id": "1511694",
-          "competition": "Abu Dhabi T10",
-          "competition_id": "18522",
-          "kickoff": "2026-11-20T13:30:00+00:00",
-          "kickoff_delta_minutes": -434.8,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "Qualifier (D/N)",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-22T23:59:00Z",
-          "authority_uid": "s:200~e:1561280~c:1561280"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
-        "ESPN"
-      ],
-      "near_miss_count": 1,
-      "conflict_reasons": [
-        "kickoff: ours 2026-11-20T20:44, espn-header 2026-11-20T13:30 (-434.8 min)",
-        "sport: ours football, espn-header cricket"
-      ],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
