@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T04:44:16.907854+00:00",
+  "generated_at": "2026-11-21T05:04:23.793527+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,10 +12,13 @@
       "requests_ok": 6,
       "fixtures": 1654,
       "unknown_statuses": [
+        "10|HT",
         "133|Stumps - day 2",
-        "2|44'",
-        "3|74'",
-        "3|81'"
+        "2|1'",
+        "2|2'",
+        "2|3'",
+        "2|4'",
+        "3|90+4'"
       ],
       "attempts": [
         {
@@ -62,8 +65,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 5,
-      "fixtures": 551,
+      "requests_ok": 4,
+      "fixtures": 515,
       "unknown_statuses": [
         "STATUS_FINAL_OT|F/OT"
       ],
@@ -77,8 +80,8 @@
         {
           "sport": "cricket",
           "date": "2026-11-21",
-          "result": "ok",
-          "fixtures": 36
+          "result": "INCONCLUSIVE",
+          "reason": "http 502"
         },
         {
           "sport": "cricket",
@@ -113,27 +116,26 @@
     "upcoming": 80,
     "fixtures": 87,
     "verdicts": {
-      "UNVERIFIED": 35,
-      "PARTIAL_AUTHORITY": 1,
-      "CONFLICT": 1,
-      "VERIFIED": 50
+      "UNVERIFIED": 36,
+      "CONFLICT": 2,
+      "VERIFIED": 49
     },
-    "verified": 50,
-    "partial_authority": 1,
-    "unverified": 35,
-    "conflict": 1,
+    "verified": 49,
+    "partial_authority": 0,
+    "unverified": 36,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 45,
-        "matched": 42
+        "unmatched": 49,
+        "matched": 38
       },
       "livescore": {
         "unmatched": 41,
         "matched": 46
       }
     },
-    "matched_by_two_independent_authorities": 34,
-    "authority_agreements": 32,
+    "matched_by_two_independent_authorities": 32,
+    "authority_agreements": 31,
     "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
@@ -142,16 +144,19 @@
     },
     "identity_near_misses": 14,
     "independent_authority_count_distribution": {
-      "0": 35,
-      "1": 18,
-      "2": 34
+      "0": 36,
+      "1": 19,
+      "2": 32
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "133|Stumps - day 2",
-        "2|44'",
-        "3|74'",
-        "3|81'"
+        "2|1'",
+        "2|2'",
+        "2|3'",
+        "2|4'",
+        "3|90+4'"
       ],
       "espn-header": [
         "STATUS_FINAL_OT|F/OT"
@@ -345,8 +350,8 @@
           "competition_id": "760",
           "kickoff": "2026-11-21T03:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "24'",
-          "status_code": "STATUS_IN_PROGRESS",
+          "status_raw": "44'",
+          "status_code": "STATUS_FIRST_HALF",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -354,8 +359,8 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "24'",
-          "espn_status_description": "In Progress",
+          "espn_status_detail": "44'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:760~e:401877053~c:401877053"
@@ -375,9 +380,9 @@
           "competition_id": "759",
           "kickoff": "2026-11-21T03:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "81'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "17",
           "format": "",
@@ -391,10 +396,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -439,7 +446,7 @@
       "card_id": "sydney-sixers-vs-perth-scorchers",
       "name": "Sydney Sixers vs Perth Scorchers",
       "competition": "",
-      "kickoff": "2026-11-21T04:44:16+00:00",
+      "kickoff": "2026-11-21T05:04:23+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -476,7 +483,7 @@
       "card_id": "sydney-sixers-women-vs-perth-scorchers-women",
       "name": "Sydney Sixers Women vs Perth Scorchers Women",
       "competition": "Womens Big Bash League 2026 - 30th Match",
-      "kickoff": "2026-11-21T04:44:16+00:00",
+      "kickoff": "2026-11-21T05:04:23+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -484,44 +491,15 @@
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
+        "srhady-primevideo-sports"
       ],
       "upstream_families": [
-        "PrimeVideo",
-        "Willow"
+        "PrimeVideo"
       ],
-      "independent_witness_count": 2,
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1543973",
-          "upstream_family": "ESPN",
-          "name": "Sydney Sixers Women vs Perth Scorchers Women",
-          "home": "Sydney Sixers Women",
-          "away": "Perth Scorchers Women",
-          "home_team_id": "896403",
-          "away_team_id": "896405",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-21T04:30:00+00:00",
-          "kickoff_delta_minutes": -14.3,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "30th Match",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-21T23:59:00Z",
-          "authority_uid": "s:200~e:1543973~c:1543973"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -537,7 +515,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "25707",
           "kickoff": "2026-11-21T04:30:00+00:00",
-          "kickoff_delta_minutes": -14.3,
+          "kickoff_delta_minutes": -34.4,
           "status_raw": "Play in progress",
           "status_code": "33",
           "status": "LIVE",
@@ -548,16 +526,15 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+        "kickoff: ours 2026-11-21T05:04, livescore 2026-11-21T04:30 (-34.4 min)"
       ],
-      "authority_agreement": "DISAGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
@@ -585,34 +562,7 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1543972",
-          "upstream_family": "ESPN",
-          "name": "Hobart Hurricanes Women vs Sydney Thunder Women",
-          "home": "Hobart Hurricanes Women",
-          "away": "Sydney Thunder Women",
-          "home_team_id": "896433",
-          "away_team_id": "896401",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-21T01:00:00+00:00",
-          "kickoff_delta_minutes": -204.4,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "29th Match",
-          "format": "",
-          "gender": "women",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-21T23:59:00Z",
-          "authority_uid": "s:200~e:1543972~c:1543972"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -641,12 +591,10 @@
       "authority_upstreams": [],
       "independent_authority_count": 0,
       "near_miss_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 2,
+      "near_miss_count": 1,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-21T04:24, espn-header 2026-11-21T01:00 (-204.4 min)",
         "kickoff: ours 2026-11-21T04:24, livescore 2026-11-21T01:00 (-204.4 min)"
       ],
       "authority_agreement": "NONE",
@@ -730,34 +678,7 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1528706",
-          "upstream_family": "ESPN",
-          "name": "Australia vs England",
-          "home": "Australia",
-          "away": "England",
-          "home_team_id": "2",
-          "away_team_id": "1",
-          "competition": "England tour of Australia 2026/27",
-          "competition_id": "24273",
-          "kickoff": "2026-11-21T08:15:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "1st T20I (D/N)",
-          "format": "T20",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-22T23:59:00Z",
-          "authority_uid": "s:200~e:1528706~c:1528706"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -781,6 +702,92 @@
           "round": "1st T20I",
           "format": "Twenty20",
           "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:brisbane-roar-vs-melbourne-city|a league women|2026-11-21",
+      "card_id": "brisbane-roar-vs-melbourne-city",
+      "name": "Brisbane Roar Vs Melbourne City",
+      "competition": "A-League Women",
+      "kickoff": "2026-11-21T05:50:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401913228",
+          "upstream_family": "ESPN",
+          "name": "Brisbane Roar vs Melbourne City",
+          "home": "Brisbane Roar",
+          "away": "Melbourne City",
+          "home_team_id": "20281",
+          "away_team_id": "20280",
+          "competition": "Australian A-League Women",
+          "competition_id": "18992",
+          "kickoff": "2026-11-21T05:50:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, November 20th at 12:50 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:18992~e:401913228~c:401913228"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1884866",
+          "upstream_family": "LiveScore",
+          "name": "Brisbane Roar FC W vs Melbourne City FC W",
+          "home": "Brisbane Roar FC W",
+          "away": "Melbourne City FC W",
+          "home_team_id": "3644",
+          "away_team_id": "3629",
+          "competition": "A-League Women",
+          "competition_id": "566",
+          "kickoff": "2026-11-21T05:50:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "6",
+          "format": "",
+          "gender": "women"
         }
       },
       "authority_upstreams": [
@@ -1098,8 +1105,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1191,8 +1198,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1375,11 +1382,11 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1464,93 +1471,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:brisbane-roar-vs-melbourne-city|a league women|2026-11-21",
-      "card_id": "brisbane-roar-vs-melbourne-city",
-      "name": "Brisbane Roar Vs Melbourne City",
-      "competition": "A-League Women",
-      "kickoff": "2026-11-21T05:50:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401913228",
-          "upstream_family": "ESPN",
-          "name": "Brisbane Roar vs Melbourne City",
-          "home": "Brisbane Roar",
-          "away": "Melbourne City",
-          "home_team_id": "20281",
-          "away_team_id": "20280",
-          "competition": "Australian A-League Women",
-          "competition_id": "18992",
-          "kickoff": "2026-11-21T05:50:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Sat, November 20th at 12:50 AM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:18992~e:401913228~c:401913228"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1884866",
-          "upstream_family": "LiveScore",
-          "name": "Brisbane Roar FC W vs Melbourne City FC W",
-          "home": "Brisbane Roar FC W",
-          "away": "Melbourne City FC W",
-          "home_team_id": "3644",
-          "away_team_id": "3629",
-          "competition": "A-League Women",
-          "competition_id": "566",
-          "kickoff": "2026-11-21T05:50:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "6",
-          "format": "",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:brisbane-roar-vs-sydney-fc|a league men|2026-11-21",
       "card_id": "brisbane-roar-vs-sydney-fc",
       "name": "Brisbane Roar Vs Sydney FC",
@@ -1567,8 +1487,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1849,78 +1769,6 @@
       },
       "authority_upstreams": [
         "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:central-coast-mariners-vs-perth-glory|a league men|2026-11-21",
-      "card_id": "central-coast-mariners-vs-perth-glory",
-      "name": "Central Coast Mariners Vs Perth Glory",
-      "competition": "A-League Men",
-      "kickoff": "2026-11-21T06:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401892136",
-          "upstream_family": "ESPN",
-          "name": "Central Coast Mariners FC vs Perth Glory FC",
-          "home": "Central Coast Mariners FC",
-          "away": "Perth Glory FC",
-          "home_team_id": "5325",
-          "away_team_id": "5322",
-          "competition": "Australian A-League Men",
-          "competition_id": "3906",
-          "kickoff": "2026-11-21T06:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Sat, November 20th at 1:00 AM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3906~e:401892136~c:401892136"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
       ],
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
@@ -2596,8 +2444,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2985,8 +2833,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3275,8 +3123,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3718,8 +3566,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3882,11 +3730,11 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4123,8 +3971,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4145,6 +3993,47 @@
               "theirs": "sassuolo"
             }
           ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:muscat-shaheens-vs-sohar-smashers-women|oman women d20 2026|2026-11-21",
+      "card_id": "muscat-shaheens-women-vs-sohar-smashers-women",
+      "name": "Muscat Shaheens Women vs Sohar Smashers Women",
+      "competition": "Oman Women's D20, 2026",
+      "kickoff": "2026-11-21T06:00:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
         }
       },
       "authority_upstreams": [],
@@ -4212,8 +4101,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4363,8 +4252,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4704,8 +4593,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4797,8 +4686,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -5023,8 +4912,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -5227,8 +5116,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -5713,8 +5602,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
