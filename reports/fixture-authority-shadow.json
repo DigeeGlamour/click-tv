@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T02:57:58.951131+00:00",
+  "generated_at": "2026-11-21T03:04:31.019183+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -14,8 +14,9 @@
       "unknown_statuses": [
         "10|HT",
         "133|Stumps - day 2",
-        "182|Tea - day 3",
-        "3|60'"
+        "2|4'",
+        "3|49'",
+        "3|67'"
       ],
       "attempts": [
         {
@@ -62,8 +63,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 5,
-      "fixtures": 551,
+      "requests_ok": 4,
+      "fixtures": 515,
       "unknown_statuses": [
         "STATUS_FINAL_OT|F/OT"
       ],
@@ -77,8 +78,8 @@
         {
           "sport": "cricket",
           "date": "2026-11-21",
-          "result": "ok",
-          "fixtures": 36
+          "result": "INCONCLUSIVE",
+          "reason": "http 502"
         },
         {
           "sport": "cricket",
@@ -114,41 +115,44 @@
     "fixtures": 47,
     "verdicts": {
       "UNVERIFIED": 33,
-      "VERIFIED": 14
+      "CONFLICT": 1,
+      "VERIFIED": 13
     },
-    "verified": 14,
+    "verified": 13,
     "partial_authority": 0,
     "unverified": 33,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 38,
-        "matched": 9
+        "unmatched": 41,
+        "matched": 6
       },
       "livescore": {
         "unmatched": 32,
         "matched": 15
       }
     },
-    "matched_by_two_independent_authorities": 7,
-    "authority_agreements": 7,
+    "matched_by_two_independent_authorities": 5,
+    "authority_agreements": 4,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "kickoff": 2
+      "card says LIVE, authority says UPCOMING": 1,
+      "kickoff": 1
     },
     "identity_near_misses": 7,
     "independent_authority_count_distribution": {
       "0": 33,
-      "1": 7,
-      "2": 7
+      "1": 9,
+      "2": 5
     },
     "unknown_authority_statuses": {
       "livescore": [
         "10|HT",
         "133|Stumps - day 2",
-        "182|Tea - day 3",
-        "3|60'"
+        "2|4'",
+        "3|49'",
+        "3|67'"
       ],
       "espn-header": [
         "STATUS_FINAL_OT|F/OT"
@@ -215,61 +219,6 @@
   ],
   "fixtures": [
     {
-      "fixture_id": "provider:club-puebla-vs-atlético-san-luis|liga mx apertura|2026-11-21",
-      "card_id": "club-puebla-vs-atlético-san-luis",
-      "name": "Club Puebla Vs Atlético San Luis",
-      "competition": "Liga MX, Apertura",
-      "kickoff": "2026-11-21T01:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Puebla vs Atlético de San Luis",
-              "event_id": "401877054",
-              "agreed_side": "puebla",
-              "ours": "atletico san luis",
-              "theirs": "atletico de san luis"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Puebla vs Atletico de San Luis",
-              "event_id": "1799074",
-              "agreed_side": "puebla",
-              "ours": "atletico san luis",
-              "theirs": "atletico de san luis"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:bbl-women-s|bbl women|2026-11-21",
       "card_id": "bbl-womens",
       "name": "BBL Women's",
@@ -312,9 +261,9 @@
       "name": "FC Juárez Vs Atlas FC",
       "competition": "Liga MX, Apertura",
       "kickoff": "2026-11-21T03:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -371,11 +320,11 @@
           "competition_id": "759",
           "kickoff": "2026-11-21T03:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "4'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
-          "round": "17",
+          "round": "Apertura",
           "format": "",
           "gender": ""
         }
@@ -387,10 +336,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -398,7 +349,7 @@
       "card_id": "hobart-hurricanes-women-vs-sydney-thunder-women",
       "name": "Hobart Hurricanes Women vs Sydney Thunder Women",
       "competition": "Womens Big Bash League 2026 - 29th Match",
-      "kickoff": "2026-11-21T02:57:58+00:00",
+      "kickoff": "2026-11-21T03:04:31+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -416,34 +367,7 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1543972",
-          "upstream_family": "ESPN",
-          "name": "Hobart Hurricanes Women vs Sydney Thunder Women",
-          "home": "Hobart Hurricanes Women",
-          "away": "Sydney Thunder Women",
-          "home_team_id": "896433",
-          "away_team_id": "896401",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-21T01:00:00+00:00",
-          "kickoff_delta_minutes": -118.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "29th Match",
-          "format": "",
-          "gender": "women",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-21T23:59:00Z",
-          "authority_uid": "s:200~e:1543972~c:1543972"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -459,7 +383,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "25707",
           "kickoff": "2026-11-21T01:00:00+00:00",
-          "kickoff_delta_minutes": -118.0,
+          "kickoff_delta_minutes": -124.5,
           "status_raw": "Play in progress",
           "status_code": "33",
           "status": "LIVE",
@@ -472,13 +396,11 @@
       "authority_upstreams": [],
       "independent_authority_count": 0,
       "near_miss_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 2,
+      "near_miss_count": 1,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-21T02:57, espn-header 2026-11-21T01:00 (-118.0 min)",
-        "kickoff: ours 2026-11-21T02:57, livescore 2026-11-21T01:00 (-118.0 min)"
+        "kickoff: ours 2026-11-21T03:04, livescore 2026-11-21T01:00 (-124.5 min)"
       ],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
@@ -523,6 +445,61 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:club-puebla-vs-atlético-san-luis|liga mx apertura|2026-11-21",
+      "card_id": "club-puebla-vs-atlético-san-luis",
+      "name": "Club Puebla Vs Atlético San Luis",
+      "competition": "Liga MX, Apertura",
+      "kickoff": "2026-11-21T01:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Puebla vs Atlético de San Luis",
+              "event_id": "401877054",
+              "agreed_side": "puebla",
+              "ours": "atletico san luis",
+              "theirs": "atletico de san luis"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Puebla vs Atletico de San Luis",
+              "event_id": "1799074",
+              "agreed_side": "puebla",
+              "ours": "atletico san luis",
+              "theirs": "atletico de san luis"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:australia-vs-england|t20 international|2026-11-21",
       "card_id": "australia-vs-england",
       "name": "Australia Vs England",
@@ -543,34 +520,7 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1528706",
-          "upstream_family": "ESPN",
-          "name": "Australia vs England",
-          "home": "Australia",
-          "away": "England",
-          "home_team_id": "2",
-          "away_team_id": "1",
-          "competition": "England tour of Australia 2026/27",
-          "competition_id": "24273",
-          "kickoff": "2026-11-21T08:15:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "1st T20I (D/N)",
-          "format": "T20",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-22T23:59:00Z",
-          "authority_uid": "s:200~e:1528706~c:1528706"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -597,14 +547,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -697,10 +646,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -748,10 +697,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -812,10 +761,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -875,10 +824,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -916,10 +865,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1276,10 +1225,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1339,10 +1288,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1398,10 +1347,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1564,10 +1513,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1628,10 +1577,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1678,10 +1627,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1719,10 +1668,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1760,10 +1709,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1823,10 +1772,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1923,10 +1872,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2038,10 +1987,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2129,10 +2078,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2220,10 +2169,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2496,10 +2445,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2507,34 +2456,7 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1543973",
-          "upstream_family": "ESPN",
-          "name": "Sydney Sixers Women vs Perth Scorchers Women",
-          "home": "Sydney Sixers Women",
-          "away": "Perth Scorchers Women",
-          "home_team_id": "896403",
-          "away_team_id": "896405",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-21T04:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "30th Match",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-21T23:59:00Z",
-          "authority_uid": "s:200~e:1543973~c:1543973"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -2561,14 +2483,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2683,97 +2604,6 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "upcoming"
-    }
-  ],
-  "retired_or_unpublished": [
-    {
-      "fixture_id": "provider:barnsley-fc-vs-sheffield-wednesday-fc|2026-11-20",
-      "card_id": "barnsley-fc-vs-sheffield-wednesday-fc",
-      "name": "Barnsley FC vs Sheffield Wednesday FC",
-      "competition": "",
-      "kickoff": "2026-11-20T22:24:29+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "401880742",
-          "upstream_family": "ESPN",
-          "name": "Barnsley vs Sheffield Wednesday",
-          "home": "Barnsley",
-          "away": "Sheffield Wednesday",
-          "home_team_id": "397",
-          "away_team_id": "399",
-          "competition": "English League One",
-          "competition_id": "3915",
-          "kickoff": "2026-11-20T20:00:00+00:00",
-          "kickoff_delta_minutes": -144.5,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3915~e:401880742~c:401880742"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1803054",
-          "upstream_family": "LiveScore",
-          "name": "Barnsley vs Sheffield Wednesday",
-          "home": "Barnsley",
-          "away": "Sheffield Wednesday",
-          "home_team_id": "2829",
-          "away_team_id": "3144",
-          "competition": "League 1",
-          "competition_id": "71",
-          "kickoff": "2026-11-20T20:00:00+00:00",
-          "kickoff_delta_minutes": -144.5,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "16",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "near_miss_count": 2,
-      "conflict_reasons": [
-        "kickoff: ours 2026-11-20T22:24, espn-header 2026-11-20T20:00 (-144.5 min)",
-        "kickoff: ours 2026-11-20T22:24, livescore 2026-11-20T20:00 (-144.5 min)"
-      ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
     }
   ]
 }
