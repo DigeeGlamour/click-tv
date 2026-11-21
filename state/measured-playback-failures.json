@@ -1295,28 +1295,6 @@
       "evidence_report": "reports/delivery-path-check.json",
       "vantage": "delivery_path_proxy"
     },
-    "otte.live.fly.ww.aiv-cdn.net/pdx-nitro/startover/clients/dash/manipulated-manifest-pdx-prod/enc/s8ty74yti6/out/v1/fb6b659aabce4021891345b0221a4f52/3d4a8a2e-a4ca-4570-a577-4fd5c2c82ce2-cenc.mpd?aws_sessionId=ca8dc431-969d-40d7-8473-f2263772b07a": {
-      "route_id": "otte.live.fly.ww.aiv-cdn.net/pdx-nitro/startover/clients/dash/manipulated-manifest-pdx-prod/enc/s8ty74yti6/out/v1/fb6b659aabce4021891345b0221a4f52/3d4a8a2e-a4ca-4570-a577-4fd5c2c82ce2-cenc.mpd?aws_sessionId=ca8dc431-969d-40d7-8473-f2263772b07a",
-      "url_public_template": "{id}.{id}.{id}.{id}.aiv-cdn.net/pdx-nitro/{seg}/clients/dash/manipulated-manifest-pdx-prod/enc/{seg}/out/v1/{seg}/3d4a8a2e-a4ca-4570-a577-4fd5c2c82ce2-cenc.mpd?aws_sessionId={v}",
-      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
-      "sessions": 1,
-      "media_progress_seconds": [
-        0
-      ],
-      "window_seconds": 0.0,
-      "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy",
-      "superseded_by": {
-        "verdict": "proven",
-        "vantage": "delivery_path_proxy",
-        "sessions": 1,
-        "media_progress_seconds": [
-          0
-        ],
-        "window_seconds": 0.0,
-        "evidence_report": "reports/delivery-path-check.json"
-      }
-    },
     "live.ftlcbx.com/live/72979698_f38e1bf3aa1c54c748b763689eba9d6a_1080p.m3u8?auth_key={cred:e6367174a5}": {
       "route_id": "live.ftlcbx.com/live/72979698_f38e1bf3aa1c54c748b763689eba9d6a_1080p.m3u8?auth_key={cred:e6367174a5}",
       "url_public_template": "{id}.ftlcbx.com/live/72979698_f38e1bf3aa1c54c748b763689eba9d6a_1080p.m3u8?auth_key={v}",
@@ -73681,7 +73659,17 @@
       ],
       "window_seconds": 0.0,
       "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy"
+      "vantage": "delivery_path_proxy",
+      "superseded_by": {
+        "verdict": "proven",
+        "vantage": "delivery_path_proxy",
+        "sessions": 1,
+        "media_progress_seconds": [
+          0
+        ],
+        "window_seconds": 0.0,
+        "evidence_report": "reports/delivery-path-check.json"
+      }
     },
     "otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/ciluyzixht/out/v1/b3ec24213f4b40be9c5644b6eed1774b/cenc.mpd": {
       "route_id": "otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/ciluyzixht/out/v1/b3ec24213f4b40be9c5644b6eed1774b/cenc.mpd",
@@ -74742,6 +74730,18 @@
         "window_seconds": 0.0,
         "evidence_report": "reports/delivery-path-check.json"
       }
+    },
+    "legitpro.co.in/taratv/taratv/tracks-v1a1/mono.m3u8": {
+      "route_id": "legitpro.co.in/taratv/taratv/tracks-v1a1/mono.m3u8",
+      "url_public_template": "{id}.co.in/taratv/taratv/tracks-v1a1/{file}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
     }
   },
   "note": "Routes a real browser measured and could not play, each with the vantage it was measured from. Marks the card; never hides it, never changes publish_allowed, never demotes another route. Keyed by route, so a channel recovers when its route changes - or when a later measurement from any vantage passes, which supersedes the failure rather than deleting it.",
