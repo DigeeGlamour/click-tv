@@ -1451,28 +1451,6 @@
       "evidence_report": "reports/delivery-path-check.json",
       "vantage": "delivery_path_proxy"
     },
-    "server.livelegitpro.in:9899/anbnews/anbnews/index.m3u8": {
-      "route_id": "server.livelegitpro.in:9899/anbnews/anbnews/index.m3u8",
-      "url_public_template": "{id}.livelegitpro.in/anbnews/anbnews/{file}",
-      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
-      "sessions": 1,
-      "media_progress_seconds": [
-        0
-      ],
-      "window_seconds": 0.0,
-      "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy",
-      "superseded_by": {
-        "verdict": "proven",
-        "vantage": "delivery_path_proxy",
-        "sessions": 1,
-        "media_progress_seconds": [
-          0
-        ],
-        "window_seconds": 0.0,
-        "evidence_report": "reports/delivery-path-check.json"
-      }
-    },
     "stream.ottplus.bd/live/sony_yay_abr/live/sony_yay_720/chunks.m3u8": {
       "route_id": "stream.ottplus.bd/live/sony_yay_abr/live/sony_yay_720/chunks.m3u8",
       "url_public_template": "{id}.ottplus.bd/live/sony_yay_abr/live/sony_yay_720/{file}",
@@ -74392,6 +74370,18 @@
         "window_seconds": 0.0,
         "evidence_report": "reports/delivery-path-check.json"
       }
+    },
+    "www.rtmpcdn.com/live/400982f6-b587-44c4-a981-ecd609913acb.m3u8": {
+      "route_id": "www.rtmpcdn.com/live/400982f6-b587-44c4-a981-ecd609913acb.m3u8",
+      "url_public_template": "{id}.rtmpcdn.com/live/{seg}.m3u8",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
     }
   },
   "note": "Routes a real browser measured and could not play, each with the vantage it was measured from. Marks the card; never hides it, never changes publish_allowed, never demotes another route. Keyed by route, so a channel recovers when its route changes - or when a later measurement from any vantage passes, which supersedes the failure rather than deleting it.",
