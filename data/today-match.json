@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-22T20:22:06.394238+00:00",
-  "count": 14,
+  "updated_at": "2026-11-22T20:25:07.806728+00:00",
+  "count": 15,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -448,7 +448,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-22T19:05:03.804785+00:00"
     },
@@ -575,7 +575,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-22T19:05:03.804785+00:00"
     },
@@ -856,7 +856,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_bc62007943364cdcceb0a3d1bd8a7ad4",
       "protected_source": true,
       "requires_credentials": true,
@@ -867,13 +867,17 @@
         ],
         "drm": false
       },
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 26,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-22T12:04:42.444094+00:00"
+      "carried_forward_misses": 27,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-22T12:04:42.444094+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 27,
+      "ended_seen_at": "2026-11-22T20:25:00.328601+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "sharjah-warriorz-vs-gulf-giants",
@@ -1238,11 +1242,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 18,
+      "carried_forward_misses": 19,
       "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-22T14:45:03.449528+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 18,
+      "end_pending_confirmations": 19,
       "ended_seen_at": "2026-11-22T20:05:07.535515+00:00",
       "lifecycle_end_basis": "estimate"
     },
@@ -1313,8 +1317,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 7,
-      "carried_forward_misses": 7,
+      "end_pending_confirmations": 8,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-22T18:05:07.911658+00:00"
     },
@@ -1582,7 +1586,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-22T14:45:03.449528+00:00",
       "authority_near_misses": [
@@ -1627,35 +1631,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1684,7 +1659,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1704,6 +1679,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1752,19 +1756,6 @@
               "id": "t20-gold-clash-footy-vs-cricket--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_69b889f788a97aa5addcd66d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "t20-gold-clash-footy-vs-cricket--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_491dc8b294dde630a1a3699b",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -1775,7 +1766,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "t20-gold-clash-footy-vs-cricket--prime-video--4",
+              "id": "t20-gold-clash-footy-vs-cricket--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_64b1265d54d66528d0699925",
@@ -1783,6 +1774,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "t20-gold-clash-footy-vs-cricket--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_69b889f788a97aa5addcd66d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1817,9 +1821,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-22T20:04:38+00:00",
-      "start_at": "2026-11-22T20:04:38+00:00",
-      "end_time": "2026-11-23T00:04:38+00:00",
+      "start_time": "2026-11-22T20:24:37+00:00",
+      "start_at": "2026-11-22T20:24:37+00:00",
+      "end_time": "2026-11-23T00:24:37+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:t20-gold-clash-footy-vs-cricket|2026-11-22",
       "status": "LIVE_NOW",
@@ -1950,13 +1954,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
-      "authority_end_status": "FINISHED",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401883304)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401883304)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1975,12 +1979,11 @@
         "query_parameters": [],
         "drm": true
       },
-      "authority_finished_confirmations": 1,
       "lifecycle_reason": "finished, holding for the post-match grace",
       "end_pending": true,
       "end_pending_confirmations": 0,
       "ended_seen_at": "2026-11-22T20:05:07.535515+00:00",
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-22T20:05:07.535515+00:00"
     },
@@ -2057,7 +2060,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=90'+2' (STATUS_SECOND_HALF, event 401883109)",
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401883109)",
         "LiveScore livescore=FT (6, event 1811152)"
       ],
       "authority_independent_count": 1,
@@ -2071,13 +2074,135 @@
       "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kfu7zu1659897499.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hccive1680933599.png",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90'+2' (STATUS_SECOND_HALF, event 401883109); LiveScore livescore=FT (6, event 1811152)",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
       "end_pending": true,
-      "end_pending_confirmations": 1,
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
-      "carried_forward_first_missed_at": "2026-11-22T20:05:07.535515+00:00"
+      "end_pending_confirmations": 2,
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-22T20:05:07.535515+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401883109); LiveScore livescore=FT (6, event 1811152)"
+    },
+    {
+      "id": "lommel-sk-vs-standard-liège",
+      "name": "Lommel SK Vs Standard Liège",
+      "primary_stream_key": "3de9832c71c2ac1a6497c880886da2e27a22873ee4a83fb200d0dd0c9cceda57",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/5046/image",
+      "category": "today_match",
+      "url": "https://file.genoads.com/ch1.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "lommel-sk-vs-standard-li-ge--server",
+          "name": "SERVER",
+          "normalized_name": "server",
+          "logo": "https://img.sofascore.com/api/v1/team/5046/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "lommel-sk-vs-standard-li-ge--server--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "lommel-sk-vs-standard-li-ge--server--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_7e965fcb4ffb435c8a188ff9",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_e94590dd78ee0859c2150c051fe96224",
+              "resolution": "SD",
+              "resolution_height": 576,
+              "stream_type": "hls"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "lommel-sk-vs-standard-li-ge--server",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "resolution": "SD",
+      "resolution_height": 576,
+      "start_time": "2026-11-22T18:15:00+00:00",
+      "start_at": "2026-11-22T18:15:00+00:00",
+      "end_time": "2026-11-22T21:24:37+00:00",
+      "end_time_source": "assumed",
+      "competition": "Pro League",
+      "fixture_id": "provider:lommel-sk-vs-standard-liège|pro league|2026-11-22",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-22T18:15:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=9' (STATUS_IN_PROGRESS, event 401878934)",
+        "LiveScore livescore=FT (6, event 1798210)"
+      ],
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=9' (STATUS_IN_PROGRESS, event 401878934); LiveScore livescore=FT (6, event 1798210)",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/gj2c1v1658141968.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/0ynlvb1771130035.png",
+      "playback_id": "ctv_e94590dd78ee0859c2150c051fe96224"
     },
     {
       "id": "atalanta-vs-inter",
@@ -2147,14 +2272,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2176,14 +2301,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+          "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2310,11 +2435,11 @@
               "id": "atalanta-vs-inter--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_5458cc437e60a57ab38df02d",
+              "variant_key": "sv_b9a4754dd8779c45821c460d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2323,11 +2448,11 @@
               "id": "atalanta-vs-inter--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_b9a4754dd8779c45821c460d",
+              "variant_key": "sv_5458cc437e60a57ab38df02d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2600,12 +2725,12 @@
     {
       "id": "playoffs-day-2-united-states-vs-hungary",
       "name": "Playoffs, Day 2 United States vs Hungary",
-      "primary_stream_key": "d507a4a8718300e42668d5604f237fd19c99dbc483e6b0b889b79b47b8978d45",
+      "primary_stream_key": "e5e2eec29c4c6f457b1e8b16c3c9cc68943275100c1d129173c888fa6f900ede",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.72ac67f4-e8f1-4a1a-a8b7-08eca8efda2a/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
       "category": "today_match",
-      "header_profile": "android_tv",
+      "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
       "requires_headers": false,
@@ -2625,7 +2750,7 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -2636,14 +2761,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_b860a6719a8b279c42160bb6e23f868b",
+          "playback_id": "ctv_420781d9008618fb171d7c8e6582c79c",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2665,14 +2790,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_420781d9008618fb171d7c8e6582c79c",
+          "playback_id": "ctv_f925359d9182deca498406a22fb9a305",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2708,19 +2833,6 @@
               "id": "playoffs-day-2-united-states-vs-hungary--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_4dd0d5047ae58641981fbcf3",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_f925359d9182deca498406a22fb9a305",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "playoffs-day-2-united-states-vs-hungary--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_c8e85a337ffc30294738b714",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -2731,7 +2843,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "playoffs-day-2-united-states-vs-hungary--prime-video--3",
+              "id": "playoffs-day-2-united-states-vs-hungary--prime-video--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_23b60b22828d2d1621fb66ed",
@@ -2739,6 +2851,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_420781d9008618fb171d7c8e6582c79c",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "playoffs-day-2-united-states-vs-hungary--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_4dd0d5047ae58641981fbcf3",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f925359d9182deca498406a22fb9a305",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2773,9 +2898,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-22T20:04:38+00:00",
-      "start_at": "2026-11-22T20:04:38+00:00",
-      "end_time": "2026-11-22T22:34:38+00:00",
+      "start_time": "2026-11-22T20:24:37+00:00",
+      "start_at": "2026-11-22T20:24:37+00:00",
+      "end_time": "2026-11-22T22:54:37+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:playoffs-united-states-vs-hungary",
       "status": "LIVE_NOW",
@@ -2789,7 +2914,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_f925359d9182deca498406a22fb9a305",
+      "playback_id": "ctv_b860a6719a8b279c42160bb6e23f868b",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -2906,6 +3031,21 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401931822)",
+        "LiveScore livescore=NS (1, event 1911852)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401931822",
+        "livescore": "1911852"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/byn6c21659694982.png",
