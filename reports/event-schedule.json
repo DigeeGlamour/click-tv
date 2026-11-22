@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T17:45:33.683812+00:00",
+  "generated_at": "2026-11-22T17:53:23.779828+00:00",
   "today_match_count": 22,
   "upcoming_count": 70,
   "today_missing_logo": [],
@@ -8,13 +8,13 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 300,
-  "provider_rejected": 108,
+  "provider_fixture": 299,
+  "provider_rejected": 109,
   "provider_rejected_reasons": {
     "provider_dead_status": 66,
     "status_neither_live_nor_upcoming": 2,
     "kickoff_missing_and_not_live": 6,
-    "upcoming_kickoff_already_passed": 34
+    "upcoming_kickoff_already_passed": 35
   },
   "provider_rejected_by_source": {
     "sm-sports-data": {
@@ -31,8 +31,8 @@
       "status_neither_live_nor_upcoming": 1
     },
     "sm-fancode": {
-      "upcoming_kickoff_already_passed": 8,
-      "total": 9,
+      "upcoming_kickoff_already_passed": 9,
+      "total": 10,
       "status_neither_live_nor_upcoming": 1
     },
     "kajju-sonyliv-backup": {
@@ -510,6 +510,15 @@
       "start_time": "2026-11-21T23:30:00+00:00"
     },
     {
+      "name": "Racing Club de Santander vs Real Sociedad",
+      "competition": "LALIGA 2026-27",
+      "sport": "football",
+      "source_id": "sm-fancode",
+      "status": "UPCOMING",
+      "reason": "upcoming_kickoff_already_passed",
+      "start_time": "2026-11-22T15:15:00+00:00"
+    },
+    {
       "name": "Sharjah vs Emirates Red",
       "competition": "Emirates D20, 2026",
       "sport": "cricket",
@@ -571,29 +580,20 @@
       "status": "ENDED",
       "reason": "provider_dead_status",
       "start_time": "2026-11-22T14:00:00+00:00"
-    },
-    {
-      "name": "Charlton Athletic WFC Vs Aston Villa",
-      "competition": "Women's Super League",
-      "sport": "football",
-      "source_id": "sm-sports-data",
-      "status": "ENDED",
-      "reason": "provider_dead_status",
-      "start_time": "2026-11-22T14:00:00+00:00"
     }
   ],
   "ambiguous_suppressed": 0,
   "unverified_suppressed": 0,
   "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
-  "provider_rejected_fixtures_truncated": 32,
+  "provider_rejected_fixtures_truncated": 33,
   "streams_attached": 0,
   "fixtures_with_stream": 12,
   "pool_offered": 0,
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 300,
+    "total": 299,
     "discarded": 100,
     "examples": [
       {
@@ -1080,32 +1080,70 @@
   },
   "reused_event_ids": 0,
   "authority_status": {
-    "applied": 0,
+    "applied": 2,
     "pending_confirmation": 0,
-    "live": 5,
+    "live": 4,
     "recorded": 34,
-    "conflict": 2,
+    "conflict": 1,
     "unmatched": 45,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 5,
-      "UPCOMING": 34
+      "LIVE": 4,
+      "UPCOMING": 34,
+      "FINISHED": 2
     },
     "by_confidence": {
-      "LOW": 13,
-      "HIGH": 26,
-      "CONFLICT": 2
+      "LOW": 12,
+      "HIGH": 28,
+      "CONFLICT": 1
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "Argentina U17 Vs Mozambique U17",
+        "fixture_id": "provider:argentina-u17-vs-mozambique-u17|u17 world championship|2026-11-22",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401873539)",
+          "LiveScore livescore=FT (6, event 1885746)"
+        ],
+        "authority_finished_seen_at": "2026-11-22T17:52:46.839906+00:00",
+        "remove_after": "2026-11-22T18:12:46.839906+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": ""
+      },
+      {
+        "name": "Real Racing Club Vs Real Sociedad",
+        "fixture_id": "provider:real-racing-club-vs-real-sociedad|laliga|2026-11-22",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401882800)",
+          "LiveScore livescore=FT (6, event 1810743)"
+        ],
+        "authority_finished_seen_at": "2026-11-22T17:52:46.839906+00:00",
+        "remove_after": "2026-11-22T18:12:46.839906+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": ""
+      }
+    ],
     "conflicts": [
       {
         "name": "Argentina U17 Vs Mozambique U17",
-        "reason": "independent authorities disagree: ESPN espn-header=78' (STATUS_SECOND_HALF, event 401873539); LiveScore livescore=FT (6, event 1885746)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1113,7 +1151,17 @@
       },
       {
         "name": "Real Racing Club Vs Real Sociedad",
-        "reason": "independent authorities disagree: ESPN espn-header=90' (STATUS_SECOND_HALF, event 401882800); LiveScore livescore=FT (6, event 1810743)",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Trabzonspor Vs Eyüpspor",
+        "reason": "independent authorities disagree: ESPN espn-header=66' (STATUS_SECOND_HALF, event 401888249); LiveScore livescore=FT (6, event 1821048)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1124,45 +1172,27 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 2,
+    "applied": 3,
     "pending_confirmation": 0,
-    "live": 5,
+    "live": 4,
     "recorded": 2,
-    "conflict": 2,
-    "unmatched": 14,
+    "conflict": 1,
+    "unmatched": 12,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "FINISHED": 2,
-      "LIVE": 5,
+      "FINISHED": 3,
+      "LIVE": 4,
       "UPCOMING": 2
     },
     "by_confidence": {
-      "HIGH": 2,
-      "CONFLICT": 2,
-      "LOW": 7
+      "HIGH": 3,
+      "CONFLICT": 1,
+      "LOW": 6
     },
     "applied_fixtures": [
-      {
-        "name": "FC Augsburg Vs 1 FSV Mainz 05",
-        "fixture_id": "provider:fc-augsburg-vs-1-fsv-mainz-05|bundesliga|2026-11-22",
-        "status": "FINISHED",
-        "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ],
-        "evidence": [
-          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401884733)",
-          "LiveScore livescore=FT (6, event 1812734)"
-        ],
-        "authority_finished_seen_at": "2026-11-22T17:24:34.338653+00:00",
-        "remove_after": "2026-11-22T17:44:34.338653+00:00",
-        "was_playable": true,
-        "lifecycle_state_before": "END_PENDING"
-      },
       {
         "name": "Arsenal Vs West Ham",
         "fixture_id": "provider:arsenal-vs-west-ham|women super league|2026-11-22",
@@ -1179,20 +1209,46 @@
         "authority_finished_seen_at": "2026-11-22T17:44:33.065837+00:00",
         "remove_after": "2026-11-22T18:04:33.065837+00:00",
         "was_playable": true,
-        "lifecycle_state_before": "LIVE"
-      }
-    ],
-    "conflicts": [
+        "lifecycle_state_before": "END_PENDING"
+      },
       {
-        "name": "FC Augsburg Vs 1 FSV Mainz 05",
-        "reason": "authority says FINISHED while the card still carries a route",
+        "name": "Real Racing Club Vs Real Sociedad",
+        "fixture_id": "provider:real-racing-club-vs-real-sociedad|laliga|2026-11-22",
         "status": "FINISHED",
         "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
-        ]
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401882800)",
+          "LiveScore livescore=FT (6, event 1810743)"
+        ],
+        "authority_finished_seen_at": "2026-11-22T17:52:46.839906+00:00",
+        "remove_after": "2026-11-22T18:12:46.839906+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
       },
+      {
+        "name": "Argentina U17 Vs Mozambique U17",
+        "fixture_id": "provider:argentina-u17-vs-mozambique-u17|u17 world championship|2026-11-22",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401873539)",
+          "LiveScore livescore=FT (6, event 1885746)"
+        ],
+        "authority_finished_seen_at": "2026-11-22T17:52:46.839906+00:00",
+        "remove_after": "2026-11-22T18:12:46.839906+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
+    "conflicts": [
       {
         "name": "Arsenal Vs West Ham",
         "reason": "authority says FINISHED while the card still carries a route",
@@ -1205,9 +1261,9 @@
       },
       {
         "name": "Real Racing Club Vs Real Sociedad",
-        "reason": "independent authorities disagree: ESPN espn-header=90' (STATUS_SECOND_HALF, event 401882800); LiveScore livescore=FT (6, event 1810743)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1215,7 +1271,17 @@
       },
       {
         "name": "Argentina U17 Vs Mozambique U17",
-        "reason": "independent authorities disagree: ESPN espn-header=78' (STATUS_SECOND_HALF, event 401873539); LiveScore livescore=FT (6, event 1885746)",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Trabzonspor Vs Eyüpspor",
+        "reason": "independent authorities disagree: ESPN espn-header=66' (STATUS_SECOND_HALF, event 401888249); LiveScore livescore=FT (6, event 1821048)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1226,46 +1292,30 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 11,
+    "asked": 7,
     "finished": 2,
     "unplayable": 0,
-    "cache_hits": 1,
-    "no_verdict": 10
+    "cache_hits": 2,
+    "no_verdict": 7
   },
   "live_protection": {
     "carried_forward": 9,
-    "released_ended": 1,
-    "released_ended_ids": [
-      "fc-augsburg-vs-1-fsv-mainz-05"
-    ],
-    "retired_terminal": [
-      {
-        "id": "brescia-lions-vs-rome-gladiators",
-        "name": "Brescia Lions vs Rome Gladiators",
-        "provenance": "multi_signal_confirmed",
-        "reason": "multi-signal confirmation: estimated end passed, every link dead, and 5 consecutive scans with no live signal"
-      },
-      {
-        "id": "fc-augsburg-vs-1-fsv-mainz-05",
-        "name": "FC Augsburg Vs 1 FSV Mainz 05",
-        "provenance": "feed_strong_end",
-        "reason": "authoritative finished status"
-      }
-    ],
-    "released_listing_expired": 1,
+    "released_ended": 0,
+    "released_ended_ids": [],
+    "retired_terminal": [],
+    "released_listing_expired": 0,
     "released_dead_link": 0,
-    "released_stale": 2,
+    "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 6,
-    "probe_dead": 4,
+    "probe_alive": 5,
+    "probe_dead": 3,
     "probe_inconclusive": 0,
     "end_pending": 4,
-    "released_confirmed": 2,
+    "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
       "LIVE": 5,
-      "ENDED": 3,
       "END_PENDING": 4
     },
     "reconciled_into_canonical": 0,
@@ -1273,15 +1323,15 @@
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 2,
+    "added": 0,
     "total": 1881,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
-    "absence_only_refused": 1,
+    "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 2
+    "decided_this_scan": 0
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1317,17 +1367,17 @@
   "sports_poster_enrichment": {
     "attempted": 86,
     "poster_filled": 0,
-    "badge_filled": 42,
+    "badge_filled": 44,
     "badge_used_as_logo": 0,
     "cache_hits": 22,
-    "cached_entries": 1803,
+    "cached_entries": 1804,
     "provider": {
-      "requests": 2,
-      "hits": 0,
+      "requests": 5,
+      "hits": 3,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 75,
+      "skipped_rate_limited": 72,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1420,10 +1470,10 @@
           "published": 2
         },
         "srhady-willow-event": {
-          "total": 25,
+          "total": 26,
           "cricket": 24,
           "football": 1,
-          "quarantined": 0,
+          "quarantined": 1,
           "rejected": 0,
           "published": 25
         },
@@ -1505,7 +1555,7 @@
       "quarantined_events": [
         {
           "name": "Dubai Capitals vs Abu Dhabi Knight Riders",
-          "source": "srhady-primevideo-sports",
+          "source": "srhady-primevideo-sports, srhady-willow-event",
           "competition": "",
           "sport_type": "other",
           "reason": "fixture lookup: only one provider knows this (cricket)"
@@ -1738,9 +1788,9 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 4,
+      "provider_or_authority": 6,
       "estimate": 0,
-      "none": 18
+      "none": 16
     }
   },
   "fixture_stream_health": {
@@ -1766,16 +1816,16 @@
     "shadow_only": true,
     "fixtures": 92,
     "verified": 32,
-    "partial_authority": 7,
+    "partial_authority": 6,
     "unverified": 49,
-    "conflict": 4,
+    "conflict": 5,
     "matched_by_two_independent_authorities": 35,
-    "authority_agreements": 27,
-    "authority_disagreements": 2,
-    "card_status_conflicts": 2,
+    "authority_agreements": 29,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 4,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 6
+    "not_published": 3
   },
   "stream_health": {
     "sources_in_outage": [],
