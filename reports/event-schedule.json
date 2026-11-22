@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-11-22T18:05:36.519398+00:00",
-  "today_match_count": 20,
-  "upcoming_count": 68,
+  "generated_at": "2026-11-22T18:24:57.899076+00:00",
+  "today_match_count": 18,
+  "upcoming_count": 71,
   "today_missing_logo": [],
   "upcoming_missing_logo": [],
   "timezone": "Asia/Dhaka",
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 288,
+  "provider_fixture": 291,
   "provider_rejected": 116,
   "provider_rejected_reasons": {
     "provider_dead_status": 82,
@@ -596,7 +596,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 288,
+    "total": 291,
     "discarded": 100,
     "examples": [
       {
@@ -833,7 +833,7 @@
       },
       {
         "name": "World Feed vs St Simons Island, Georgia (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+        "source": "sm-fancode, vk1817-fancode-mirror",
         "competition": "The RSM Classic 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
@@ -1083,32 +1083,72 @@
   },
   "reused_event_ids": 0,
   "authority_status": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
-    "live": 6,
+    "live": 4,
     "recorded": 31,
-    "conflict": 1,
-    "unmatched": 44,
+    "conflict": 2,
+    "unmatched": 47,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 6,
-      "UPCOMING": 31
+      "LIVE": 4,
+      "UPCOMING": 31,
+      "FINISHED": 1
     },
     "by_confidence": {
-      "LOW": 12,
-      "HIGH": 25,
-      "CONFLICT": 1
+      "LOW": 10,
+      "CONFLICT": 2,
+      "HIGH": 26
     },
-    "applied_fixtures": [],
-    "conflicts": [
+    "applied_fixtures": [
       {
         "name": "Trabzonspor Vs Eyüpspor",
-        "reason": "independent authorities disagree: ESPN espn-header=86' (STATUS_SECOND_HALF, event 401888249); LiveScore livescore=FT (6, event 1821048)",
+        "fixture_id": "provider:trabzonspor-vs-eyüpspor|trendyol s per lig|2026-11-22",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401888249)",
+          "LiveScore livescore=FT (6, event 1821048)"
+        ],
+        "authority_finished_seen_at": "2026-11-22T18:24:23.643755+00:00",
+        "remove_after": "2026-11-22T18:44:23.643755+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": ""
+      }
+    ],
+    "conflicts": [
+      {
+        "name": "Liverpool FC Vs Manchester United",
+        "reason": "independent authorities disagree: ESPN espn-header=64' (STATUS_SECOND_HALF, event 401878755); LiveScore livescore=FT (6, event 1793647)",
         "status": "",
         "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Lorient Vs Stade Rennais",
+        "reason": "independent authorities disagree: ESPN espn-header=80' (STATUS_SECOND_HALF, event 401876401); LiveScore livescore=FT (6, event 1794768)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Trabzonspor Vs Eyüpspor",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1119,42 +1159,24 @@
   "authority_status_carried": {
     "applied": 3,
     "pending_confirmation": 0,
-    "live": 6,
+    "live": 5,
     "recorded": 0,
-    "conflict": 1,
-    "unmatched": 12,
+    "conflict": 2,
+    "unmatched": 10,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
       "FINISHED": 3,
-      "LIVE": 6
+      "LIVE": 5
     },
     "by_confidence": {
       "HIGH": 3,
-      "CONFLICT": 1,
-      "LOW": 6
+      "CONFLICT": 2,
+      "LOW": 5
     },
     "applied_fixtures": [
-      {
-        "name": "Arsenal Vs West Ham",
-        "fixture_id": "provider:arsenal-vs-west-ham|women super league|2026-11-22",
-        "status": "FINISHED",
-        "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ],
-        "evidence": [
-          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401902858)",
-          "LiveScore livescore=FT (6, event 1850316)"
-        ],
-        "authority_finished_seen_at": "2026-11-22T17:44:33.065837+00:00",
-        "remove_after": "2026-11-22T18:04:33.065837+00:00",
-        "was_playable": true,
-        "lifecycle_state_before": "END_PENDING"
-      },
       {
         "name": "Real Racing Club Vs Real Sociedad",
         "fixture_id": "provider:real-racing-club-vs-real-sociedad|laliga|2026-11-22",
@@ -1190,19 +1212,27 @@
         "remove_after": "2026-11-22T18:12:46.839906+00:00",
         "was_playable": true,
         "lifecycle_state_before": "END_PENDING"
-      }
-    ],
-    "conflicts": [
+      },
       {
-        "name": "Arsenal Vs West Ham",
-        "reason": "authority says FINISHED while the card still carries a route",
+        "name": "Trabzonspor Vs Eyüpspor",
+        "fixture_id": "provider:trabzonspor-vs-eyüpspor|trendyol s per lig|2026-11-22",
         "status": "FINISHED",
         "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
-        ]
-      },
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401888249)",
+          "LiveScore livescore=FT (6, event 1821048)"
+        ],
+        "authority_finished_seen_at": "2026-11-22T18:24:23.643755+00:00",
+        "remove_after": "2026-11-22T18:44:23.643755+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
+    "conflicts": [
       {
         "name": "Real Racing Club Vs Real Sociedad",
         "reason": "authority says FINISHED while the card still carries a route",
@@ -1225,7 +1255,27 @@
       },
       {
         "name": "Trabzonspor Vs Eyüpspor",
-        "reason": "independent authorities disagree: ESPN espn-header=86' (STATUS_SECOND_HALF, event 401888249); LiveScore livescore=FT (6, event 1821048)",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Lorient Vs Stade Rennais",
+        "reason": "independent authorities disagree: ESPN espn-header=80' (STATUS_SECOND_HALF, event 401876401); LiveScore livescore=FT (6, event 1794768)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Liverpool FC Vs Manchester United",
+        "reason": "independent authorities disagree: ESPN espn-header=64' (STATUS_SECOND_HALF, event 401878755); LiveScore livescore=FT (6, event 1793647)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1236,69 +1286,63 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 9,
-    "finished": 3,
+    "asked": 8,
+    "finished": 1,
     "unplayable": 0,
-    "cache_hits": 2,
+    "cache_hits": 1,
     "no_verdict": 8
   },
   "live_protection": {
-    "carried_forward": 10,
+    "carried_forward": 8,
     "released_ended": 2,
     "released_ended_ids": [
-      "arsenal-vs-west-ham",
-      "arsenal-vs-west-ham-united"
+      "real-racing-club-vs-real-sociedad",
+      "argentina-u17-vs-mozambique-u17"
     ],
     "retired_terminal": [
       {
-        "id": "charlton-athletic-f-c-women-vs-aston-villa-women",
-        "name": "Charlton Athletic F C Women vs Aston Villa Women",
-        "provenance": "multi_signal_confirmed",
-        "reason": "multi-signal confirmation: estimated end passed, every link dead, and 7 consecutive scans with no live signal"
-      },
-      {
-        "id": "arsenal-vs-west-ham",
-        "name": "Arsenal Vs West Ham",
-        "provenance": "authority_finished",
+        "id": "real-racing-club-vs-real-sociedad",
+        "name": "Real Racing Club Vs Real Sociedad",
+        "provenance": "feed_strong_end",
         "reason": "authoritative finished status"
       },
       {
-        "id": "arsenal-vs-west-ham-united",
-        "name": "Arsenal vs West Ham United",
+        "id": "argentina-u17-vs-mozambique-u17",
+        "name": "Argentina U17 Vs Mozambique U17",
         "provenance": "authority_finished",
         "reason": "authoritative finished status"
       }
     ],
     "released_listing_expired": 0,
     "released_dead_link": 0,
-    "released_stale": 1,
+    "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 5,
-    "probe_dead": 5,
+    "probe_alive": 4,
+    "probe_dead": 4,
     "probe_inconclusive": 0,
-    "end_pending": 5,
-    "released_confirmed": 1,
+    "end_pending": 3,
+    "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
       "LIVE": 5,
-      "END_PENDING": 5,
-      "ENDED": 3
+      "END_PENDING": 3,
+      "ENDED": 2
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 3,
-    "total": 1884,
+    "added": 2,
+    "total": 1886,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 3
+    "decided_this_scan": 2
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1332,19 +1376,19 @@
     "unmatched": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 83,
+    "attempted": 85,
     "poster_filled": 0,
     "badge_filled": 44,
     "badge_used_as_logo": 0,
     "cache_hits": 23,
     "cached_entries": 1804,
     "provider": {
-      "requests": 3,
-      "hits": 1,
+      "requests": 4,
+      "hits": 2,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 70,
+      "skipped_rate_limited": 72,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1409,12 +1453,12 @@
   ],
   "sport_filter": {
     "at_merge": {
-      "total": 89,
-      "published": 82,
+      "total": 92,
+      "published": 85,
       "rejected": 4,
       "quarantined": 3,
       "states": {
-        "confirmed_football": 45,
+        "confirmed_football": 48,
         "confirmed_cricket": 37,
         "unknown": 3,
         "confirmed_other": 4
@@ -1437,10 +1481,10 @@
           "published": 2
         },
         "srhady-willow-event": {
-          "total": 25,
+          "total": 24,
           "cricket": 24,
           "football": 0,
-          "quarantined": 1,
+          "quarantined": 0,
           "rejected": 0,
           "published": 24
         },
@@ -1453,30 +1497,30 @@
           "published": 19
         },
         "sportlive-fancode-backup": {
-          "total": 19,
+          "total": 21,
           "cricket": 9,
-          "football": 10,
+          "football": 12,
           "quarantined": 0,
           "rejected": 0,
-          "published": 19
-        },
-        "vk1817-fancode-mirror": {
-          "total": 19,
-          "cricket": 9,
-          "football": 10,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
+          "published": 21
         },
         "drmlive-fancode-mirror": {
-          "total": 19,
+          "total": 21,
           "cricket": 9,
-          "football": 10,
+          "football": 12,
           "quarantined": 0,
           "rejected": 0,
-          "published": 19
+          "published": 21
         },
         "sayanpal-fancode-mirror": {
+          "total": 21,
+          "cricket": 9,
+          "football": 12,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 21
+        },
+        "vk1817-fancode-mirror": {
           "total": 19,
           "cricket": 9,
           "football": 10,
@@ -1522,7 +1566,7 @@
       "quarantined_events": [
         {
           "name": "Dubai Capitals vs Abu Dhabi Knight Riders",
-          "source": "srhady-primevideo-sports, srhady-willow-event",
+          "source": "srhady-primevideo-sports",
           "competition": "",
           "sport_type": "other",
           "reason": "fixture lookup: only one provider knows this (cricket)"
@@ -1545,30 +1589,22 @@
       "leaks": []
     },
     "today_match": {
-      "total": 20,
-      "published": 20,
+      "total": 18,
+      "published": 18,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 14,
+        "confirmed_football": 12,
         "confirmed_cricket": 6
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 13,
+          "total": 11,
           "cricket": 3,
-          "football": 10,
+          "football": 8,
           "quarantined": 0,
           "rejected": 0,
-          "published": 13
-        },
-        "srhady-primevideo-sports": {
-          "total": 4,
-          "cricket": 2,
-          "football": 2,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 4
+          "published": 11
         },
         "srhady-willow-event": {
           "total": 2,
@@ -1578,6 +1614,14 @@
           "rejected": 0,
           "published": 2
         },
+        "srhady-primevideo-sports": {
+          "total": 4,
+          "cricket": 2,
+          "football": 2,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 4
+        },
         "sm-fancode": {
           "total": 3,
           "cricket": 1,
@@ -1586,31 +1630,7 @@
           "rejected": 0,
           "published": 3
         },
-        "sportlive-fancode-backup": {
-          "total": 2,
-          "cricket": 0,
-          "football": 2,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 2
-        },
         "vk1817-fancode-mirror": {
-          "total": 2,
-          "cricket": 0,
-          "football": 2,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 2
-        },
-        "drmlive-fancode-mirror": {
-          "total": 2,
-          "cricket": 0,
-          "football": 2,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 2
-        },
-        "sayanpal-fancode-mirror": {
           "total": 2,
           "cricket": 0,
           "football": 2,
@@ -1641,6 +1661,30 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 1
+        },
+        "sportlive-fancode-backup": {
+          "total": 1,
+          "cricket": 0,
+          "football": 1,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
+        },
+        "drmlive-fancode-mirror": {
+          "total": 1,
+          "cricket": 0,
+          "football": 1,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 1,
+          "cricket": 0,
+          "football": 1,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
         }
       },
       "rejected_examples": [],
@@ -1648,13 +1692,13 @@
       "leaks": []
     },
     "upcoming": {
-      "total": 68,
-      "published": 68,
+      "total": 71,
+      "published": 71,
       "rejected": 0,
       "quarantined": 0,
       "states": {
         "confirmed_cricket": 31,
-        "confirmed_football": 37
+        "confirmed_football": 40
       },
       "by_source": {
         "sm-sports-data": {
@@ -1682,30 +1726,30 @@
           "published": 18
         },
         "sportlive-fancode-backup": {
-          "total": 18,
+          "total": 21,
           "cricket": 9,
-          "football": 9,
+          "football": 12,
           "quarantined": 0,
           "rejected": 0,
-          "published": 18
-        },
-        "vk1817-fancode-mirror": {
-          "total": 18,
-          "cricket": 9,
-          "football": 9,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
+          "published": 21
         },
         "drmlive-fancode-mirror": {
-          "total": 18,
+          "total": 21,
           "cricket": 9,
-          "football": 9,
+          "football": 12,
           "quarantined": 0,
           "rejected": 0,
-          "published": 18
+          "published": 21
         },
         "sayanpal-fancode-mirror": {
+          "total": 21,
+          "cricket": 9,
+          "football": 12,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 21
+        },
+        "vk1817-fancode-mirror": {
           "total": 18,
           "cricket": 9,
           "football": 9,
@@ -1727,15 +1771,15 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 404,
+    "raw_events": 407,
     "cricket_kept": 37,
-    "football_kept": 45,
+    "football_kept": 48,
     "other_discarded": 104,
     "unresolved": 3,
-    "today_final": 20,
-    "upcoming_final": 68,
+    "today_final": 18,
+    "upcoming_final": 71,
     "published_states": {
-      "confirmed_football": 51,
+      "confirmed_football": 52,
       "confirmed_cricket": 37
     },
     "other_sport_leak": 0,
@@ -1762,50 +1806,50 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 5,
+      "provider_or_authority": 4,
       "estimate": 0,
-      "none": 15
+      "none": 14
     }
   },
   "fixture_stream_health": {
-    "fixtures": 100,
-    "published_fixtures": 88,
-    "fixtures_with_verified_stream": 29,
-    "fixtures_with_zero_verified": 71,
-    "published_without_stream": 71,
-    "fallback_available": 10,
-    "targeted_fixtures": 11,
-    "targeted_attempts": 35,
-    "fixtures_with_a_first_link_time": 8,
-    "candidate_routes": 125,
-    "verified_routes": 77,
-    "failed_routes": 48,
-    "fixtures_touched_by_a_route_failure": 20,
+    "fixtures": 101,
+    "published_fixtures": 89,
+    "fixtures_with_verified_stream": 27,
+    "fixtures_with_zero_verified": 74,
+    "published_without_stream": 74,
+    "fallback_available": 8,
+    "targeted_fixtures": 10,
+    "targeted_attempts": 34,
+    "fixtures_with_a_first_link_time": 7,
+    "candidate_routes": 114,
+    "verified_routes": 69,
+    "failed_routes": 45,
+    "fixtures_touched_by_a_route_failure": 18,
     "fixtures_left_with_nothing": 5,
     "distinct_failure_codes": 5,
-    "unrecognised_candidate_groups": 47,
-    "unrecognised_failed_routes": 84
+    "unrecognised_candidate_groups": 49,
+    "unrecognised_failed_routes": 87
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 88,
+    "fixtures": 89,
     "verified": 32,
-    "partial_authority": 7,
-    "unverified": 46,
+    "partial_authority": 5,
+    "unverified": 49,
     "conflict": 3,
-    "matched_by_two_independent_authorities": 34,
-    "authority_agreements": 27,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 2,
+    "matched_by_two_independent_authorities": 32,
+    "authority_agreements": 26,
+    "authority_disagreements": 2,
+    "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 7
+    "not_published": 6
   },
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 88,
+    "published_fixtures": 89,
     "fixtures_with_stream": 10,
-    "fixtures_playable_via_catalogue": 7,
+    "fixtures_playable_via_catalogue": 5,
     "fixtures_with_fresh_stream": 9,
     "fixtures_with_carried_stream": 1,
     "today_with_stream": 10,
