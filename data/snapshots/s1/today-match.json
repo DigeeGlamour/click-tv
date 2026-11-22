@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-22T12:42:02.610800+00:00",
+  "updated_at": "2026-11-22T12:57:15.938845+00:00",
   "count": 11,
-  "filtered_stale": 0,
+  "filtered_stale": 1,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -188,12 +188,20 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-22T12:44:57.480638+00:00"
     },
     {
       "id": "ilt20",
       "name": "ILT20",
-      "primary_stream_key": "f0b6e3adabda2adbf8c17508e381e7a39f836b4165f2642c8e81c2c67976fecf",
+      "primary_stream_key": "31e22f25241c4501634c83d35ab163d421aaffb5ca53a23434c8a7e9605009df",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/8/80/International_League_T20_logo.svg/330px-International_League_T20_logo.svg.png",
@@ -201,7 +209,7 @@
       "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
-      "requires_headers": false,
+      "requires_headers": true,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -221,7 +229,7 @@
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": true,
+          "requires_headers": false,
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
@@ -229,14 +237,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_8c7d5ff3bcd249c11df338feeba9f530",
+          "playback_id": "ctv_168fcbb20cab26d11dfa6a2d23b8c819",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -247,42 +255,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "ilt20--willow",
-          "name": "WILLOW",
-          "normalized_name": "willow",
-          "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/8/80/International_League_T20_logo.svg/330px-International_League_T20_logo.svg.png",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "ilt20--willow--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "ilt20--willow--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_0d2b9abad4cadf39c066d3bc",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_168fcbb20cab26d11dfa6a2d23b8c819",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "ilt20--tnt3-sports",
           "name": "TNT3 SPORTS",
@@ -318,10 +290,46 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "ilt20--willow",
+          "name": "WILLOW",
+          "normalized_name": "willow",
+          "logo": "https://thumb.wikimedia.org/wikipedia/en/thumb/8/80/International_League_T20_logo.svg/330px-International_League_T20_logo.svg.png",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "ilt20--willow--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "ilt20--willow--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_0d2b9abad4cadf39c066d3bc",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_168fcbb20cab26d11dfa6a2d23b8c819",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "ilt20--willow",
+      "default_channel_id": "ilt20--tnt3-sports",
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 0,
@@ -366,7 +374,7 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_168fcbb20cab26d11dfa6a2d23b8c819",
+      "playback_id": "ctv_8c7d5ff3bcd249c11df338feeba9f530",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -513,9 +521,9 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "start_time": "2026-11-22T12:24:28+00:00",
-          "start_at": "2026-11-22T12:24:28+00:00",
-          "end_time": "2026-11-22T17:24:28+00:00",
+          "start_time": "2026-11-22T12:44:32+00:00",
+          "start_at": "2026-11-22T12:44:32+00:00",
+          "end_time": "2026-11-22T17:44:32+00:00",
           "end_time_source": "sport",
           "competition": "ACC Mens Asia Cup Rising Stars 2026 - 8th Match",
           "fixture_id": "provider:india-a-vs-pakistan-a|acc men asia cup rising stars 2026 8th|2026-11-22",
@@ -552,14 +560,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_b2f660e79558ed4a878d961e43e1599a",
+          "playback_id": "ctv_1bb40f6a17c7259cc36df93ff16cf13f",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -581,14 +589,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_1bb40f6a17c7259cc36df93ff16cf13f",
+          "playback_id": "ctv_b2f660e79558ed4a878d961e43e1599a",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -650,11 +658,11 @@
               "id": "india-a-vs-pakistan-a--willow--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_7287480aa6123239be381dab",
+              "variant_key": "sv_34444b419b559f4437be2a1e",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_430c3ff8fbac6d35629498245ca6c632",
+              "playback_id": "ctv_eb3a76ee8848c42beee3ca70539db89f",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -663,11 +671,11 @@
               "id": "india-a-vs-pakistan-a--willow--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_34444b419b559f4437be2a1e",
+              "variant_key": "sv_7287480aa6123239be381dab",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_eb3a76ee8848c42beee3ca70539db89f",
+              "playback_id": "ctv_430c3ff8fbac6d35629498245ca6c632",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -748,11 +756,11 @@
               "id": "india-a-vs-pakistan-a--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_a3793ace306a50a6f728a5bc",
+              "variant_key": "sv_57f72a18bff3918fbe476aa0",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_b2f660e79558ed4a878d961e43e1599a",
+              "playback_id": "ctv_1bb40f6a17c7259cc36df93ff16cf13f",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -761,11 +769,11 @@
               "id": "india-a-vs-pakistan-a--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_57f72a18bff3918fbe476aa0",
+              "variant_key": "sv_a3793ace306a50a6f728a5bc",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_1bb40f6a17c7259cc36df93ff16cf13f",
+              "playback_id": "ctv_b2f660e79558ed4a878d961e43e1599a",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -791,20 +799,20 @@
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
         },
         {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        },
-        {
           "source_id": "srhady-willow-event",
           "source_name": "Willow Event Sports",
           "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
+        },
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
         }
       ],
       "source_ids": [
         "sm-sports-data",
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
+        "srhady-willow-event",
+        "srhady-primevideo-sports"
       ],
       "drm": {
         "type": "clearkey",
@@ -992,8 +1000,8 @@
       ],
       "start_time": "2026-11-22T11:00:00+00:00",
       "start_at": "2026-11-22T11:00:00+00:00",
-      "end_time": "2026-11-22T13:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-22T13:44:32+00:00",
+      "end_time_source": "assumed",
       "competition": "Italia T10 League",
       "fixture_id": "provider:italia-t10-league|italia t10 league|2026-11-22",
       "status": "LIVE_NOW",
@@ -1303,19 +1311,19 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-22T12:04:42.444094+00:00"
     },
     {
-      "id": "sharjah-warriorz-vs-gulf-giants",
-      "name": "Sharjah Warriorz vs Gulf Giants",
-      "primary_stream_key": "1fbffb94539fc4e85fc04eef8ea3a837aeb3155fd5a88d0ee4622ba9402fbc82",
+      "id": "united-arab-emirates-vs-nepal",
+      "name": "United Arab Emirates vs Nepal",
+      "primary_stream_key": "d53d40341ac3610d93c9d97bda0a78dc53b1d3e877e07d5251d688f85dba0827",
       "sport_type": "cricket",
       "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.e000e3d7-eeac-4eb4-9cb7-f6f673e4c3ab/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
+      "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.87c723c7-0535-4196-8c99-d5472eca5403/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
       "category": "today_match",
-      "header_profile": "android_chrome",
+      "header_profile": "android_tv",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
       "requires_headers": false,
@@ -1346,6 +1354,64 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_9437f7b847773f0c5bb05b00932d1d67",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_35923afdd6862a188a275cf9ba051969",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
           "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
@@ -1353,7 +1419,472 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_d7a097554edf6b364400a68696d8252a",
+          "playback_id": "ctv_4a311acd046c267f477e41191829180e",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-willow-event",
+          "host": "ss-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_b4809f658b363673754e40f97f1954a3",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-5",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-willow-event",
+          "host": "a96aivottlinear-a.akamaihd.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_eaea076626a196070ac10c8ee7053b07",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "united-arab-emirates-vs-nepal--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.87c723c7-0535-4196-8c99-d5472eca5403/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "united-arab-emirates-vs-nepal--prime-video--1",
+          "stream_count": 6,
+          "backup_count": 5,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "united-arab-emirates-vs-nepal--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_a805199c6e43c7d5f8ab2caf",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_45321d347d3960a4f854d4f804557b08",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "united-arab-emirates-vs-nepal--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_40b5984104c08534ce93ba98",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_9437f7b847773f0c5bb05b00932d1d67",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "united-arab-emirates-vs-nepal--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_69b889f788a97aa5addcd66d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "united-arab-emirates-vs-nepal--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_802e87705536c0de0035be37",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_7d7ca6819c39c11bc7e501a50b8835de",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "united-arab-emirates-vs-nepal--prime-video--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_3fac1a44c6771cbf82c33060",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_35923afdd6862a188a275cf9ba051969",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "united-arab-emirates-vs-nepal--prime-video--6",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_64b1265d54d66528d0699925",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ],
+          "dropped_variant_count": 2
+        },
+        {
+          "id": "united-arab-emirates-vs-nepal--willow",
+          "name": "Willow",
+          "normalized_name": "willow",
+          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.87c723c7-0535-4196-8c99-d5472eca5403/3/BOXART-16X9/en-US._UR1920,1080_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-willow-event",
+          "source_ids": [
+            "srhady-willow-event"
+          ],
+          "primary_stream_id": "united-arab-emirates-vs-nepal--willow--1",
+          "stream_count": 2,
+          "backup_count": 1,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "united-arab-emirates-vs-nepal--willow--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_612588a69c9f478cacbab2ba",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_b4809f658b363673754e40f97f1954a3",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "united-arab-emirates-vs-nepal--willow--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b23de88ebf9dbdb8b7a85493",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_eaea076626a196070ac10c8ee7053b07",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 2,
+      "default_channel_id": "united-arab-emirates-vs-nepal--prime-video",
+      "channel_stats": {
+        "streams_in": 10,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 2,
+        "variants": 8,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "standby_link_count": 4,
+      "standby": [
+        {
+          "name": "Standby-1",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "srhady-primevideo-sports",
+          "source_provenance": [
+            {
+              "source_id": "srhady-primevideo-sports",
+              "source_name": "Prime Video Free Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+            },
+            {
+              "source_id": "srhady-willow-event",
+              "source_name": "Willow Event Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
+            }
+          ],
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_11a2d513630f93b9073f486096d77176",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Standby-2",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "srhady-primevideo-sports",
+          "source_provenance": [
+            {
+              "source_id": "srhady-primevideo-sports",
+              "source_name": "Prime Video Free Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+            },
+            {
+              "source_id": "srhady-willow-event",
+              "source_name": "Willow Event Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
+            }
+          ],
+          "host": "otte.cache.aiv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_f1b2cfeef147a7d20afc3f6024bb9f43",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Standby-3",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "srhady-primevideo-sports",
+          "source_provenance": [
+            {
+              "source_id": "srhady-primevideo-sports",
+              "source_name": "Prime Video Free Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+            }
+          ],
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_496b633cb47f5aa80a6113dea3a95840",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Standby-4",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "srhady-primevideo-sports",
+          "source_provenance": [
+            {
+              "source_id": "srhady-primevideo-sports",
+              "source_name": "Prime Video Free Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+            }
+          ],
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_cf360d2cb0273f5c269494b5a5cc0350",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        },
+        {
+          "source_id": "srhady-willow-event",
+          "source_name": "Willow Event Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-22T12:44:32+00:00",
+      "start_at": "2026-11-22T12:44:32+00:00",
+      "end_time": "2026-11-22T17:44:32+00:00",
+      "end_time_source": "sport",
+      "competition": "ACC Mens Asia Cup Rising Stars 2026 - 7th Match",
+      "fixture_id": "provider:united-arab-emirates-vs-nepal|acc men asia cup rising stars 2026 7th|2026-11-22",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_cricket",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "cricket",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tua6w31713725676.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ns8ezg1597934556.png",
+      "playback_id": "ctv_45321d347d3960a4f854d4f804557b08",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "sharjah-warriorz-vs-gulf-giants",
+      "name": "Sharjah Warriorz vs Gulf Giants",
+      "primary_stream_key": "1fbffb94539fc4e85fc04eef8ea3a837aeb3155fd5a88d0ee4622ba9402fbc82",
+      "sport_type": "cricket",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.e000e3d7-eeac-4eb4-9cb7-f6f673e4c3ab/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 6,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_651dc181737be643166beb5fe771f4fb",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1393,7 +1924,7 @@
         },
         {
           "name": "Backup-3",
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -1404,14 +1935,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_651dc181737be643166beb5fe771f4fb",
+          "playback_id": "ctv_d7a097554edf6b364400a68696d8252a",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1518,11 +2049,11 @@
               "id": "sharjah-warriorz-vs-gulf-giants--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_eae71dca91c71111da2d82d4",
+              "variant_key": "sv_45cb1a77d6e2768e5b2ad3e5",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_d7a097554edf6b364400a68696d8252a",
+              "playback_id": "ctv_651dc181737be643166beb5fe771f4fb",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1544,11 +2075,11 @@
               "id": "sharjah-warriorz-vs-gulf-giants--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_45cb1a77d6e2768e5b2ad3e5",
+              "variant_key": "sv_eae71dca91c71111da2d82d4",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_651dc181737be643166beb5fe771f4fb",
+              "playback_id": "ctv_d7a097554edf6b364400a68696d8252a",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1638,9 +2169,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-22T12:24:28+00:00",
-      "start_at": "2026-11-22T12:24:28+00:00",
-      "end_time": "2026-11-22T16:24:28+00:00",
+      "start_time": "2026-11-22T12:44:32+00:00",
+      "start_at": "2026-11-22T12:44:32+00:00",
+      "end_time": "2026-11-22T16:44:32+00:00",
       "end_time_source": "sport",
       "competition": "International League T20 2026 - 2nd Match",
       "fixture_id": "provider:sharjah-warriorz-vs-gulf-giants|international league t20 2026 2nd|2026-11-22",
@@ -1665,6 +2196,97 @@
         "query_parameters": [],
         "drm": true
       }
+    },
+    {
+      "id": "brescia-lions-vs-rome-gladiators",
+      "name": "Brescia Lions vs Rome Gladiators",
+      "primary_stream_key": "",
+      "sport_type": "cricket",
+      "sport_type_derived": true,
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4251139_53165_BL_RG_fc-web.jpg",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "media",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "none",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "sm-fancode",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-fancode",
+          "source_name": "SM FanCode Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
+        },
+        {
+          "source_id": "sportlive-fancode-backup",
+          "source_name": "SportLive18 FanCode Backup",
+          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
+        },
+        {
+          "source_id": "drmlive-fancode-mirror",
+          "source_name": "FanCode Live Events (drmlive)",
+          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
+        },
+        {
+          "source_id": "sayanpal-fancode-mirror",
+          "source_name": "FanCode Auto Updated (sayanpal)",
+          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
+        },
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        }
+      ],
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
+      ],
+      "start_time": "2026-11-22T13:15:00+00:00",
+      "start_at": "2026-11-22T13:15:00+00:00",
+      "end_time": "2026-11-22T15:45:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Italia T10 2026",
+      "fixture_id": "provider:brescia-lions-vs-rome-gladiators|italia t10 2026|2026-11-22",
+      "status": "LINK_UPDATING",
+      "original_status": "UPCOMING",
+      "schedule_status": "LINK_UPDATING",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "source_start_time": "2026-11-22T13:15:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_cricket",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "cricket",
+      "allow_without_stream": true,
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "STARTING"
     },
     {
       "id": "italia-napoli-knights-vs-venice-livewires",
@@ -1842,9 +2464,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-22T12:24:28+00:00",
-      "start_at": "2026-11-22T12:24:28+00:00",
-      "end_time": "2026-11-22T16:24:28+00:00",
+      "start_time": "2026-11-22T12:44:32+00:00",
+      "start_at": "2026-11-22T12:44:32+00:00",
+      "end_time": "2026-11-22T16:44:32+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:italia-napoli-knights-vs-venice-livewires|2026-11-22",
       "status": "LIVE_NOW",
@@ -1873,7 +2495,7 @@
       "primary_stream_key": "2378f87b47c1a3e10af1ae6459f418022cf30673af524ac85342d124e21826b3",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.ddf4cae0-302f-4b00-bc1e-1954c580e061/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+      "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.ddf4cae0-302f-4b00-bc1e-1954c580e061/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
       "category": "today_match",
       "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
@@ -1895,35 +2517,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1952,7 +2545,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1979,6 +2572,35 @@
             "query_parameters": [],
             "drm": true
           }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
         }
       ],
       "channels": [
@@ -1986,7 +2608,7 @@
           "id": "manchester-city-vs-tottenham-hotspur--prime-video",
           "name": "Prime Video",
           "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.ddf4cae0-302f-4b00-bc1e-1954c580e061/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.ddf4cae0-302f-4b00-bc1e-1954c580e061/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
           "name_confidence": "explicit",
           "name_source": "channel_name",
           "provider": "srhady-primevideo-sports",
@@ -2020,19 +2642,6 @@
               "id": "manchester-city-vs-tottenham-hotspur--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "manchester-city-vs-tottenham-hotspur--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_b9a4754dd8779c45821c460d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -2043,7 +2652,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "manchester-city-vs-tottenham-hotspur--prime-video--4",
+              "id": "manchester-city-vs-tottenham-hotspur--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_5458cc437e60a57ab38df02d",
@@ -2051,6 +2660,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "manchester-city-vs-tottenham-hotspur--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2085,9 +2707,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-22T12:24:28+00:00",
-      "start_at": "2026-11-22T12:24:28+00:00",
-      "end_time": "2026-11-22T14:54:28+00:00",
+      "start_time": "2026-11-22T12:44:32+00:00",
+      "start_at": "2026-11-22T12:44:32+00:00",
+      "end_time": "2026-11-22T15:14:32+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:manchester-city-vs-tottenham-hotspur|2026-11-22",
       "status": "LIVE_NOW",
@@ -2113,17 +2735,18 @@
       }
     },
     {
-      "id": "united-arab-emirates-vs-nepal",
-      "name": "United Arab Emirates vs Nepal",
-      "primary_stream_key": "b20c11b5b5bd91b5827c3778393f24f3237b6136ea048fc97badfb57b6b8f816",
+      "id": "fc-barcelona-vs-villarreal",
+      "name": "FC Barcelona Vs Villarreal",
+      "primary_stream_key": "9013a6ae3f4556543765716cfede59160a7938f0053eedc3d1196baf8de9f464",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.03ba26cd-1883-4c47-9f78-a27b1cef559a/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+      "logo": "https://img.sofascore.com/api/v1/team/2817/image",
       "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
+      "url": "https://chatgpt.hereisman.net/playlist/60725/load-playlist-multi?&.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "media",
+      "requires_headers": true,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -2134,31 +2757,31 @@
       "original_source_pipeline": "today_match",
       "content_kind": "event",
       "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-primevideo-sports",
+      "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 6,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": false,
+          "requires_headers": true,
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_9437f7b847773f0c5bb05b00932d1d67",
+          "playback_id": "ctv_3b0070e5d2f831d4a82a372e611db21c",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2169,112 +2792,25 @@
         },
         {
           "name": "Backup-2",
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": false,
+          "requires_headers": true,
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-4",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-willow-event",
-          "host": "ss-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_b4809f658b363673754e40f97f1954a3",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-5",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-willow-event",
-          "host": "a96aivottlinear-a.akamaihd.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_eaea076626a196070ac10c8ee7053b07",
+          "playback_id": "ctv_cab85971ab322b9bd5e8d88efe6a4e95",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2286,19 +2822,19 @@
       ],
       "channels": [
         {
-          "id": "united-arab-emirates-vs-nepal--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.03ba26cd-1883-4c47-9f78-a27b1cef559a/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "id": "fc-barcelona-vs-villarreal--espn-deportes",
+          "name": "ESPN DEPORTES+",
+          "normalized_name": "espn-deportes",
+          "logo": "https://img.sofascore.com/api/v1/team/2817/image",
           "name_confidence": "explicit",
           "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
+          "provider": "sm-sports-data",
           "source_ids": [
-            "srhady-primevideo-sports"
+            "sm-sports-data"
           ],
-          "primary_stream_id": "united-arab-emirates-vs-nepal--prime-video--1",
-          "stream_count": 6,
-          "backup_count": 5,
+          "primary_stream_id": "fc-barcelona-vs-villarreal--espn-deportes--1",
+          "stream_count": 1,
+          "backup_count": 0,
           "verified": true,
           "verification_status": "verified_global",
           "playback_types": [
@@ -2307,100 +2843,70 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "united-arab-emirates-vs-nepal--prime-video--1",
+              "id": "fc-barcelona-vs-villarreal--espn-deportes--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_491dc8b294dde630a1a3699b",
-              "provider": "srhady-primevideo-sports",
+              "variant_key": "sv_3bb05641cf1b1fcc1760244e",
+              "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_4a311acd046c267f477e41191829180e",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
+              "playback_id": "ctv_ac815f241901dfc214fd1152a0de0a18",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "media"
+            }
+          ]
+        },
+        {
+          "id": "fc-barcelona-vs-villarreal--bein-english",
+          "name": "beIN ENGLISH",
+          "normalized_name": "bein-english",
+          "logo": "https://img.sofascore.com/api/v1/team/2817/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "fc-barcelona-vs-villarreal--bein-english--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
             {
-              "id": "united-arab-emirates-vs-nepal--prime-video--2",
-              "role": "backup",
+              "id": "fc-barcelona-vs-villarreal--bein-english--1",
+              "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_6a626d0a4bc5889dc12760d4",
-              "provider": "srhady-primevideo-sports",
+              "variant_key": "sv_fbab8af230ddc8d94364855d",
+              "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_d42768d38ee1aea4e93691086b5cf93a",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "united-arab-emirates-vs-nepal--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_40b5984104c08534ce93ba98",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_9437f7b847773f0c5bb05b00932d1d67",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "united-arab-emirates-vs-nepal--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_64b1265d54d66528d0699925",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "united-arab-emirates-vs-nepal--prime-video--5",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_3fac1a44c6771cbf82c33060",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_35923afdd6862a188a275cf9ba051969",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "united-arab-emirates-vs-nepal--prime-video--6",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_802e87705536c0de0035be37",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_7d7ca6819c39c11bc7e501a50b8835de",
+              "playback_id": "ctv_3b0070e5d2f831d4a82a372e611db21c",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
             }
-          ],
-          "dropped_variant_count": 2
+          ]
         },
         {
-          "id": "united-arab-emirates-vs-nepal--willow",
-          "name": "Willow",
-          "normalized_name": "willow",
-          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.87c723c7-0535-4196-8c99-d5472eca5403/3/BOXART-16X9/en-US._UR1920,1080_.jpeg",
+          "id": "fc-barcelona-vs-villarreal--tsn4-sports",
+          "name": "TSN4 SPORTS",
+          "normalized_name": "tsn4-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2817/image",
           "name_confidence": "explicit",
           "name_source": "channel_name",
-          "provider": "srhady-willow-event",
+          "provider": "sm-sports-data",
           "source_ids": [
-            "srhady-willow-event"
+            "sm-sports-data"
           ],
-          "primary_stream_id": "united-arab-emirates-vs-nepal--willow--1",
-          "stream_count": 2,
-          "backup_count": 1,
+          "primary_stream_id": "fc-barcelona-vs-villarreal--tsn4-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
           "verified": true,
           "verification_status": "verified_global",
           "playback_types": [
@@ -2409,27 +2915,14 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "united-arab-emirates-vs-nepal--willow--1",
+              "id": "fc-barcelona-vs-villarreal--tsn4-sports--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_612588a69c9f478cacbab2ba",
-              "provider": "srhady-willow-event",
+              "variant_key": "sv_56b05a72eb8721492ce607fa",
+              "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_b4809f658b363673754e40f97f1954a3",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "united-arab-emirates-vs-nepal--willow--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_b23de88ebf9dbdb8b7a85493",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_eaea076626a196070ac10c8ee7053b07",
+              "playback_id": "ctv_cab85971ab322b9bd5e8d88efe6a4e95",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2437,235 +2930,14 @@
           ]
         }
       ],
-      "channel_count": 2,
-      "default_channel_id": "united-arab-emirates-vs-nepal--prime-video",
+      "channel_count": 3,
+      "default_channel_id": "fc-barcelona-vs-villarreal--espn-deportes",
       "channel_stats": {
-        "streams_in": 10,
+        "streams_in": 4,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 8,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "standby_link_count": 4,
-      "standby": [
-        {
-          "name": "Standby-1",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "requires_headers": false,
-          "verification_status": "verified_global",
-          "verified": true,
-          "source_id": "srhady-primevideo-sports",
-          "source_provenance": [
-            {
-              "source_id": "srhady-primevideo-sports",
-              "source_name": "Prime Video Free Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-            },
-            {
-              "source_id": "srhady-willow-event",
-              "source_name": "Willow Event Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
-            }
-          ],
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_11a2d513630f93b9073f486096d77176",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Standby-2",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "requires_headers": false,
-          "verification_status": "verified_global",
-          "verified": true,
-          "source_id": "srhady-primevideo-sports",
-          "source_provenance": [
-            {
-              "source_id": "srhady-primevideo-sports",
-              "source_name": "Prime Video Free Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-            },
-            {
-              "source_id": "srhady-willow-event",
-              "source_name": "Willow Event Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
-            }
-          ],
-          "host": "otte.cache.aiv-cdn.net",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_f1b2cfeef147a7d20afc3f6024bb9f43",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Standby-3",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "requires_headers": false,
-          "verification_status": "verified_global",
-          "verified": true,
-          "source_id": "srhady-primevideo-sports",
-          "source_provenance": [
-            {
-              "source_id": "srhady-primevideo-sports",
-              "source_name": "Prime Video Free Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-            }
-          ],
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_ccf1109e1058533916bed6e5117dd8f6",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Standby-4",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "requires_headers": false,
-          "verification_status": "verified_global",
-          "verified": true,
-          "source_id": "srhady-primevideo-sports",
-          "source_provenance": [
-            {
-              "source_id": "srhady-primevideo-sports",
-              "source_name": "Prime Video Free Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-            },
-            {
-              "source_id": "srhady-willow-event",
-              "source_name": "Willow Event Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
-            }
-          ],
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_416cc7c925b634287bb703cba84151b2",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
-      "source_provenance": [
-        {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-22T12:24:28+00:00",
-      "start_at": "2026-11-22T12:24:28+00:00",
-      "end_time": "2026-11-22T14:54:28+00:00",
-      "end_time_source": "sport",
-      "fixture_id": "provider:united-arab-emirates-vs-nepal|2026-11-22",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tua6w31713725676.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ns8ezg1597934556.png",
-      "playback_id": "ctv_4a311acd046c267f477e41191829180e",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
-    },
-    {
-      "id": "energie-cottbus-vs-hertha-bsc",
-      "name": "Energie Cottbus Vs Hertha BSC",
-      "primary_stream_key": "",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/2532/image",
-      "category": "today_match",
-      "url": "",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-sports-data",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "backups": [],
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 1,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
+        "channels": 3,
+        "variants": 3,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -2677,139 +2949,32 @@
         }
       ],
       "source_ids": [
-        "sm-sports-data"
-      ],
-      "start_time": "2026-11-22T12:30:00+00:00",
-      "start_at": "2026-11-22T12:30:00+00:00",
-      "end_time": "2026-11-22T15:00:00+00:00",
-      "end_time_source": "sport",
-      "competition": "2. Bundesliga",
-      "fixture_id": "provider:energie-cottbus-vs-hertha-bsc|2 bundesliga|2026-11-22",
-      "status": "UPCOMING",
-      "original_status": "UPCOMING",
-      "schedule_status": "UPCOMING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-22T12:30:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401885048)",
-        "LiveScore livescore=NS (1, event 1813385)"
-      ],
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "401885048",
-        "livescore": "1813385"
-      },
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/8ks84j1750352338.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/8okmtm1621593943.png",
-      "allow_without_stream": true,
-      "routing_changed_from": "upcoming",
-      "lifecycle_reason": "still live: authority_live",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-22T12:24:45.867303+00:00"
-    },
-    {
-      "id": "fc-barcelona-vs-villarreal-cf",
-      "name": "FC Barcelona vs Villarreal CF",
-      "primary_stream_key": "",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4247688_53004_BAR_VIL_FC-Web.png",
-      "category": "today_match",
-      "url": "",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "backups": [],
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "sportlive-fancode-backup",
-          "source_name": "SportLive18 FanCode Backup",
-          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
-        },
-        {
-          "source_id": "drmlive-fancode-mirror",
-          "source_name": "FanCode Live Events (drmlive)",
-          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        },
-        {
-          "source_id": "sayanpal-fancode-mirror",
-          "source_name": "FanCode Auto Updated (sayanpal)",
-          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
-        }
-      ],
-      "source_ids": [
+        "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
+      "resolution": "HD",
+      "resolution_height": 720,
       "start_time": "2026-11-22T13:00:00+00:00",
       "start_at": "2026-11-22T13:00:00+00:00",
       "end_time": "2026-11-22T15:30:00+00:00",
       "end_time_source": "sport",
-      "competition": "LALIGA 2026-27",
-      "fixture_id": "provider:fc-barcelona-vs-villarreal-cf|laliga 2026 27|2026-11-22",
+      "competition": "LaLiga",
+      "fixture_id": "provider:fc-barcelona-vs-villarreal|laliga|2026-11-22",
       "status": "STARTING_SOON",
-      "original_status": "UPCOMING",
+      "original_status": "LIVE",
       "schedule_status": "STARTING_SOON",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-22T13:00:00+00:00",
       "time_verification": "provider_feed",
+      "source_category": "football",
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
-      "sport_class_evidence": "LALIGA",
+      "sport_class_evidence": "LaLiga",
       "authority_end_status": "UPCOMING",
       "authority_end_confidence": "HIGH",
       "authority_end_families": [
@@ -2825,12 +2990,13 @@
         "espn-header": "401882804",
         "livescore": "1810740"
       },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 15 minute(s) away",
       "event_type": "today_match",
-      "lifecycle_state": "STARTING",
-      "allow_without_stream": true,
-      "routing_changed_from": "upcoming",
+      "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wq9sir1639406443.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vrypqy1473503073.png"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vrypqy1473503073.png",
+      "playback_id": "ctv_8d3dc2aa591ec7859e577118f0bc67a3"
     }
   ]
 }
