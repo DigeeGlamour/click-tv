@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T02:40:24.904488+00:00",
+  "generated_at": "2026-11-22T02:45:11.099101+00:00",
   "today_match_count": 9,
   "upcoming_count": 61,
   "today_missing_logo": [],
@@ -8,7 +8,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 219,
+  "provider_fixture": 214,
   "provider_rejected": 120,
   "provider_rejected_reasons": {
     "provider_dead_status": 87,
@@ -592,7 +592,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 219,
+    "total": 214,
     "discarded": 67,
     "examples": [
       {
@@ -765,7 +765,7 @@
       },
       {
         "name": "Finals vs Hong Kong (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
         "competition": "BWF Super 500 - LI-NING Hong Kong Open 2026",
         "sport_type": "",
         "reason": "badminton gazetteer",
@@ -781,7 +781,7 @@
       },
       {
         "name": "World Feed vs St Simons Island, Georgia (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
         "competition": "The RSM Classic 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
@@ -1082,11 +1082,23 @@
     "applied": 0,
     "pending_confirmation": 0,
     "live": 1,
-    "recorded": 34,
+    "recorded": 33,
     "conflict": 0,
     "unmatched": 30,
-    "start_window": 0,
-    "start_window_fixtures": [],
+    "start_window": 1,
+    "start_window_fixtures": [
+      {
+        "id": "tigres-uanl-vs-club-américa",
+        "name": "Tigres UANL Vs Club América",
+        "claimed": "LIVE_NOW",
+        "now_says": "STARTING_SOON",
+        "conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 15 minute(s) away",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
@@ -1101,32 +1113,51 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 1,
     "recorded": 1,
-    "conflict": 1,
+    "conflict": 0,
     "unmatched": 6,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
+      "FINISHED": 1,
       "LIVE": 1,
       "UPCOMING": 1
     },
     "by_confidence": {
-      "CONFLICT": 1,
-      "LOW": 1,
-      "HIGH": 1
+      "HIGH": 2,
+      "LOW": 1
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "Chapecoense Vs Cruzeiro",
+        "fixture_id": "provider:chapecoense-vs-cruzeiro|campeonato brasileiro s rie a|2026-11-22",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401841325)",
+          "LiveScore livescore=FT (6, event 1708784)"
+        ],
+        "authority_finished_seen_at": "2026-11-22T02:44:33.203281+00:00",
+        "remove_after": "2026-11-22T03:04:33.203281+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
+      }
+    ],
     "conflicts": [
       {
         "name": "Chapecoense Vs Cruzeiro",
-        "reason": "independent authorities disagree: ESPN espn-header=86' (STATUS_SECOND_HALF, event 401841325); LiveScore livescore=FT (6, event 1708784)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1135,10 +1166,10 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 3,
+    "asked": 1,
     "finished": 2,
     "unplayable": 0,
-    "cache_hits": 0,
+    "cache_hits": 2,
     "no_verdict": 1
   },
   "live_protection": {
@@ -1151,7 +1182,7 @@
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 4,
+    "probe_alive": 3,
     "probe_dead": 1,
     "probe_inconclusive": 0,
     "end_pending": 3,
@@ -1210,17 +1241,17 @@
   "sports_poster_enrichment": {
     "attempted": 62,
     "poster_filled": 0,
-    "badge_filled": 36,
+    "badge_filled": 40,
     "badge_used_as_logo": 0,
-    "cache_hits": 18,
-    "cached_entries": 1779,
+    "cache_hits": 19,
+    "cached_entries": 1781,
     "provider": {
-      "requests": 9,
-      "hits": 7,
+      "requests": 11,
+      "hits": 9,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 46,
+      "skipped_rate_limited": 42,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1317,7 +1348,7 @@
           "rejected": 1,
           "published": 15
         },
-        "vk1817-fancode-mirror": {
+        "drmlive-fancode-mirror": {
           "total": 17,
           "cricket": 7,
           "football": 8,
@@ -1325,7 +1356,7 @@
           "rejected": 1,
           "published": 15
         },
-        "drmlive-fancode-mirror": {
+        "vk1817-fancode-mirror": {
           "total": 17,
           "cricket": 7,
           "football": 8,
@@ -1433,7 +1464,7 @@
         },
         {
           "name": "Coppa Shell AM World Final Race vs Barcelona, Spain (2026)",
-          "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+          "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
           "competition": "Ferrari Challenge Series 2026",
           "sport_type": "motorsport",
           "reason": "source sport field",
@@ -1472,7 +1503,7 @@
         },
         {
           "name": "Auction vs New Delhi (2026)",
-          "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+          "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
           "competition": "Super T10 Auction 2026",
           "sport_type": "other",
           "reason": "fixture lookup: no provider answered"
@@ -1561,7 +1592,7 @@
           "rejected": 0,
           "published": 15
         },
-        "vk1817-fancode-mirror": {
+        "drmlive-fancode-mirror": {
           "total": 15,
           "cricket": 7,
           "football": 8,
@@ -1569,7 +1600,7 @@
           "rejected": 0,
           "published": 15
         },
-        "drmlive-fancode-mirror": {
+        "vk1817-fancode-mirror": {
           "total": 15,
           "cricket": 7,
           "football": 8,
@@ -1599,7 +1630,7 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 339,
+    "raw_events": 334,
     "cricket_kept": 34,
     "football_kept": 31,
     "other_discarded": 80,
@@ -1649,14 +1680,14 @@
     "targeted_fixtures": 5,
     "targeted_attempts": 11,
     "fixtures_with_a_first_link_time": 4,
-    "candidate_routes": 93,
+    "candidate_routes": 88,
     "verified_routes": 56,
-    "failed_routes": 37,
+    "failed_routes": 32,
     "fixtures_touched_by_a_route_failure": 17,
     "fixtures_left_with_nothing": 7,
     "distinct_failure_codes": 5,
     "unrecognised_candidate_groups": 53,
-    "unrecognised_failed_routes": 81
+    "unrecognised_failed_routes": 82
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
@@ -1666,9 +1697,9 @@
     "unverified": 34,
     "conflict": 1,
     "matched_by_two_independent_authorities": 27,
-    "authority_agreements": 25,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 0,
+    "authority_agreements": 26,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 0
