@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-23T15:54:11.999862+00:00",
+  "generated_at": "2026-11-23T16:05:19.664986+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,13 +10,19 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 851,
+      "fixtures": 852,
       "unknown_statuses": [
         "10|HT",
         "132|Stumps - day 1",
         "133|Stumps - day 2",
-        "2|23'",
-        "3|66'"
+        "2|34'",
+        "2|35'",
+        "2|4'",
+        "2|5'",
+        "2|6'",
+        "3|46'",
+        "3|48'",
+        "3|77'"
       ],
       "attempts": [
         {
@@ -53,7 +59,7 @@
           "sport": "football",
           "date": "2026-11-24",
           "result": "ok",
-          "fixtures": 160
+          "fixtures": 161
         }
       ]
     },
@@ -116,12 +122,14 @@
     "fixtures": 81,
     "verdicts": {
       "UNVERIFIED": 44,
-      "VERIFIED": 37
+      "PARTIAL_AUTHORITY": 1,
+      "CONFLICT": 1,
+      "VERIFIED": 35
     },
-    "verified": 37,
-    "partial_authority": 0,
+    "verified": 35,
+    "partial_authority": 1,
     "unverified": 44,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 48,
@@ -133,13 +141,14 @@
       }
     },
     "matched_by_two_independent_authorities": 28,
-    "authority_agreements": 28,
+    "authority_agreements": 27,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says FINISHED": 1,
       "kickoff": 2
     },
-    "identity_near_misses": 11,
+    "identity_near_misses": 9,
     "independent_authority_count_distribution": {
       "0": 44,
       "1": 9,
@@ -150,8 +159,14 @@
         "10|HT",
         "132|Stumps - day 1",
         "133|Stumps - day 2",
-        "2|23'",
-        "3|66'"
+        "2|34'",
+        "2|35'",
+        "2|4'",
+        "2|5'",
+        "2|6'",
+        "3|46'",
+        "3|48'",
+        "3|77'"
       ],
       "espn-header": [
         "STATUS_FINAL_2OT|F/2OT",
@@ -199,22 +214,6 @@
       "agreed_side": "al hilal",
       "ours": "neftchi fergana",
       "theirs": "neftchi fargona"
-    },
-    {
-      "fixture": "Başakşehir FK Vs Çorum FK",
-      "authority": "espn-header",
-      "authority_name": "Istanbul Basaksehir vs Çorum FK",
-      "agreed_side": "corum",
-      "ours": "basaksehir",
-      "theirs": "istanbul basaksehir"
-    },
-    {
-      "fixture": "Başakşehir FK Vs Çorum FK",
-      "authority": "livescore",
-      "authority_name": "İstanbul Başakşehir vs Corum FK",
-      "agreed_side": "corum",
-      "ours": "basaksehir",
-      "theirs": "istanbul basaksehir"
     },
     {
       "fixture": "CDT Real Oruro Vs Guabirá",
@@ -310,40 +309,93 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:bangladesh-a-vs-sri-lanka-a|cricket evento|2026-11-23",
-      "card_id": "bangladesh-a-vs-sri-lanka-a",
-      "name": "Bangladesh A Vs Sri Lanka A",
-      "competition": "Cricket Evento",
-      "kickoff": "2026-11-23T10:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "fixture_id": "provider:al-ain-vs-esteghlal-fc|afc champions league elite 2026 27|2026-11-23",
+      "card_id": "al-ain-vs-esteghlal-fc",
+      "name": "Al Ain vs Esteghlal FC",
+      "competition": "AFC Champions League Elite 2026-27",
+      "kickoff": "2026-11-23T16:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "FanCode"
       ],
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401912602",
+          "upstream_family": "ESPN",
+          "name": "Al Ain vs Esteghlal FC",
+          "home": "Al Ain",
+          "away": "Esteghlal FC",
+          "home_team_id": "7128",
+          "away_team_id": "7525",
+          "competition": "AFC Champions League Elite",
+          "competition_id": "3902",
+          "kickoff": "2026-11-23T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Mon, November 23rd at 11:00 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3902~e:401912602~c:401912602"
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1873591",
+          "upstream_family": "LiveScore",
+          "name": "Al-Ain vs Esteghlal",
+          "home": "Al-Ain",
+          "away": "Esteghlal",
+          "home_team_id": "4670",
+          "away_team_id": "4592",
+          "competition": "AFC Champions League Elite: West",
+          "competition_id": "692",
+          "kickoff": "2026-11-23T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "5'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "5",
+          "format": "",
+          "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -351,7 +403,7 @@
       "card_id": "italia-milan-icons-vs-napoli-knights",
       "name": "Italia Milan Icons vs Napoli Knights",
       "competition": "",
-      "kickoff": "2026-11-23T15:54:11+00:00",
+      "kickoff": "2026-11-23T16:05:19+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -482,7 +534,7 @@
       "card_id": "sharjah-warriorz-vs-desert-vipers",
       "name": "Sharjah Warriorz vs Desert Vipers",
       "competition": "International League T20 2026 - 4th Match",
-      "kickoff": "2026-11-23T15:54:11+00:00",
+      "kickoff": "2026-11-23T16:05:19+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -514,97 +566,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:al-ain-vs-esteghlal-fc|afc champions league elite 2026 27|2026-11-23",
-      "card_id": "al-ain-vs-esteghlal-fc",
-      "name": "Al Ain vs Esteghlal FC",
-      "competition": "AFC Champions League Elite 2026-27",
-      "kickoff": "2026-11-23T16:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401912602",
-          "upstream_family": "ESPN",
-          "name": "Al Ain vs Esteghlal FC",
-          "home": "Al Ain",
-          "away": "Esteghlal FC",
-          "home_team_id": "7128",
-          "away_team_id": "7525",
-          "competition": "AFC Champions League Elite",
-          "competition_id": "3902",
-          "kickoff": "2026-11-23T16:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Mon, November 23rd at 11:00 AM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3902~e:401912602~c:401912602"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1873591",
-          "upstream_family": "LiveScore",
-          "name": "Al-Ain vs Esteghlal",
-          "home": "Al-Ain",
-          "away": "Esteghlal",
-          "home_team_id": "4670",
-          "away_team_id": "4592",
-          "competition": "AFC Champions League Elite: West",
-          "competition_id": "692",
-          "kickoff": "2026-11-23T16:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "5",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -663,6 +624,43 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:bangladesh-a-vs-sri-lanka-a|cricket evento|2026-11-23",
+      "card_id": "bangladesh-a-vs-sri-lanka-a",
+      "name": "Bangladesh A Vs Sri Lanka A",
+      "competition": "Cricket Evento",
+      "kickoff": "2026-11-23T10:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:neftchi-fergana-vs-al-hilal|afc champions league elite|2026-11-23",
       "card_id": "neftchi-fergana-vs-al-hilal",
       "name": "Neftchi Fergana Vs Al Hilal",
@@ -697,18 +695,18 @@
           "competition_id": "3902",
           "kickoff": "2026-11-23T13:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "81'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "81'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3902~e:401912612~c:401912612"
         },
@@ -731,10 +729,12 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -1195,11 +1195,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1288,11 +1287,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1511,61 +1509,6 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:başakşehir-fk-vs-çorum-fk|trendyol s per lig|2026-11-23",
-      "card_id": "başakşehir-fk-vs-çorum-fk",
-      "name": "Başakşehir FK Vs Çorum FK",
-      "competition": "Trendyol Süper Lig",
-      "kickoff": "2026-11-23T17:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Istanbul Basaksehir vs Çorum FK",
-              "event_id": "401888370",
-              "agreed_side": "corum",
-              "ours": "basaksehir",
-              "theirs": "istanbul basaksehir"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "İstanbul Başakşehir vs Corum FK",
-              "event_id": "1821052",
-              "agreed_side": "corum",
-              "ours": "basaksehir",
-              "theirs": "istanbul basaksehir"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1844,9 +1787,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2250,11 +2192,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2417,12 +2358,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-willow-event",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "srhady-willow-event"
       ],
       "upstream_families": [
         "FanCode",
@@ -2698,11 +2638,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2792,9 +2731,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2832,11 +2770,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2985,8 +2922,7 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3362,9 +3298,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3564,9 +3499,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3675,6 +3609,43 @@
       "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:mi-emirates-vs-sharjah-warriorz|international league t20 2026 20th|2026-12-06",
+      "card_id": "mi-emirates-vs-sharjah-warriorz",
+      "name": "Mi Emirates vs Sharjah Warriorz",
+      "competition": "International League T20 2026 - 20th Match",
+      "kickoff": "2026-12-06T10:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "Willow"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -3992,11 +3963,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4160,12 +4130,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-willow-event",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "srhady-willow-event"
       ],
       "upstream_families": [
         "FanCode",
@@ -4205,8 +4174,7 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4471,11 +4439,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4639,9 +4606,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4822,9 +4788,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5073,11 +5038,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
