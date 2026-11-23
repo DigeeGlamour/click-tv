@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-23T21:05:11.404852+00:00",
+  "updated_at": "2026-11-23T21:25:02.269460+00:00",
   "count": 9,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -257,7 +257,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_970d70bf371686c7c8a0cd084b38fe50",
       "protected_source": true,
       "requires_credentials": true,
@@ -266,14 +266,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-23T19:04:52.718843+00:00"
+      "carried_forward_misses": 8,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-23T19:04:52.718843+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 8,
+      "ended_seen_at": "2026-11-23T21:24:54.491669+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "italia-t10-league",
@@ -398,11 +402,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-23T18:44:59.743174+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 8,
+      "end_pending_confirmations": 9,
       "ended_seen_at": "2026-11-23T21:05:06.414785+00:00",
       "lifecycle_end_basis": "estimate"
     },
@@ -620,7 +624,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-23T19:04:52.718843+00:00"
     },
@@ -829,7 +833,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 14,
+      "carried_forward_misses": 15,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-23T16:45:25.888407+00:00"
     },
@@ -934,13 +938,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401842884)"
+        "ESPN espn-header=66' (STATUS_SECOND_HALF, event 401842884)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -955,12 +959,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-23T19:04:52.718843+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 7,
-      "authority_finished_confirmations": 1
+      "end_pending_confirmations": 8
     },
     {
       "id": "al-ittihad-vs-pakhtakor-tashkent",
@@ -1028,14 +1031,14 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401912601)",
+        "ESPN espn-header=52' (STATUS_SECOND_HALF, event 401912601)",
         "LiveScore livescore=FT (6, event 1873587)"
       ],
       "allow_without_stream": true,
@@ -1056,9 +1059,10 @@
       "end_pending": true,
       "end_pending_confirmations": 0,
       "ended_seen_at": "2026-11-23T21:05:06.414785+00:00",
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-11-23T21:05:06.414785+00:00"
+      "carried_forward_first_missed_at": "2026-11-23T21:05:06.414785+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=52' (STATUS_SECOND_HALF, event 401912601); LiveScore livescore=FT (6, event 1873587)"
     },
     {
       "id": "ceuta-vs-almería",
@@ -1126,24 +1130,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "UPCOMING",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401883110)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401883110)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401883110"
       },
-      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "STARTING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ja7sl51677475273.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yswsww1473503818.png"
     },
@@ -1213,24 +1216,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LALIGA",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "UPCOMING",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401882802)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882802)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401882802"
       },
-      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "STARTING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xwtxsx1473503739.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/e4vaw51655594332.png"
     },
@@ -1262,35 +1264,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1310,6 +1283,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1387,11 +1389,11 @@
               "id": "monza-vs-fiorentina--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
+              "variant_key": "sv_b9a4754dd8779c45821c460d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1400,11 +1402,11 @@
               "id": "monza-vs-fiorentina--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_b9a4754dd8779c45821c460d",
+              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1452,9 +1454,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-23T21:04:50+00:00",
-      "start_at": "2026-11-23T21:04:50+00:00",
-      "end_time": "2026-11-24T01:04:50+00:00",
+      "start_time": "2026-11-23T21:24:39+00:00",
+      "start_at": "2026-11-23T21:24:39+00:00",
+      "end_time": "2026-11-24T01:24:39+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:monza-vs-fiorentina|2026-11-23",
       "status": "LIVE_NOW",
@@ -1476,8 +1478,8 @@
           "name": "Monza vs Fiorentina",
           "competition": "Italian Serie A",
           "kickoff": "2026-11-23T19:45:00+00:00",
-          "kickoff_delta_minutes": -79.8,
-          "status": "LIVE"
+          "kickoff_delta_minutes": -99.7,
+          "status": "UPCOMING"
         },
         {
           "authority": "livescore",
@@ -1487,7 +1489,7 @@
           "name": "Monza vs Fiorentina",
           "competition": "Serie A",
           "kickoff": "2026-11-23T19:45:00+00:00",
-          "kickoff_delta_minutes": -79.8,
+          "kickoff_delta_minutes": -99.7,
           "status": "UNKNOWN"
         }
       ],
