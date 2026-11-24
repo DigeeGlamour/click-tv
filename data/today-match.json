@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-24T20:37:56.238544+00:00",
+  "updated_at": "2026-11-24T20:45:16.528720+00:00",
   "count": 17,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -186,7 +186,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_cc566c5562bf965f2fe056adf3a4a19c",
       "protected_source": true,
       "requires_credentials": true,
@@ -195,14 +195,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-24T18:25:26.493001+00:00"
+      "carried_forward_misses": 8,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-24T18:25:26.493001+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 8,
+      "ended_seen_at": "2026-11-24T20:45:13.271694+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "al-nassr-vs-al-sadd",
@@ -316,13 +320,21 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=59' (STATUS_SECOND_HALF, event 401912584)",
+        "ESPN espn-header=45'+4' (STATUS_FIRST_HALF, event 401912584)",
         "LiveScore livescore=FT (6, event 1873594)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=59' (STATUS_SECOND_HALF, event 401912584); LiveScore livescore=FT (6, event 1873594)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_666c89c3d6b6ee8cbf226862b882d180"
+      "playback_id": "ctv_666c89c3d6b6ee8cbf226862b882d180",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=45'+4' (STATUS_FIRST_HALF, event 401912584); LiveScore livescore=FT (6, event 1873594)",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-24T20:45:13.271694+00:00"
     },
     {
       "id": "arsenal-vs-dortmund",
@@ -534,7 +546,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-24T18:55:00+00:00",
       "start_at": "2026-11-24T18:55:00+00:00",
-      "end_time": "2026-11-24T21:25:10+00:00",
+      "end_time": "2026-11-24T21:45:02+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:manchester-city-vs-napoli|2026-11-24",
       "status": "LIVE_NOW",
@@ -677,7 +689,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-24T18:55:00+00:00",
       "start_at": "2026-11-24T18:55:00+00:00",
-      "end_time": "2026-11-24T21:25:10+00:00",
+      "end_time": "2026-11-24T21:45:02+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:real-madrid-vs-psv|2026-11-24",
       "status": "LIVE_NOW",
@@ -771,7 +783,7 @@
           "host": "chatgpt.hereisman.net",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_c6695c7f2b30a35c34b32812d6ecfff8"
+          "playback_id": "ctv_162297ad7d1dfc36cda38e9685506a69"
         }
       ],
       "channels": [
@@ -901,7 +913,7 @@
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/j13pfe1601726274.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yutyxs1467459956.png",
       "competition_from_source": "Championship",
-      "playback_id": "ctv_15f5fccb0b46e5c158c3a12a0243722d"
+      "playback_id": "ctv_ccce5f86423eaf3dd3cd50e8cb1d77f7"
     },
     {
       "id": "sheffield-united-vs-southampton",
@@ -1021,7 +1033,7 @@
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/w7f8pj1672950689.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ggqtd01621593274.png",
       "competition_from_source": "Championship",
-      "playback_id": "ctv_52217f67c9d5781f0a95d177584d932f"
+      "playback_id": "ctv_14caaaaf1af59b8b8a445e7e880095d3"
     },
     {
       "id": "wolverhampton-wanderers-f-c-vs-derby-county-football-club",
@@ -1228,14 +1240,15 @@
     {
       "id": "rangers-vs-aberdeen",
       "name": "Rangers Vs Aberdeen",
-      "primary_stream_key": "c6a86ffd75f295898e70fd70ce5513f30ece07b1ef15c0381e8affb0d5d80579",
+      "primary_stream_key": "f42fe16a1016fcb3ef3384ba3ac78e84508eace1503002d615058c9249cd1083",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/2351/image",
       "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
+      "url": "https://www.rtmpcdn.com/live/1316adc3-1c46-4358-835c-96137c5f506a.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
@@ -1249,9 +1262,73 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_425cf52158846f8191b9d6c08668db6c",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
       "channels": [
+        {
+          "id": "rangers-vs-aberdeen--stream",
+          "name": "STREAM",
+          "normalized_name": "stream",
+          "logo": "https://img.sofascore.com/api/v1/team/2351/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "rangers-vs-aberdeen--stream--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "rangers-vs-aberdeen--stream--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_65f4983f727afd1a019f2495",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_3964bc73b9705cef4d9ca360165db6bb",
+              "stream_type": "hls"
+            }
+          ]
+        },
         {
           "id": "rangers-vs-aberdeen--sportdigital-fussball",
           "name": "SportDigital Fussball",
@@ -1289,14 +1366,14 @@
           ]
         }
       ],
-      "channel_count": 1,
-      "default_channel_id": "rangers-vs-aberdeen--sportdigital-fussball",
+      "channel_count": 2,
+      "default_channel_id": "rangers-vs-aberdeen--stream",
       "channel_stats": {
-        "streams_in": 1,
+        "streams_in": 2,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1310,12 +1387,6 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
       "start_time": "2026-11-24T20:00:00+00:00",
       "start_at": "2026-11-24T20:00:00+00:00",
       "end_time": "2026-11-24T22:30:00+00:00",
@@ -1349,14 +1420,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/zgrbl21788969413.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/f9s6vg1781155578.png",
-      "playback_id": "ctv_425cf52158846f8191b9d6c08668db6c",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "playback_id": "ctv_3964bc73b9705cef4d9ca360165db6bb"
     },
     {
       "id": "arsenal-vs-borussia-dortmund",
@@ -1382,8 +1446,67 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 3,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_a773c1c42aeb6514799cfab1a5b83c23",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_80aa429c155aaad5f61cc9c83b300f81",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
       "channels": [
         {
           "id": "arsenal-vs-borussia-dortmund--paramount",
@@ -1420,16 +1543,88 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "arsenal-vs-borussia-dortmund--spanish",
+          "name": "SPANISH",
+          "normalized_name": "spanish",
+          "logo": "https://img.sofascore.com/api/v1/team/42/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "arsenal-vs-borussia-dortmund--spanish--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "arsenal-vs-borussia-dortmund--spanish--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_b8909e2c0491e372ae745af0",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_a773c1c42aeb6514799cfab1a5b83c23",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "arsenal-vs-borussia-dortmund--dazn-sports",
+          "name": "DAZN SPORTS",
+          "normalized_name": "dazn-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/42/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "arsenal-vs-borussia-dortmund--dazn-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "arsenal-vs-borussia-dortmund--dazn-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_d2d7d65a5eb153a4e0c6516b",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_80aa429c155aaad5f61cc9c83b300f81",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 1,
+      "channel_count": 3,
       "default_channel_id": "arsenal-vs-borussia-dortmund--paramount",
       "channel_stats": {
-        "streams_in": 1,
+        "streams_in": 3,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 3,
+        "variants": 3,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1516,7 +1711,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 3,
+      "available_link_count": 6,
       "backups": [
         {
           "name": "Backup-1",
@@ -1549,6 +1744,93 @@
         },
         {
           "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_b88a29e64e1ba55af721bb3e834ae39e",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_7eafa7ce9d47939784bd3e9e0f094e0a",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_0fb4f5970ce22a2a8df82d32a7749cb6",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-5",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1651,6 +1933,114 @@
           ]
         },
         {
+          "id": "como-vs-aek-athens--dazn-sports",
+          "name": "DAZN SPORTS",
+          "normalized_name": "dazn-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2704/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "como-vs-aek-athens--dazn-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "como-vs-aek-athens--dazn-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_0dcaafcd8a4fb016a9a0f1e2",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_b88a29e64e1ba55af721bb3e834ae39e",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "como-vs-aek-athens--spanish",
+          "name": "SPANISH",
+          "normalized_name": "spanish",
+          "logo": "https://img.sofascore.com/api/v1/team/2704/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "como-vs-aek-athens--spanish--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "como-vs-aek-athens--spanish--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_0cd2d168edbdd0f278e73b46",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_7eafa7ce9d47939784bd3e9e0f094e0a",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "como-vs-aek-athens--dazn",
+          "name": "DAZN",
+          "normalized_name": "dazn",
+          "logo": "https://img.sofascore.com/api/v1/team/2704/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "como-vs-aek-athens--dazn--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "como-vs-aek-athens--dazn--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_9ef75e2a79479f6420029cd4",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_0fb4f5970ce22a2a8df82d32a7749cb6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
           "id": "como-vs-aek-athens--tnt-sports",
           "name": "TNT SPORTS",
           "normalized_name": "tnt-sports",
@@ -1687,14 +2077,14 @@
           ]
         }
       ],
-      "channel_count": 3,
+      "channel_count": 6,
       "default_channel_id": "como-vs-aek-athens--server",
       "channel_stats": {
-        "streams_in": 3,
+        "streams_in": 6,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 3,
-        "variants": 3,
+        "channels": 6,
+        "variants": 6,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1743,7 +2133,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/02x81t1627405841.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/4nogst1602773624.png",
-      "playback_id": "ctv_e609333bcfa302d44b5cdcb35184d16a"
+      "playback_id": "ctv_f01efb12f60ce47e5751cf4b338af75d"
     },
     {
       "id": "feyenoord-vs-fc-porto",
@@ -1769,10 +2159,97 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 5,
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_6e6d5fdde8afe05f3de9ebd1698acb43",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_b9b642463759fb11ee4e695c1ab7ac4c",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_7c6c69c1d1b6a3c07e7907771e45a1c1",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1839,6 +2316,114 @@
           ]
         },
         {
+          "id": "feyenoord-vs-fc-porto--spanish",
+          "name": "SPANISH",
+          "normalized_name": "spanish",
+          "logo": "https://img.sofascore.com/api/v1/team/2959/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "feyenoord-vs-fc-porto--spanish--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "feyenoord-vs-fc-porto--spanish--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_f58ab5dc318287e97526b9ca",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_6e6d5fdde8afe05f3de9ebd1698acb43",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "feyenoord-vs-fc-porto--dazn-sports",
+          "name": "DAZN SPORTS",
+          "normalized_name": "dazn-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2959/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "feyenoord-vs-fc-porto--dazn-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "feyenoord-vs-fc-porto--dazn-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_5f257753e30867305f0944b2",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_b9b642463759fb11ee4e695c1ab7ac4c",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "feyenoord-vs-fc-porto--dazn",
+          "name": "DAZN",
+          "normalized_name": "dazn",
+          "logo": "https://img.sofascore.com/api/v1/team/2959/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "feyenoord-vs-fc-porto--dazn--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "feyenoord-vs-fc-porto--dazn--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_40885806d43a1a9a39d2d6de",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_7c6c69c1d1b6a3c07e7907771e45a1c1",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
           "id": "feyenoord-vs-fc-porto--cbs-sports",
           "name": "CBS SPORTS",
           "normalized_name": "cbs-sports",
@@ -1875,14 +2460,14 @@
           ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 5,
       "default_channel_id": "feyenoord-vs-fc-porto--paramount",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 5,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 5,
+        "variants": 5,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1966,7 +2551,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 4,
       "backups": [
         {
           "name": "Backup-1",
@@ -1989,6 +2574,64 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_c3fa5394b620dc034dd21ea50958a389",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_5eeed63d05c200ec24eba21df8d74cde",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_0249b43ddac09645b8727909d1964c6f",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2070,16 +2713,88 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "manchester-city-vs-ssc-napoli--dazn",
+          "name": "DAZN",
+          "normalized_name": "dazn",
+          "logo": "https://img.sofascore.com/api/v1/team/17/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "manchester-city-vs-ssc-napoli--dazn--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "manchester-city-vs-ssc-napoli--dazn--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_82dfdf6244b52980a4b6b57d",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_5eeed63d05c200ec24eba21df8d74cde",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "manchester-city-vs-ssc-napoli--dazn-sports",
+          "name": "DAZN SPORTS",
+          "normalized_name": "dazn-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/17/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "manchester-city-vs-ssc-napoli--dazn-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "manchester-city-vs-ssc-napoli--dazn-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_b979f1ba11b9e28554de4f72",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_0249b43ddac09645b8727909d1964c6f",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 4,
       "default_channel_id": "manchester-city-vs-ssc-napoli--tnt-sports",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 4,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 4,
+        "variants": 4,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -2165,7 +2880,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 4,
       "backups": [
         {
           "name": "Backup-1",
@@ -2188,6 +2903,64 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_f2233263dfb29c4c8de10cbc9e4dc265",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_3e3fcde71309bc050b6d3d6461e0bf56",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_0332fda9b24ca14076c14ddf4eed888a",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2235,6 +3008,78 @@
           ]
         },
         {
+          "id": "rb-leipzig-vs-rc-lens--spanish",
+          "name": "SPANISH",
+          "normalized_name": "spanish",
+          "logo": "https://img.sofascore.com/api/v1/team/36360/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "rb-leipzig-vs-rc-lens--spanish--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "rb-leipzig-vs-rc-lens--spanish--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_8e16306e1ee8ae7c334304bc",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_3e3fcde71309bc050b6d3d6461e0bf56",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "rb-leipzig-vs-rc-lens--dazn-sports",
+          "name": "DAZN SPORTS",
+          "normalized_name": "dazn-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/36360/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "rb-leipzig-vs-rc-lens--dazn-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "rb-leipzig-vs-rc-lens--dazn-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_4259505c066ecbd94d9c5840",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_0332fda9b24ca14076c14ddf4eed888a",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
           "id": "rb-leipzig-vs-rc-lens--prime-video",
           "name": "Prime Video",
           "normalized_name": "prime-video",
@@ -2271,14 +3116,14 @@
           ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 4,
       "default_channel_id": "rb-leipzig-vs-rc-lens--paramount",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 4,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 4,
+        "variants": 4,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -2341,7 +3186,7 @@
     {
       "id": "real-madrid-vs-psv-eindhoven",
       "name": "Real Madrid Vs PSV Eindhoven",
-      "primary_stream_key": "24fe867837fd1cc830bf6a4893fbf450c5fb33604d6ada84bcdd5ac8c09f7df4",
+      "primary_stream_key": "6f2f94aab842cf52114f9c3cb6e48f1a9de3bde62c842e8e7e350121a6f7795f",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/2829/image",
@@ -2362,10 +3207,68 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 4,
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_f28ba0acafbdc68a4e3de99c06a29d86",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_a4fa931b3952a762c27f0e2b4afb1f6d",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -2395,6 +3298,78 @@
         }
       ],
       "channels": [
+        {
+          "id": "real-madrid-vs-psv-eindhoven--dazn-sports",
+          "name": "DAZN SPORTS",
+          "normalized_name": "dazn-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2829/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "real-madrid-vs-psv-eindhoven--dazn-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "real-madrid-vs-psv-eindhoven--dazn-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_252a5c837de91bce9c460bee",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_264717ade3201befb932305bc00e4ed8",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "real-madrid-vs-psv-eindhoven--spanish",
+          "name": "SPANISH",
+          "normalized_name": "spanish",
+          "logo": "https://img.sofascore.com/api/v1/team/2829/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "real-madrid-vs-psv-eindhoven--spanish--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "real-madrid-vs-psv-eindhoven--spanish--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_111bd2e390ec721577fc5eec",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f28ba0acafbdc68a4e3de99c06a29d86",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
         {
           "id": "real-madrid-vs-psv-eindhoven--paramount",
           "name": "PARAMOUNT",
@@ -2468,14 +3443,14 @@
           ]
         }
       ],
-      "channel_count": 2,
-      "default_channel_id": "real-madrid-vs-psv-eindhoven--paramount",
+      "channel_count": 4,
+      "default_channel_id": "real-madrid-vs-psv-eindhoven--dazn-sports",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 4,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 4,
+        "variants": 4,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -2528,7 +3503,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vwvwrw1473502969.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xfsz6i1721297428.png",
-      "playback_id": "ctv_a4fa931b3952a762c27f0e2b4afb1f6d",
+      "playback_id": "ctv_264717ade3201befb932305bc00e4ed8",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -2562,7 +3537,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 5,
       "backups": [
         {
           "name": "Backup-1",
@@ -2585,6 +3560,93 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_0faeafb8511e82e51d9d36f189a3366a",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_acfb14756e4574a17b42f7475b22ecbc",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_dca3eec7f29371c5fdc9b10bffaf1007",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_c2ab01e43d47daf490444e7220004753",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2664,16 +3726,124 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "k-slovan-bratislava-vs-real-betis--spanish",
+          "name": "SPANISH",
+          "normalized_name": "spanish",
+          "logo": "https://img.sofascore.com/api/v1/team/2404/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "k-slovan-bratislava-vs-real-betis--spanish--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "k-slovan-bratislava-vs-real-betis--spanish--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_4359db9efe5a7b35e4f152f5",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_acfb14756e4574a17b42f7475b22ecbc",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "k-slovan-bratislava-vs-real-betis--dazn-sports",
+          "name": "DAZN SPORTS",
+          "normalized_name": "dazn-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2404/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "k-slovan-bratislava-vs-real-betis--dazn-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "k-slovan-bratislava-vs-real-betis--dazn-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_d6d2a1d56de67ec6a4073211",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_dca3eec7f29371c5fdc9b10bffaf1007",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "k-slovan-bratislava-vs-real-betis--dazn",
+          "name": "DAZN",
+          "normalized_name": "dazn",
+          "logo": "https://img.sofascore.com/api/v1/team/2404/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "k-slovan-bratislava-vs-real-betis--dazn--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "k-slovan-bratislava-vs-real-betis--dazn--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_f24922e79b995b96e183f3bc",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_c2ab01e43d47daf490444e7220004753",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 5,
       "default_channel_id": "k-slovan-bratislava-vs-real-betis--fast",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 5,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 5,
+        "variants": 5,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -2718,7 +3888,7 @@
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_2e642d2ac0c01992575198b9bb0603f1"
+      "playback_id": "ctv_757d913ea36e0a28cb0f59c4c505de32"
     },
     {
       "id": "chapecoense-vs-palmeiras",
@@ -2894,6 +4064,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841335)",
+        "LiveScore livescore=NS (1, event 1708786)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401841335",
+        "livescore": "1708786"
+      },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 14 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wy0e1i1765900601.png",
