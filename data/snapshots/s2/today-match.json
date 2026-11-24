@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-24T12:37:57.740242+00:00",
-  "count": 14,
+  "updated_at": "2026-11-24T12:52:39.918678+00:00",
+  "count": 13,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -883,6 +883,9 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "league map",
       "sport_class_evidence": "ICC World Test Championship",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_972bfd716fd376b7da3b8095989c12d8",
       "authority_near_misses": [
         {
           "authority": "livescore",
@@ -896,9 +899,14 @@
           "status": "LIVE"
         }
       ],
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_972bfd716fd376b7da3b8095989c12d8"
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-24T12:45:20.741327+00:00"
     },
     {
       "id": "south-asia-vs-sub-saharan-africa",
@@ -1243,7 +1251,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_1268371b1e8ebcc9649ce68a2a5f56b5",
       "protected_source": true,
       "requires_credentials": true,
@@ -1254,13 +1262,15 @@
         ],
         "drm": false
       },
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-24T10:25:18.991712+00:00"
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "carried_forward_first_missed_at": "2026-11-24T10:25:18.991712+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 9
     },
     {
       "id": "italia-t10",
@@ -1414,8 +1424,8 @@
       ],
       "start_time": "2026-11-24T11:00:00+00:00",
       "start_at": "2026-11-24T11:00:00+00:00",
-      "end_time": "2026-11-24T13:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-24T13:45:09+00:00",
+      "end_time_source": "assumed",
       "competition": "Italia T10 2026",
       "fixture_id": "provider:italia-t10|italia t10 2026|2026-11-24",
       "status": "LIVE_NOW",
@@ -1743,6 +1753,14 @@
         "query_parameters": [],
         "drm": true
       },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-24T12:25:34.441920+00:00",
       "authority_near_misses": [
         {
           "authority": "livescore",
@@ -1755,15 +1773,98 @@
           "kickoff_delta_minutes": -230.3,
           "status": "FINISHED"
         }
+      ]
+    },
+    {
+      "id": "brescia-lions-vs-venice-livewires",
+      "name": "Brescia Lions vs Venice Livewires",
+      "primary_stream_key": "",
+      "sport_type": "cricket",
+      "sport_type_derived": true,
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4251143_53165_BL_VL_fc-web.jpg",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "media",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "none",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "sm-fancode",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-fancode",
+          "source_name": "SM FanCode Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
+        },
+        {
+          "source_id": "sportlive-fancode-backup",
+          "source_name": "SportLive18 FanCode Backup",
+          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
+        },
+        {
+          "source_id": "drmlive-fancode-mirror",
+          "source_name": "FanCode Live Events (drmlive)",
+          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
+        },
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        },
+        {
+          "source_id": "sayanpal-fancode-mirror",
+          "source_name": "FanCode Auto Updated (sayanpal)",
+          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
+        }
       ],
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
-      "lifecycle_protections": [
-        "primary_playable",
-        "backup_playable"
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-24T12:25:34.441920+00:00"
+      "start_time": "2026-11-24T13:15:00+00:00",
+      "start_at": "2026-11-24T13:15:00+00:00",
+      "end_time": "2026-11-24T15:45:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Italia T10 2026",
+      "fixture_id": "provider:brescia-lions-vs-venice-livewires|italia t10 2026|2026-11-24",
+      "status": "STARTING_SOON",
+      "original_status": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "source_start_time": "2026-11-24T13:15:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_cricket",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "cricket",
+      "allow_without_stream": true,
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "STARTING"
     },
     {
       "id": "kyoto-sanga-fc-vs-pohang-steelers",
@@ -1873,7 +1974,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=65' (STATUS_SECOND_HALF, event 401912587)",
+        "ESPN espn-header=76' (STATUS_SECOND_HALF, event 401912587)",
         "LiveScore livescore=FT (6, event 1873665)"
       ],
       "authority_independent_count": 1,
@@ -1890,10 +1991,10 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-24T12:05:32.074664+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=65' (STATUS_SECOND_HALF, event 401912587); LiveScore livescore=FT (6, event 1873665)"
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=76' (STATUS_SECOND_HALF, event 401912587); LiveScore livescore=FT (6, event 1873665)"
     },
     {
       "id": "daejeon-hana-citizen-fc-vs-beijing-guoan",
@@ -1961,7 +2062,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=65' (STATUS_SECOND_HALF, event 401912588)"
+        "ESPN espn-header=76' (STATUS_SECOND_HALF, event 401912588)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1972,230 +2073,15 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/o9z6eq1589558557.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/cdkguq1652626854.png"
-    },
-    {
-      "id": "ratchaburi-vs-johor-darul-tazim",
-      "name": "Ratchaburi Vs Johor Darul Ta'zim",
-      "primary_stream_key": "",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/85743/image",
-      "category": "today_match",
-      "url": "",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-sports-data",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "backups": [],
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 1,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        },
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "sportlive-fancode-backup",
-          "source_name": "SportLive18 FanCode Backup",
-          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
-        },
-        {
-          "source_id": "drmlive-fancode-mirror",
-          "source_name": "FanCode Live Events (drmlive)",
-          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        },
-        {
-          "source_id": "sayanpal-fancode-mirror",
-          "source_name": "FanCode Auto Updated (sayanpal)",
-          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "start_time": "2026-11-24T12:15:00+00:00",
-      "start_at": "2026-11-24T12:15:00+00:00",
-      "end_time": "2026-11-24T14:45:00+00:00",
-      "end_time_source": "sport",
-      "competition": "AFC Champions League Elite",
-      "fixture_id": "provider:ratchaburi-vs-johor-darul-ta-zim|afc champions league elite|2026-11-24",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-24T12:15:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "allow_without_stream": true,
-      "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912585)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401912585"
-      },
-      "lifecycle_reason": "still live: authority_live",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-24T12:05:32.074664+00:00"
-    },
-    {
-      "id": "shanghai-port-vs-buriram-united",
-      "name": "Shanghai Port vs Buriram United",
-      "primary_stream_key": "",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4248755_53053_SHG_BU_fc-web.jpg",
-      "category": "today_match",
-      "url": "",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "backups": [],
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "sportlive-fancode-backup",
-          "source_name": "SportLive18 FanCode Backup",
-          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
-        },
-        {
-          "source_id": "drmlive-fancode-mirror",
-          "source_name": "FanCode Live Events (drmlive)",
-          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
-        },
-        {
-          "source_id": "sayanpal-fancode-mirror",
-          "source_name": "FanCode Auto Updated (sayanpal)",
-          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        }
-      ],
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
-      ],
-      "start_time": "2026-11-24T12:15:00+00:00",
-      "start_at": "2026-11-24T12:15:00+00:00",
-      "end_time": "2026-11-24T14:45:00+00:00",
-      "end_time_source": "sport",
-      "competition": "AFC Champions League Elite 2026-27",
-      "fixture_id": "provider:shanghai-port-vs-buriram-united|afc champions league elite 2026 27|2026-11-24",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "source_start_time": "2026-11-24T12:15:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912586)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401912586"
-      },
-      "allow_without_stream": true,
-      "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/d9evs91776534441.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/0z45791784587806.png"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/cdkguq1652626854.png",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-24T12:45:20.741327+00:00"
     },
     {
       "id": "india-a-vs-united-arab-emirates",
@@ -2756,7 +2642,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-24T12:45:20.741327+00:00"
     },
     {
       "id": "italia-milan-icons-vs-rome-gladiators",
@@ -2957,7 +2851,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-24T12:45:20.741327+00:00"
     },
     {
       "id": "costa-rica-u17-vs-ireland-u17",
@@ -3144,11 +3046,18 @@
         "livescore": "1885774"
       },
       "event_type": "today_match",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ut57sp1730998860.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/n2v5lx1794971757.png",
       "allow_without_stream": true,
-      "routing_changed_from": "upcoming"
+      "routing_changed_from": "upcoming",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-24T12:45:20.741327+00:00"
     }
   ]
 }
