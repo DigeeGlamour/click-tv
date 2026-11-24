@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-24T07:45:09.664180+00:00",
+  "generated_at": "2026-11-24T08:05:04.958819+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,11 +10,11 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 399,
+      "fixtures": 400,
       "unknown_statuses": [
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "181|Tea - day 2"
+        "2|20'"
       ],
       "attempts": [
         {
@@ -45,7 +45,7 @@
           "sport": "football",
           "date": "2026-11-24",
           "result": "ok",
-          "fixtures": 161
+          "fixtures": 162
         },
         {
           "sport": "football",
@@ -62,7 +62,7 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 3,
-      "fixtures": 182,
+      "fixtures": 186,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -99,39 +99,42 @@
           "sport": "football",
           "date": "2026-11-25",
           "result": "ok",
-          "fixtures": 58
+          "fixtures": 62
         }
       ]
     }
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 7,
-    "upcoming": 52,
+    "today_match": 8,
+    "upcoming": 51,
     "fixtures": 59,
     "verdicts": {
+      "CONFLICT": 1,
       "UNVERIFIED": 33,
-      "VERIFIED": 26
+      "PARTIAL_AUTHORITY": 1,
+      "VERIFIED": 24
     },
-    "verified": 26,
-    "partial_authority": 0,
+    "verified": 24,
+    "partial_authority": 1,
     "unverified": 33,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 36,
         "matched": 23
       },
       "livescore": {
-        "unmatched": 34,
-        "matched": 25
+        "matched": 25,
+        "unmatched": 34
       }
     },
     "matched_by_two_independent_authorities": 20,
-    "authority_agreements": 20,
+    "authority_agreements": 19,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
       "kickoff": 1
     },
     "identity_near_misses": 3,
@@ -144,7 +147,7 @@
       "livescore": [
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "181|Tea - day 2"
+        "2|20'"
       ],
       "espn-header": []
     }
@@ -176,6 +179,69 @@
     }
   ],
   "fixtures": [
+    {
+      "fixture_id": "provider:australia-vs-england|england tour of australia 2026 2nd t20i|2026-11-24",
+      "card_id": "australia-vs-england",
+      "name": "Australia vs England",
+      "competition": "England tour of Australia 2026 - 2nd T20I",
+      "kickoff": "2026-11-24T08:05:04+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "PrimeVideo",
+        "Willow"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1757843",
+          "upstream_family": "LiveScore",
+          "name": "Australia vs England",
+          "home": "Australia",
+          "away": "England",
+          "home_team_id": "86103",
+          "away_team_id": "86110",
+          "competition": "Australia v England 2026",
+          "competition_id": "24880",
+          "kickoff": "2026-11-24T08:15:00+00:00",
+          "kickoff_delta_minutes": 9.9,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "2nd T20I",
+          "format": "Twenty20",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
     {
       "fixture_id": "provider:india-a-vs-uae|men asia cup rising stars|2026-11-24",
       "card_id": "india-a-vs-uae",
@@ -218,7 +284,7 @@
       "card_id": "india-a-vs-united-arab-emirates",
       "name": "India A vs United Arab Emirates",
       "competition": "",
-      "kickoff": "2026-11-24T07:45:09+00:00",
+      "kickoff": "2026-11-24T08:05:04+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -255,12 +321,12 @@
       "card_id": "south-africa-vs-bangladesh",
       "name": "South Africa vs Bangladesh",
       "competition": "Bangladesh tour of South Africa 2026 - 2nd Test",
-      "kickoff": "2026-11-24T07:30:00+00:00",
+      "kickoff": "2026-11-24T08:05:04+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
         "srhady-primevideo-sports"
@@ -287,10 +353,10 @@
           "competition": "South Africa v Bangladesh",
           "competition_id": "24645",
           "kickoff": "2026-11-23T08:00:00+00:00",
-          "kickoff_delta_minutes": -1410.0,
-          "status_raw": "Stumps - day 1",
-          "status_code": "132",
-          "status": "UNKNOWN",
+          "kickoff_delta_minutes": -1445.1,
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "2nd Test",
           "format": "Test",
@@ -304,7 +370,7 @@
       ],
       "near_miss_count": 1,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-24T07:30, livescore 2026-11-23T08:00 (-1410.0 min)"
+        "kickoff: ours 2026-11-24T08:05, livescore 2026-11-23T08:00 (-1445.1 min)"
       ],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
@@ -326,9 +392,6 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -382,9 +445,9 @@
           "competition_id": "692",
           "kickoff": "2026-11-24T07:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "20'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "5",
           "format": "",
@@ -399,9 +462,9 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -739,8 +802,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -832,8 +895,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -924,8 +987,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1103,8 +1166,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1175,65 +1238,6 @@
       "near_miss_count": 0,
       "conflict_reasons": [],
       "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:australia-vs-england|t20 international|2026-11-24",
-      "card_id": "australia-vs-england",
-      "name": "Australia Vs England",
-      "competition": "T20 International",
-      "kickoff": "2026-11-24T08:15:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1757843",
-          "upstream_family": "LiveScore",
-          "name": "Australia vs England",
-          "home": "Australia",
-          "away": "England",
-          "home_team_id": "86103",
-          "away_team_id": "86110",
-          "competition": "Australia v England 2026",
-          "competition_id": "24880",
-          "kickoff": "2026-11-24T08:15:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "2nd T20I",
-          "format": "Twenty20",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1428,8 +1432,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1718,8 +1722,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1857,8 +1861,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1949,8 +1953,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1990,8 +1994,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2230,8 +2234,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2322,8 +2326,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2510,8 +2514,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2715,8 +2719,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2945,8 +2949,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3075,8 +3079,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3168,8 +3172,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3448,8 +3452,8 @@
       "name": "South Asia vs Sub Saharan Africa",
       "competition": "Test Twenty Championship 2026",
       "kickoff": "2026-11-24T09:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -3458,8 +3462,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3573,8 +3577,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3722,6 +3726,64 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
+    },
+    {
+      "fixture_id": "provider:australia-vs-england|t20 international|2026-11-24",
+      "card_id": "australia-vs-england",
+      "name": "Australia Vs England",
+      "competition": "T20 International",
+      "kickoff": "2026-11-24T08:15:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1757843",
+          "upstream_family": "LiveScore",
+          "name": "Australia vs England",
+          "home": "Australia",
+          "away": "England",
+          "home_team_id": "86103",
+          "away_team_id": "86110",
+          "competition": "Australia v England 2026",
+          "competition_id": "24880",
+          "kickoff": "2026-11-24T08:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "2nd T20I",
+          "format": "Twenty20",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED"
     }
   ]
 }
