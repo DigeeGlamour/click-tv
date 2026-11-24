@@ -7319,28 +7319,6 @@
       "evidence_report": "reports/delivery-path-check.json",
       "vantage": "delivery_path_proxy"
     },
-    "otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/hhdwlzlfyp/out/v1/e4254483facf470fa4b47daf8c954e51/cenc.mpd": {
-      "route_id": "otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/hhdwlzlfyp/out/v1/e4254483facf470fa4b47daf8c954e51/cenc.mpd",
-      "url_public_template": "{id}.{id}.aiv-cdn.net/iad-nitro/live/clients/dash/enc/{seg}/out/v1/{seg}/{file}",
-      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
-      "sessions": 1,
-      "media_progress_seconds": [
-        0
-      ],
-      "window_seconds": 0.0,
-      "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy",
-      "superseded_by": {
-        "verdict": "proven",
-        "vantage": "delivery_path_proxy",
-        "sessions": 1,
-        "media_progress_seconds": [
-          0
-        ],
-        "window_seconds": 0.0,
-        "evidence_report": "reports/delivery-path-check.json"
-      }
-    },
     "www.rtmpcdn.com/live/da86ca09-ea22-4755-94cb-47bd4c5193c1.m3u8": {
       "route_id": "www.rtmpcdn.com/live/da86ca09-ea22-4755-94cb-47bd4c5193c1.m3u8",
       "url_public_template": "{id}.rtmpcdn.com/live/da86ca09-ea22-4755-94cb-47bd4c5193c1.m3u8",
@@ -74027,7 +74005,17 @@
       ],
       "window_seconds": 0.0,
       "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy"
+      "vantage": "delivery_path_proxy",
+      "superseded_by": {
+        "verdict": "proven",
+        "vantage": "delivery_path_proxy",
+        "sessions": 1,
+        "media_progress_seconds": [
+          0
+        ],
+        "window_seconds": 0.0,
+        "evidence_report": "reports/delivery-path-check.json"
+      }
     },
     "a96aivottlinear-a.akamaihd.net/OTTB/iad-nitro/live/clients/dash/enc/po7s7fvgjq/out/v1/5c412831b960410cb880428166b74dee/cenc.mpd": {
       "route_id": "a96aivottlinear-a.akamaihd.net/OTTB/iad-nitro/live/clients/dash/enc/po7s7fvgjq/out/v1/5c412831b960410cb880428166b74dee/cenc.mpd",
@@ -74072,6 +74060,18 @@
         "window_seconds": 0.0,
         "evidence_report": "reports/delivery-path-check.json"
       }
+    },
+    "deshitv.deshitv24.net/live/myStream/playlist.m3u8": {
+      "route_id": "deshitv.deshitv24.net/live/myStream/playlist.m3u8",
+      "url_public_template": "{id}.deshitv24.net/live/{seg}/{file}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
     }
   },
   "note": "Routes a real browser measured and could not play, each with the vantage it was measured from. Marks the card; never hides it, never changes publish_allowed, never demotes another route. Keyed by route, so a channel recovers when its route changes - or when a later measurement from any vantage passes, which supersedes the failure rather than deleting it.",
