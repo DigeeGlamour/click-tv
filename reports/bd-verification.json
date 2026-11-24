@@ -1,25 +1,45 @@
 {
-  "timestamp": "2026-11-24T18:02:36.464456+00:00",
+  "timestamp": "2026-11-24T18:07:39.681526+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 1,
-  "total_global_network_checked": 1,
+  "total_input_pool": 3,
+  "total_global_network_checked": 3,
   "total_proxy_selected": 0,
   "total_proxy_checked": 0,
-  "total_processed": 1,
-  "total_publishable": 0,
+  "total_processed": 3,
+  "total_publishable": 1,
   "strict_player_hidden": 1,
-  "browser_unreachable_hidden": 0,
+  "browser_unreachable_hidden": 1,
   "unproven_hidden": 0,
   "status_counts": {
-    "metadata_only": 1
+    "verified_global": 1,
+    "metadata_only": 1,
+    "unreachable_from_browser": 1
   },
   "groups": {
-    "metadata_only": [
+    "verified_global": [
       {
         "id": "al-nassr-vs-al-sadd",
         "name": "Al Nassr Vs Al Sadd",
         "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://sdn-global-live-streaming-packager-cache.3qsdn.com/102539/102539_264_live.m3u8",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      }
+    ],
+    "metadata_only": [
+      {
+        "id": "al-nassr-fc-vs-al-sadd",
+        "name": "Al Nassr FC vs Al Sadd",
+        "source_id": "sm-fancode",
         "source_pipeline": "upcoming",
         "url": "",
         "verification_status": "metadata_only",
@@ -30,6 +50,24 @@
         "proxy_http_status": 0,
         "verification_error": "",
         "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "permanent_fail_count": 0
+      }
+    ],
+    "unreachable_from_browser": [
+      {
+        "id": "al-nassr-vs-al-sadd",
+        "name": "Al Nassr Vs Al Sadd",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.41/hls/7GGGAAAAAA.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.41): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
         "permanent_fail_count": 0
       }
     ]
