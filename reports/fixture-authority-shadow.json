@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-24T21:30:13.270586+00:00",
+  "generated_at": "2026-11-24T21:45:08.024329+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -15,23 +15,18 @@
         "132|Stumps - day 1",
         "133|Stumps - day 2",
         "134|Stumps - day 3",
-        "2|29'",
-        "3|46'",
-        "3|66'",
-        "3|68'",
-        "3|69'",
-        "3|70'",
-        "3|71'",
-        "3|72'",
-        "3|73'",
-        "3|74'",
-        "3|75'",
-        "3|82'",
+        "2|44'",
         "3|83'",
         "3|84'",
         "3|85'",
         "3|86'",
-        "3|87'"
+        "3|87'",
+        "3|88'",
+        "3|89'",
+        "3|90'",
+        "3|90+11'",
+        "4|Pen",
+        "8|96'"
       ],
       "attempts": [
         {
@@ -78,8 +73,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 3,
-      "fixtures": 183,
+      "requests_ok": 4,
+      "fixtures": 192,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -97,8 +92,8 @@
         {
           "sport": "cricket",
           "date": "2026-11-25",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 9
         },
         {
           "sport": "football",
@@ -127,61 +122,57 @@
     "upcoming": 38,
     "fixtures": 55,
     "verdicts": {
-      "CONFLICT": 12,
+      "PARTIAL_AUTHORITY": 9,
+      "CONFLICT": 3,
       "UNVERIFIED": 32,
       "VERIFIED": 11
     },
     "verified": 11,
-    "partial_authority": 0,
+    "partial_authority": 9,
     "unverified": 32,
-    "conflict": 12,
+    "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 22,
-        "unmatched": 33
+        "matched": 24,
+        "unmatched": 31
       },
       "livescore": {
         "matched": 23,
         "unmatched": 32
       }
     },
-    "matched_by_two_independent_authorities": 18,
-    "authority_agreements": 6,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 11,
+    "matched_by_two_independent_authorities": 20,
+    "authority_agreements": 9,
+    "authority_disagreements": 2,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 11,
+      "authorities disagree": 2,
       "kickoff": 4,
-      "authorities disagree": 1
+      "card says LIVE, authority says FINISHED": 1
     },
     "identity_near_misses": 4,
     "independent_authority_count_distribution": {
       "0": 32,
-      "1": 5,
-      "2": 18
+      "1": 3,
+      "2": 20
     },
     "unknown_authority_statuses": {
       "livescore": [
         "132|Stumps - day 1",
         "133|Stumps - day 2",
         "134|Stumps - day 3",
-        "2|29'",
-        "3|46'",
-        "3|66'",
-        "3|68'",
-        "3|69'",
-        "3|70'",
-        "3|71'",
-        "3|72'",
-        "3|73'",
-        "3|74'",
-        "3|75'",
-        "3|82'",
+        "2|44'",
         "3|83'",
         "3|84'",
         "3|85'",
         "3|86'",
-        "3|87'"
+        "3|87'",
+        "3|88'",
+        "3|89'",
+        "3|90'",
+        "3|90+11'",
+        "4|Pen",
+        "8|96'"
       ],
       "espn-header": []
     }
@@ -256,17 +247,17 @@
           "competition_id": "775",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:775~e:401915296~c:401915296"
@@ -286,7 +277,7 @@
           "competition_id": "60",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "69'",
+          "status_raw": "84'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -302,12 +293,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -345,17 +334,17 @@
           "competition_id": "3914",
           "kickoff": "2026-11-24T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "63'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 2:45 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "63'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3914~e:401880143~c:401880143"
@@ -375,9 +364,9 @@
           "competition_id": "70",
           "kickoff": "2026-11-24T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "88'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "17",
           "format": "",
@@ -392,10 +381,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
       ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -434,17 +423,17 @@
           "competition_id": "735",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:735~e:401878345~c:401878345"
@@ -464,7 +453,7 @@
           "competition_id": "69",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "70'",
+          "status_raw": "85'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -480,12 +469,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -523,17 +510,17 @@
           "competition_id": "3914",
           "kickoff": "2026-11-24T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "63'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 2:45 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "63'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3914~e:401880142~c:401880142"
@@ -553,9 +540,9 @@
           "competition_id": "70",
           "kickoff": "2026-11-24T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "88'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "17",
           "format": "",
@@ -570,10 +557,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
       ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -612,17 +599,17 @@
           "competition_id": "775",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "49'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "49'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:775~e:401915297~c:401915297"
@@ -642,7 +629,7 @@
           "competition_id": "60",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "74'",
+          "status_raw": "89'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -658,12 +645,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -701,17 +686,17 @@
           "competition_id": "775",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "49'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "49'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:775~e:401915295~c:401915295"
@@ -731,7 +716,7 @@
           "competition_id": "60",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "75'",
+          "status_raw": "90'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -747,12 +732,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -827,17 +810,17 @@
           "competition_id": "630",
           "kickoff": "2026-11-24T21:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "4'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 4:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "4'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841335~c:401841335"
@@ -857,7 +840,7 @@
           "competition_id": "155",
           "kickoff": "2026-11-24T21:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "29'",
+          "status_raw": "44'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -873,12 +856,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -916,17 +897,17 @@
           "competition_id": "775",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:775~e:401915294~c:401915294"
@@ -946,7 +927,7 @@
           "competition_id": "60",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "71'",
+          "status_raw": "86'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -962,12 +943,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -1042,17 +1021,17 @@
           "competition_id": "775",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 65.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "48'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "48'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:775~e:401915379~c:401915379"
@@ -1072,7 +1051,7 @@
           "competition_id": "60",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 65.0,
-          "status_raw": "73'",
+          "status_raw": "88'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -1132,17 +1111,17 @@
           "competition_id": "775",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "48'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "48'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:775~e:401915379~c:401915379"
@@ -1162,7 +1141,7 @@
           "competition_id": "60",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "73'",
+          "status_raw": "88'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -1178,12 +1157,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -1221,17 +1198,17 @@
           "competition_id": "775",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "49'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "49'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:775~e:401915299~c:401915299"
@@ -1251,7 +1228,7 @@
           "competition_id": "60",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "74'",
+          "status_raw": "87'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -1267,12 +1244,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -1310,17 +1285,17 @@
           "competition_id": "775",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 65.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "46'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "46'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:775~e:401915298~c:401915298"
@@ -1340,7 +1315,7 @@
           "competition_id": "60",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 65.0,
-          "status_raw": "72'",
+          "status_raw": "87'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -1400,17 +1375,17 @@
           "competition_id": "775",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "46'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "46'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:775~e:401915298~c:401915298"
@@ -1430,7 +1405,7 @@
           "competition_id": "60",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "72'",
+          "status_raw": "87'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -1446,12 +1421,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -1547,18 +1520,18 @@
           "competition_id": "3902",
           "kickoff": "2026-11-24T18:15:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "69'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "69'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3902~e:401912584~c:401912584"
         },
@@ -1594,10 +1567,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+        "card says LIVE, authority says FINISHED"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -1617,8 +1590,8 @@
         "srhady-willow-event",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1733,8 +1706,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1897,8 +1870,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2049,8 +2022,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2090,8 +2063,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2282,8 +2255,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2374,8 +2347,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2470,7 +2443,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543976",
+          "upstream_family": "ESPN",
+          "name": "Melbourne Renegades Women vs Brisbane Heat Women",
+          "home": "Melbourne Renegades Women",
+          "away": "Brisbane Heat Women",
+          "home_team_id": "896407",
+          "away_team_id": "896397",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-25T08:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "33rd Match (D/N)",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-25T23:59:00Z",
+          "authority_uid": "s:200~e:1543976~c:1543976"
         },
         "livescore": {
           "result": "matched",
@@ -2497,13 +2497,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2562,8 +2563,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2641,8 +2642,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2683,8 +2684,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2801,8 +2802,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2894,8 +2895,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3022,8 +3023,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3062,8 +3063,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3323,8 +3324,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3332,7 +3333,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1557572",
+          "upstream_family": "ESPN",
+          "name": "Ireland Women vs Sri Lanka Women",
+          "home": "Ireland Women",
+          "away": "Sri Lanka Women",
+          "home_team_id": "2234",
+          "away_team_id": "3621",
+          "competition": "ICC Women's Emerging Nations Trophy",
+          "competition_id": "24142",
+          "kickoff": "2026-11-25T05:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Final",
+          "format": "T20",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-26T23:59:00Z",
+          "authority_uid": "s:200~e:1557572~c:1557572"
         },
         "livescore": {
           "result": "matched",
@@ -3359,13 +3387,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -3386,8 +3415,8 @@
         "srhady-willow-event",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3429,8 +3458,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3471,8 +3500,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3511,8 +3540,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3573,17 +3602,17 @@
           "competition_id": "3914",
           "kickoff": "2026-11-24T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "48'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 24th at 3:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "48'",
+          "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3914~e:401880141~c:401880141"
@@ -3607,12 +3636,10 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
+      "card_status_conflict": false,
+      "verdict": "VERIFIED"
     }
   ]
 }
