@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-24T18:06:13.541364+00:00",
+  "updated_at": "2026-11-24T18:25:38.075822+00:00",
   "count": 13,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -296,7 +296,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-24T17:25:28.792158+00:00",
       "authority_near_misses": [
@@ -380,8 +380,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 4,
-      "carried_forward_misses": 4,
+      "end_pending_confirmations": 5,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-24T17:05:39.151419+00:00"
     },
@@ -634,7 +634,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-24T16:45:19.754834+00:00"
     },
@@ -872,7 +872,7 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_finished_confirmations": 2,
+      "authority_finished_confirmations": 3,
       "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
@@ -896,7 +896,19 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_finished_seen_at": "2026-11-24T18:25:10.242362+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-24T18:45:10.242362+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "contradicted_end_confirmations": 1,
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_first_missed_at": "2026-11-24T18:25:26.493001+00:00"
     },
     {
       "id": "ilt-t20",
@@ -1087,7 +1099,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-24T18:25:26.493001+00:00"
     },
     {
       "id": "italia-milan-icons-vs-rome-gladiators",
@@ -1294,7 +1314,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 14,
+      "carried_forward_misses": 15,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-24T13:45:47.497254+00:00"
     },
@@ -1406,14 +1426,14 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401873556)",
+        "ESPN espn-header=85' (STATUS_SECOND_HALF, event 401873556)",
         "LiveScore livescore=FT (6, event 1885794)"
       ],
       "authority_independent_count": 2,
@@ -1425,7 +1445,6 @@
       "authority_finished_seen_at": "2026-11-24T18:05:42.500672+00:00",
       "authority_status": "FINISHED",
       "authority_remove_after": "2026-11-24T18:25:42.500672+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "finished, holding for the post-match grace",
       "end_pending": true,
@@ -1441,7 +1460,11 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401873556); LiveScore livescore=FT (6, event 1885794)",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-24T18:25:26.493001+00:00"
     },
     {
       "id": "algeria-u17-vs-montenegro-u17",
@@ -1551,7 +1574,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=77' (STATUS_SECOND_HALF, event 401873553)",
+        "ESPN espn-header=57' (STATUS_SECOND_HALF, event 401873553)",
         "LiveScore livescore=FT (6, event 1885768)"
       ],
       "authority_independent_count": 1,
@@ -1560,18 +1583,21 @@
       },
       "authority_status": "LIVE",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/961w9v1779469931.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/i6qjqi1731994375.png",
       "playback_id": "ctv_2e642d2ac0c01992575198b9bb0603f1",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-24T17:45:23.581357+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=77' (STATUS_SECOND_HALF, event 401873553); LiveScore livescore=FT (6, event 1885768)"
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=57' (STATUS_SECOND_HALF, event 401873553); LiveScore livescore=FT (6, event 1885768)",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-24T18:25:26.493001+00:00"
     },
     {
       "id": "honduras-u17-vs-colombia-u17",
@@ -1688,12 +1714,11 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=78' (STATUS_SECOND_HALF, event 401873557)",
+        "ESPN espn-header=58' (STATUS_SECOND_HALF, event 401873557)",
         "LiveScore livescore=FT (6, event 1885775)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=78' (STATUS_SECOND_HALF, event 401873557); LiveScore livescore=FT (6, event 1885775)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/p145bh1742919352.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/v1m8h41743907655.png",
       "playback_id": "ctv_4593d40e0c3cfdb900f71d518c3ea558",
@@ -1703,7 +1728,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=58' (STATUS_SECOND_HALF, event 401873557); LiveScore livescore=FT (6, event 1885775)",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-24T18:25:26.493001+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-24T18:25:26.493001+00:00"
     },
     {
       "id": "shabab-al-ahli-vs-al-qadisiyah",
@@ -1778,10 +1811,10 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401912598)",
+        "ESPN espn-header=44' (STATUS_FIRST_HALF, event 401912598)",
         "LiveScore livescore=FT (6, event 1873593)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401912598); LiveScore livescore=FT (6, event 1873593)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=44' (STATUS_FIRST_HALF, event 401912598); LiveScore livescore=FT (6, event 1873593)",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
@@ -1896,7 +1929,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401912754)",
+        "ESPN espn-header=45' (STATUS_FIRST_HALF, event 401912754)",
         "LiveScore livescore=FT (6, event 1873893)"
       ],
       "authority_independent_count": 1,
@@ -1905,16 +1938,18 @@
       },
       "authority_status": "LIVE",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_bf7717e050a9b52df2c88f878bd3fbc9",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401912754); LiveScore livescore=FT (6, event 1873893)",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-24T18:05:58.395584+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-24T18:05:58.395584+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=45' (STATUS_FIRST_HALF, event 401912754); LiveScore livescore=FT (6, event 1873893)",
+      "end_pending": true,
+      "end_pending_confirmations": 2
     },
     {
       "id": "bodø-glimt-vs-lask",
@@ -1998,43 +2033,83 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-24T17:45:23.581357+00:00"
     },
     {
       "id": "al-nassr-vs-al-sadd",
       "name": "Al Nassr Vs Al Sadd",
-      "primary_stream_key": "",
+      "primary_stream_key": "bbb895f9d8888f420b226fca7ce1f6cc9d2a888e401444e30a5fc8481155fedd",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/23400/image",
       "category": "today_match",
-      "url": "",
+      "url": "https://sdn-global-live-streaming-packager-cache.3qsdn.com/102539/102539_264_live.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
-      "stream_type": "media",
+      "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
+      "original_source_pipeline": "today_match",
       "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
+      "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
-      "metadata_only": true,
-      "available_link_count": 0,
+      "metadata_only": false,
+      "available_link_count": 1,
       "backups": [],
+      "channels": [
+        {
+          "id": "al-nassr-vs-al-sadd--sportdigital",
+          "name": "SPORTDIGITAL",
+          "normalized_name": "sportdigital",
+          "logo": "https://img.sofascore.com/api/v1/team/23400/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "al-nassr-vs-al-sadd--sportdigital--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "al-nassr-vs-al-sadd--sportdigital--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_d9e5397a4b919ffb573b7d25",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_6c0277bd74c6dc2012a8a745800264f7",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "hls"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "al-nassr-vs-al-sadd--sportdigital",
       "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 1,
+        "streams_in": 2,
+        "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
+        "channels": 1,
+        "variants": 1,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -2043,76 +2118,45 @@
           "source_id": "sm-sports-data",
           "source_name": "SM Live and Upcoming Sports Data",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        },
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "drmlive-fancode-mirror",
-          "source_name": "FanCode Live Events (drmlive)",
-          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
-        },
-        {
-          "source_id": "sportlive-fancode-backup",
-          "source_name": "SportLive18 FanCode Backup",
-          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
-        },
-        {
-          "source_id": "sayanpal-fancode-mirror",
-          "source_name": "FanCode Auto Updated (sayanpal)",
-          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sm-sports-data"
       ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "start_time": "2026-11-24T18:15:00+00:00",
       "start_at": "2026-11-24T18:15:00+00:00",
       "end_time": "2026-11-24T20:45:00+00:00",
       "end_time_source": "sport",
       "competition": "AFC Champions League Elite",
       "fixture_id": "provider:al-nassr-vs-al-sadd|afc champions league elite|2026-11-24",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-24T18:15:00+00:00",
       "time_verification": "provider_feed",
+      "source_category": "football",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912584)",
-        "LiveScore livescore=NS (1, event 1873594)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912584)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "401912584",
-        "livescore": "1873594"
+        "espn-header": "401912584"
       },
-      "allow_without_stream": true,
       "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_6c0277bd74c6dc2012a8a745800264f7"
     }
   ]
 }
