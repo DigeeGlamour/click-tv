@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-25T12:24:07.755791+00:00",
+  "generated_at": "2026-11-25T12:44:15.520325+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -14,14 +14,15 @@
       "unknown_statuses": [
         "133|Stumps - day 2",
         "134|Stumps - day 3",
-        "2|23'",
-        "2|5'",
-        "2|9'",
-        "3|61'",
-        "3|63'",
-        "3|68'",
-        "3|90+3'",
-        "3|90+5'"
+        "2|13'",
+        "2|14'",
+        "2|25'",
+        "2|30'",
+        "2|43'",
+        "2|44'",
+        "3|82'",
+        "3|83'",
+        "3|89'"
       ],
       "attempts": [
         {
@@ -68,15 +69,15 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 6,
-      "fixtures": 268,
+      "requests_ok": 4,
+      "fixtures": 208,
       "unknown_statuses": [],
       "attempts": [
         {
           "sport": "cricket",
           "date": "2026-11-24",
-          "result": "ok",
-          "fixtures": 30
+          "result": "INCONCLUSIVE",
+          "reason": "http 502"
         },
         {
           "sport": "cricket",
@@ -87,8 +88,8 @@
         {
           "sport": "cricket",
           "date": "2026-11-26",
-          "result": "ok",
-          "fixtures": 30
+          "result": "INCONCLUSIVE",
+          "reason": "http 502"
         },
         {
           "sport": "football",
@@ -113,60 +114,69 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 10,
-    "upcoming": 38,
+    "today_match": 11,
+    "upcoming": 37,
     "fixtures": 48,
     "verdicts": {
-      "CONFLICT": 2,
+      "CONFLICT": 3,
       "UNVERIFIED": 29,
       "PARTIAL_AUTHORITY": 1,
-      "VERIFIED": 16
+      "VERIFIED": 15
     },
-    "verified": 16,
+    "verified": 15,
     "partial_authority": 1,
     "unverified": 29,
-    "conflict": 2,
+    "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 16,
-        "unmatched": 32
+        "matched": 13,
+        "unmatched": 35
       },
       "livescore": {
-        "matched": 17,
-        "unmatched": 31
+        "matched": 16,
+        "unmatched": 32
       }
     },
-    "matched_by_two_independent_authorities": 14,
-    "authority_agreements": 12,
+    "matched_by_two_independent_authorities": 10,
+    "authority_agreements": 7,
     "authority_disagreements": 1,
-    "card_status_conflicts": 1,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "authorities disagree": 1,
-      "card says LIVE, authority says FINISHED": 1
+      "card says LIVE, authority says UPCOMING": 2,
+      "authorities disagree": 1
     },
-    "identity_near_misses": 5,
+    "identity_near_misses": 6,
     "independent_authority_count_distribution": {
       "0": 29,
-      "1": 5,
-      "2": 14
+      "1": 9,
+      "2": 10
     },
     "unknown_authority_statuses": {
       "livescore": [
         "133|Stumps - day 2",
         "134|Stumps - day 3",
-        "2|23'",
-        "2|5'",
-        "2|9'",
-        "3|61'",
-        "3|63'",
-        "3|68'",
-        "3|90+3'",
-        "3|90+5'"
+        "2|13'",
+        "2|14'",
+        "2|25'",
+        "2|30'",
+        "2|43'",
+        "2|44'",
+        "3|82'",
+        "3|83'",
+        "3|89'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Uganda U17 Vs New Caledonia U17",
+      "authority": "livescore",
+      "authority_name": "Uganda vs New Caledonia U17",
+      "agreed_side": "new caledonia u17",
+      "ours": "uganda u17",
+      "theirs": "uganda"
+    },
     {
       "fixture": "Kashima Antlers vs Jeonbuk Motors",
       "authority": "espn-header",
@@ -210,6 +220,95 @@
   ],
   "fixtures": [
     {
+      "fixture_id": "provider:ecuador-u17-vs-south-korea-u17|u17 world championship|2026-11-25",
+      "card_id": "ecuador-u17-vs-south-korea-u17",
+      "name": "Ecuador U17 Vs South Korea U17",
+      "competition": "U17 World Championship",
+      "kickoff": "2026-11-25T12:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401873561",
+          "upstream_family": "ESPN",
+          "name": "Ecuador U17 vs South Korea U17",
+          "home": "Ecuador U17",
+          "away": "South Korea U17",
+          "home_team_id": "17973",
+          "away_team_id": "8414",
+          "competition": "FIFA Under-17 World Cup",
+          "competition_id": "5697",
+          "kickoff": "2026-11-25T12:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, November 25th at 7:30 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:5697~e:401873561~c:401873561"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1885756",
+          "upstream_family": "LiveScore",
+          "name": "Ecuador U17 vs South Korea U17",
+          "home": "Ecuador U17",
+          "away": "South Korea U17",
+          "home_team_id": "9872",
+          "away_team_id": "9678",
+          "competition": "Group B",
+          "competition_id": "26303",
+          "kickoff": "2026-11-25T12:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "13'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:kashima-antlers-vs-jeonbuk-hyundai-motors|afc champions league elite|2026-11-25",
       "card_id": "kashima-antlers-vs-jeonbuk-hyundai-motors",
       "name": "Kashima Antlers Vs Jeonbuk Hyundai Motors",
@@ -244,17 +343,17 @@
           "competition_id": "3902",
           "kickoff": "2026-11-25T10:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "86'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "86'",
-          "espn_status_description": "Second Half",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, November 25th at 5:00 AM EST",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3902~e:401912597~c:401912597"
@@ -291,7 +390,7 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
       ],
       "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
@@ -336,95 +435,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:melbourne-renegades-vs-brisbane-heat-women|women big bash league|2026-11-25",
-      "card_id": "melbourne-renegades-women-vs-brisbane-heat-women",
-      "name": "Melbourne Renegades Women Vs Brisbane Heat Women",
-      "competition": "Women's Big Bash League",
-      "kickoff": "2026-11-25T08:10:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1543976",
-          "upstream_family": "ESPN",
-          "name": "Melbourne Renegades Women vs Brisbane Heat Women",
-          "home": "Melbourne Renegades Women",
-          "away": "Brisbane Heat Women",
-          "home_team_id": "896407",
-          "away_team_id": "896397",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-25T08:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "33rd Match (D/N)",
-          "format": "",
-          "gender": "women",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-25T23:59:00Z",
-          "authority_uid": "s:200~e:1543976~c:1543976"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1813039",
-          "upstream_family": "LiveScore",
-          "name": "Melbourne Renegades W vs Brisbane Heat W",
-          "home": "Melbourne Renegades W",
-          "away": "Brisbane Heat W",
-          "home_team_id": "86305",
-          "away_team_id": "86302",
-          "competition": "Women's Big Bash League",
-          "competition_id": "25707",
-          "kickoff": "2026-11-25T08:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "Match 33",
-          "format": "Womens Domestic Twenty20",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:persib-bandung-vs-seoul|afc champions league two 2026 27|2026-11-25",
       "card_id": "persib-bandung-vs-seoul",
       "name": "Persib Bandung vs Seoul",
@@ -437,8 +447,7 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode"
@@ -490,7 +499,7 @@
           "competition_id": "690",
           "kickoff": "2026-11-25T12:15:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "9'",
+          "status_raw": "30'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -513,6 +522,142 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:sporting-u19-vs-manchester-united-u19|uefa youth league|2026-11-25",
+      "card_id": "sporting-u19-vs-manchester-united-u19",
+      "name": "Sporting U19 Vs Manchester United U19",
+      "competition": "UEFA Youth League",
+      "kickoff": "2026-11-25T13:00:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1886621",
+          "upstream_family": "LiveScore",
+          "name": "Sporting CP U19 vs Manchester United U19",
+          "home": "Sporting CP U19",
+          "away": "Manchester United U19",
+          "home_team_id": "188110",
+          "away_team_id": "12556",
+          "competition": "Champions League Path",
+          "competition_id": "109",
+          "kickoff": "2026-11-25T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "5",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:uganda-u17-vs-new-caledonia-u17|u17 world championship|2026-11-25",
+      "card_id": "uganda-u17-vs-new-caledonia-u17",
+      "name": "Uganda U17 Vs New Caledonia U17",
+      "competition": "U17 World Championship",
+      "kickoff": "2026-11-25T12:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401873562",
+          "upstream_family": "ESPN",
+          "name": "Uganda U17 vs New Caledonia U17",
+          "home": "Uganda U17",
+          "away": "New Caledonia U17",
+          "home_team_id": "130890",
+          "away_team_id": "18765",
+          "competition": "FIFA Under-17 World Cup",
+          "competition_id": "5697",
+          "kickoff": "2026-11-25T12:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, November 25th at 7:30 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:5697~e:401873562~c:401873562"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Uganda vs New Caledonia U17",
+              "event_id": "1885757",
+              "agreed_side": "new caledonia u17",
+              "ours": "uganda u17",
+              "theirs": "uganda"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:europe-vs-australasia|test twenty championship 2026|2026-11-25",
       "card_id": "europe-vs-australasia",
       "name": "Europe vs Australasia",
@@ -525,8 +670,7 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode"
@@ -563,13 +707,88 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode"
       ],
       "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:venice-livewires-vs-napoli-knights|italia t10 2026|2026-11-25",
+      "card_id": "venice-livewires-vs-napoli-knights",
+      "name": "Venice Livewires vs Napoli Knights",
+      "competition": "Italia T10 2026",
+      "kickoff": "2026-11-25T11:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:south-africa-vs-bangladesh|bangladesh tour of south africa 2026 2nd test|2026-11-25",
+      "card_id": "south-africa-vs-bangladesh",
+      "name": "South Africa vs Bangladesh",
+      "competition": "Bangladesh tour of South Africa 2026 - 2nd Test",
+      "kickoff": "2026-11-25T12:44:15+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "PrimeVideo",
+        "Willow"
+      ],
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -595,7 +814,7 @@
       "competition": "AFC Champions League Elite 2026-27",
       "kickoff": "2026-11-25T10:00:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -658,170 +877,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:venice-livewires-vs-napoli-knights|italia t10 2026|2026-11-25",
-      "card_id": "venice-livewires-vs-napoli-knights",
-      "name": "Venice Livewires vs Napoli Knights",
-      "competition": "Italia T10 2026",
-      "kickoff": "2026-11-25T11:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:south-africa-vs-bangladesh|bangladesh tour of south africa 2026 2nd test|2026-11-25",
-      "card_id": "south-africa-vs-bangladesh",
-      "name": "South Africa vs Bangladesh",
-      "competition": "Bangladesh tour of South Africa 2026 - 2nd Test",
-      "kickoff": "2026-11-25T12:24:07+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
-      ],
-      "upstream_families": [
-        "PrimeVideo",
-        "Willow"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:ecuador-u17-vs-south-korea-u17|u17 world championship|2026-11-25",
-      "card_id": "ecuador-u17-vs-south-korea-u17",
-      "name": "Ecuador U17 Vs South Korea U17",
-      "competition": "U17 World Championship",
-      "kickoff": "2026-11-25T12:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401873561",
-          "upstream_family": "ESPN",
-          "name": "Ecuador U17 vs South Korea U17",
-          "home": "Ecuador U17",
-          "away": "South Korea U17",
-          "home_team_id": "17973",
-          "away_team_id": "8414",
-          "competition": "FIFA Under-17 World Cup",
-          "competition_id": "5697",
-          "kickoff": "2026-11-25T12:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, November 25th at 7:30 AM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:5697~e:401873561~c:401873561"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1885756",
-          "upstream_family": "LiveScore",
-          "name": "Ecuador U17 vs South Korea U17",
-          "home": "Ecuador U17",
-          "away": "South Korea U17",
-          "home_team_id": "9872",
-          "away_team_id": "9678",
-          "competition": "Group B",
-          "competition_id": "26303",
-          "kickoff": "2026-11-25T12:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "3",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:abu-dhabi-knight-riders-vs-mi-emirates|international league t20 2026 7th|2026-11-26",
       "card_id": "abu-dhabi-knight-riders-vs-mi-emirates",
       "name": "Abu Dhabi Knight Riders vs Mi Emirates",
@@ -838,8 +893,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -848,34 +903,7 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1557449",
-          "upstream_family": "ESPN",
-          "name": "Abu Dhabi Knight Riders vs MI Emirates",
-          "home": "Abu Dhabi Knight Riders",
-          "away": "MI Emirates",
-          "home_team_id": "1346027",
-          "away_team_id": "1328788",
-          "competition": "International League T20",
-          "competition_id": "20921",
-          "kickoff": "2026-11-26T14:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "7th Match (D/N)",
-          "format": "T20",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-27T23:59:00Z",
-          "authority_uid": "s:200~e:1557449~c:1557449"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -902,14 +930,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1005,8 +1032,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1086,8 +1113,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1320,7 +1347,8 @@
         "srhady-willow-event",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1398,8 +1426,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1486,8 +1514,7 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode"
@@ -1527,8 +1554,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1642,8 +1669,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1719,7 +1746,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1749,8 +1777,8 @@
       "name": "Haiti U17 Vs Saudi Arabia U17",
       "competition": "U17 World Championship",
       "kickoff": "2026-11-25T13:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1846,8 +1874,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1998,8 +2026,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2040,8 +2068,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2180,8 +2208,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2272,7 +2300,8 @@
         "srhady-willow-event",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2313,8 +2342,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2353,7 +2382,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2393,8 +2423,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2558,7 +2588,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2583,65 +2614,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:sporting-u19-vs-manchester-united-u19|uefa youth league|2026-11-25",
-      "card_id": "sporting-u19-vs-manchester-united-u19",
-      "name": "Sporting U19 Vs Manchester United U19",
-      "competition": "UEFA Youth League",
-      "kickoff": "2026-11-25T13:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1886621",
-          "upstream_family": "LiveScore",
-          "name": "Sporting CP U19 vs Manchester United U19",
-          "home": "Sporting CP U19",
-          "away": "Manchester United U19",
-          "home_team_id": "188110",
-          "away_team_id": "12556",
-          "competition": "Champions League Path",
-          "competition_id": "109",
-          "kickoff": "2026-11-25T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "5",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:sydney-sixers-vs-melbourne-stars-women|women big bash league 2026 35th|2026-11-26",
       "card_id": "sydney-sixers-women-vs-melbourne-stars-women",
       "name": "Sydney Sixers Women vs Melbourne Stars Women",
@@ -2658,8 +2630,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2668,34 +2640,7 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1543978",
-          "upstream_family": "ESPN",
-          "name": "Sydney Sixers Women vs Melbourne Stars Women",
-          "home": "Sydney Sixers Women",
-          "away": "Melbourne Stars Women",
-          "home_team_id": "896403",
-          "away_team_id": "896399",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-26T08:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "35th Match (D/N)",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-26T23:59:00Z",
-          "authority_uid": "s:200~e:1543978~c:1543978"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -2722,14 +2667,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2751,8 +2695,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2761,34 +2705,7 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1543977",
-          "upstream_family": "ESPN",
-          "name": "Sydney Thunder Women vs Adelaide Strikers Women",
-          "home": "Sydney Thunder Women",
-          "away": "Adelaide Strikers Women",
-          "home_team_id": "896401",
-          "away_team_id": "896431",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-26T04:40:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "34th Match",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-26T23:59:00Z",
-          "authority_uid": "s:200~e:1543977~c:1543977"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -2815,14 +2732,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2842,7 +2758,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2992,6 +2909,94 @@
       "verdict": "UNVERIFIED"
     },
     {
+      "fixture_id": "provider:melbourne-renegades-vs-brisbane-heat-women|women big bash league|2026-11-25",
+      "card_id": "melbourne-renegades-women-vs-brisbane-heat-women",
+      "name": "Melbourne Renegades Women Vs Brisbane Heat Women",
+      "competition": "Women's Big Bash League",
+      "kickoff": "2026-11-25T08:10:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543976",
+          "upstream_family": "ESPN",
+          "name": "Melbourne Renegades Women vs Brisbane Heat Women",
+          "home": "Melbourne Renegades Women",
+          "away": "Brisbane Heat Women",
+          "home_team_id": "896407",
+          "away_team_id": "896397",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-25T08:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Result",
+          "status_code": "Result",
+          "status": "FINISHED",
+          "sport": "cricket",
+          "round": "33rd Match (D/N)",
+          "format": "",
+          "gender": "women",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "Final",
+          "espn_status_description": "Result",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-25T23:59:00Z",
+          "authority_uid": "s:200~e:1543976~c:1543976"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1813039",
+          "upstream_family": "LiveScore",
+          "name": "Melbourne Renegades W vs Brisbane Heat W",
+          "home": "Melbourne Renegades W",
+          "away": "Brisbane Heat W",
+          "home_team_id": "86305",
+          "away_team_id": "86302",
+          "competition": "Women's Big Bash League",
+          "competition_id": "25707",
+          "kickoff": "2026-11-25T08:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "cricket",
+          "round": "Match 33",
+          "format": "Womens Domestic Twenty20",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT"
+    },
+    {
       "fixture_id": "provider:persib-bandung-vs-fc-seoul|afc champions league two|2026-11-25",
       "card_id": "persib-bandung-vs-fc-seoul",
       "name": "Persib Bandung Vs FC Seoul",
@@ -3061,7 +3066,7 @@
           "competition_id": "690",
           "kickoff": "2026-11-25T12:15:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "9'",
+          "status_raw": "30'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
