@@ -8459,28 +8459,6 @@
       "evidence_report": "reports/delivery-path-check.json",
       "vantage": "delivery_path_proxy"
     },
-    "a96aivottlinear-a.akamaihd.net/OTTB/pdx-nitro/live/clients/dash/enc/w5ucrsei9m/out/v1/3e217bead6614b57bc2b68cd77fb1bc5/cenc.mpd": {
-      "route_id": "a96aivottlinear-a.akamaihd.net/OTTB/pdx-nitro/live/clients/dash/enc/w5ucrsei9m/out/v1/3e217bead6614b57bc2b68cd77fb1bc5/cenc.mpd",
-      "url_public_template": "{id}.akamaihd.net/OTTB/pdx-nitro/live/clients/dash/enc/{seg}/out/v1/{seg}/{file}",
-      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
-      "sessions": 1,
-      "media_progress_seconds": [
-        0
-      ],
-      "window_seconds": 0.0,
-      "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy",
-      "superseded_by": {
-        "verdict": "proven",
-        "vantage": "delivery_path_proxy",
-        "sessions": 1,
-        "media_progress_seconds": [
-          0
-        ],
-        "window_seconds": 0.0,
-        "evidence_report": "reports/delivery-path-check.json"
-      }
-    },
     "otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/mrfbslkffj/out/v1/6580420c39c64278a2cbc093bc059ef4/cenc.mpd": {
       "route_id": "otte.live.fly.ww.aiv-cdn.net/iad-nitro/live/clients/dash/enc/mrfbslkffj/out/v1/6580420c39c64278a2cbc093bc059ef4/cenc.mpd",
       "url_public_template": "{id}.{id}.{id}.{id}.aiv-cdn.net/iad-nitro/live/clients/dash/enc/{seg}/out/v1/{seg}/{file}",
@@ -8564,28 +8542,6 @@
       "window_seconds": 0.0,
       "evidence_report": "reports/delivery-path-check.json",
       "vantage": "delivery_path_proxy"
-    },
-    "chatgpt.hereisman.net/playlist/57453/load-playlist?.m3u8=": {
-      "route_id": "chatgpt.hereisman.net/playlist/57453/load-playlist?.m3u8=",
-      "url_public_template": "{id}.hereisman.net/{seg}/57453/load-playlist?.m3u8={v}",
-      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
-      "sessions": 1,
-      "media_progress_seconds": [
-        0
-      ],
-      "window_seconds": 0.0,
-      "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy",
-      "superseded_by": {
-        "verdict": "proven",
-        "vantage": "delivery_path_proxy",
-        "sessions": 1,
-        "media_progress_seconds": [
-          0
-        ],
-        "window_seconds": 0.0,
-        "evidence_report": "reports/delivery-path-check.json"
-      }
     },
     "otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/mrfbslkffj/out/v1/6580420c39c64278a2cbc093bc059ef4/cenc.mpd": {
       "route_id": "otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/mrfbslkffj/out/v1/6580420c39c64278a2cbc093bc059ef4/cenc.mpd",
@@ -73922,6 +73878,30 @@
         "window_seconds": 0.0,
         "evidence_report": "reports/delivery-path-check.json"
       }
+    },
+    "ipcloud.live/nvision/nvisionhd/index.m3u8": {
+      "route_id": "ipcloud.live/nvision/nvisionhd/index.m3u8",
+      "url_public_template": "ipcloud.live/nvision/{seg}/{file}",
+      "reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
+    },
+    "srknowapp.ncare.live/srktvhlswodrm/srktv.stream/playlist.m3u8": {
+      "route_id": "srknowapp.ncare.live/srktvhlswodrm/srktv.stream/playlist.m3u8",
+      "url_public_template": "{id}.ncare.live/{seg}/srktv.stream/{file}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
     }
   },
   "note": "Routes a real browser measured and could not play, each with the vantage it was measured from. Marks the card; never hides it, never changes publish_allowed, never demotes another route. Keyed by route, so a channel recovers when its route changes - or when a later measurement from any vantage passes, which supersedes the failure rather than deleting it.",
