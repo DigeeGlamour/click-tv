@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-25T15:41:55.975930+00:00",
-  "count": 15,
+  "updated_at": "2026-11-25T16:24:36.551390+00:00",
+  "count": 16,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -136,11 +136,11 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "END_PENDING",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 1,
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending_confirmations": 3,
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-25T15:30:52.151102+00:00"
     },
     {
@@ -266,7 +266,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-25T15:04:14.648286+00:00"
     },
@@ -334,12 +334,18 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-25T16:24:26.233827+00:00"
     },
     {
       "id": "ilt-t20",
       "name": "ILT T20",
-      "primary_stream_key": "6b6d708c65d2c1a2eb2476e0b927d0c908bc873ffc82dde4466e236c3cd041d4",
+      "primary_stream_key": "5ef95312090fea3232a0ef39aacef831da9b08912598ea776a612ef7a5aa49d9",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLPb2DPj3zNmfruRqU6BXsmrMIYosxxZA0efvdkBZ_4Q&s=10",
@@ -382,7 +388,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_d84450865644d388e7651c113298e051",
+          "playback_id": "ctv_1ad69b0123b4c072176896030bd5c6fe",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -393,42 +399,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "ilt-t20--tnt-sports",
-          "name": "TNT SPORTS",
-          "normalized_name": "tnt-sports",
-          "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLPb2DPj3zNmfruRqU6BXsmrMIYosxxZA0efvdkBZ_4Q&s=10",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "ilt-t20--tnt-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "ilt-t20--tnt-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_91f9815a00ecb0504bba57e8",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_1ad69b0123b4c072176896030bd5c6fe",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "ilt-t20--willow",
           "name": "WILLOW",
@@ -464,10 +434,46 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "ilt-t20--tnt-sports",
+          "name": "TNT SPORTS",
+          "normalized_name": "tnt-sports",
+          "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLPb2DPj3zNmfruRqU6BXsmrMIYosxxZA0efvdkBZ_4Q&s=10",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "ilt-t20--tnt-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "ilt-t20--tnt-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_91f9815a00ecb0504bba57e8",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_1ad69b0123b4c072176896030bd5c6fe",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "ilt-t20--tnt-sports",
+      "default_channel_id": "ilt-t20--willow",
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 0,
@@ -512,7 +518,7 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_1ad69b0123b4c072176896030bd5c6fe",
+      "playback_id": "ctv_d84450865644d388e7651c113298e051",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -548,7 +554,7 @@
       "available_link_count": 0,
       "channel_stats": {
         "streams_in": 2,
-        "unresolved_channel_streams": 0,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -596,7 +602,7 @@
     {
       "id": "dubai-capitals-vs-desert-vipers",
       "name": "Dubai Capitals vs Desert Vipers",
-      "primary_stream_key": "f8e0fd35a6cbf9e613407d2c7d159fed30ea5fef3af9e9ed0d4eee19a49415e6",
+      "primary_stream_key": "96bb76d91d732041318992eea60d0605a0b91eda0265531d2f7192f9a724e02e",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.b852ad1b-829e-4346-8fe4-67afa7b2b0a7/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/s-z/willowtv/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1724,885,117,117_kvebed36e78eaa0330f200bb6045a52aca_SX624_FMjpg_.jpeg",
@@ -621,6 +627,35 @@
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_00d27e602dd9967ad9a37d1b0aee580e",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -640,35 +675,6 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_c561b16468cc5fc04b52609acff84bf4",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_a13cfb929f9cf7f9183cc47f43ac090c",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -719,14 +725,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "ss-ott.bia-cf.live.pv-cdn.net",
+          "host": "a96aivottlinear-a.akamaihd.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_cb155554ff04ea5b16f966cc2bb0e4a5",
+          "playback_id": "ctv_705b602634bcd54e2fbb1434b1e70132",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -748,14 +754,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "a96aivottlinear-a.akamaihd.net",
+          "host": "ss-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_705b602634bcd54e2fbb1434b1e70132",
+          "playback_id": "ctv_cb155554ff04ea5b16f966cc2bb0e4a5",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -791,6 +797,19 @@
               "id": "dubai-capitals-vs-desert-vipers--prime-video--1",
               "role": "primary",
               "playback_type": "native",
+              "variant_key": "sv_cb45778a9f5c0c6297601ac1",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_a13cfb929f9cf7f9183cc47f43ac090c",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "dubai-capitals-vs-desert-vipers--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_5003e649ddaaeb15727d8b89",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -801,7 +820,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "dubai-capitals-vs-desert-vipers--prime-video--2",
+              "id": "dubai-capitals-vs-desert-vipers--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_0c04c749e7df5fd63908283a",
@@ -809,19 +828,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_c561b16468cc5fc04b52609acff84bf4",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "dubai-capitals-vs-desert-vipers--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_cb45778a9f5c0c6297601ac1",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_a13cfb929f9cf7f9183cc47f43ac090c",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -866,11 +872,11 @@
               "id": "dubai-capitals-vs-desert-vipers--willow--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_d5c83f6c3f6b09c0ba65cb69",
+              "variant_key": "sv_e293513372066acfb3102fa7",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_cb155554ff04ea5b16f966cc2bb0e4a5",
+              "playback_id": "ctv_705b602634bcd54e2fbb1434b1e70132",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -879,11 +885,11 @@
               "id": "dubai-capitals-vs-desert-vipers--willow--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_e293513372066acfb3102fa7",
+              "variant_key": "sv_d5c83f6c3f6b09c0ba65cb69",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_705b602634bcd54e2fbb1434b1e70132",
+              "playback_id": "ctv_cb155554ff04ea5b16f966cc2bb0e4a5",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -924,9 +930,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-25T15:30:42+00:00",
-      "start_at": "2026-11-25T15:30:42+00:00",
-      "end_time": "2026-11-25T19:30:42+00:00",
+      "start_time": "2026-11-25T16:24:13+00:00",
+      "start_at": "2026-11-25T16:24:13+00:00",
+      "end_time": "2026-11-25T20:24:13+00:00",
       "end_time_source": "sport",
       "competition": "International League T20 2026 - 6th Match",
       "fixture_id": "provider:dubai-capitals-vs-desert-vipers|international league t20 2026 6th|2026-11-25",
@@ -948,8 +954,8 @@
           "name": "Dubai Capitals vs Desert Vipers",
           "competition": "International League T20",
           "kickoff": "2026-11-25T14:30:00+00:00",
-          "kickoff_delta_minutes": -60.7,
-          "status": "UPCOMING"
+          "kickoff_delta_minutes": -114.2,
+          "status": "LIVE"
         },
         {
           "authority": "livescore",
@@ -959,7 +965,7 @@
           "name": "Dubai Capitals vs Desert Vipers",
           "competition": "International League T20",
           "kickoff": "2026-11-25T14:30:00+00:00",
-          "kickoff_delta_minutes": -60.7,
+          "kickoff_delta_minutes": -114.2,
           "status": "LIVE"
         }
       ],
@@ -967,147 +973,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/f95loc1721480695.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/uqmlhc1721480710.png",
-      "playback_id": "ctv_00d27e602dd9967ad9a37d1b0aee580e",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
-    },
-    {
-      "id": "sporting-u19-vs-manchester-united-u19",
-      "name": "Sporting U19 Vs Manchester United U19",
-      "primary_stream_key": "81919bb4744c72359da6c485f2b91b1f885177b4fc174eca3bd096b3b8feea60",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/78151/image",
-      "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "sporting-u19-vs-manchester-united-u19--tnt-sports",
-          "name": "TNT SPORTS",
-          "normalized_name": "tnt-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/78151/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "sporting-u19-vs-manchester-united-u19--tnt-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "sporting-u19-vs-manchester-united-u19--tnt-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_6069b6d8fe28cd5336931140",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_1a3c8115988633bfefac0fa272ffe1c6",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "sporting-u19-vs-manchester-united-u19--tnt-sports",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-25T13:00:00+00:00",
-      "start_at": "2026-11-25T13:00:00+00:00",
-      "end_time": "2026-11-25T16:30:42+00:00",
-      "end_time_source": "assumed",
-      "competition": "UEFA Youth League",
-      "fixture_id": "provider:sporting-u19-vs-manchester-united-u19|uefa youth league|2026-11-25",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-25T13:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_finished_seen_at": "2026-11-25T15:24:12.821020+00:00",
-      "authority_finished_confirmations": 4,
-      "ended_seen_at": "2026-11-25T15:24:12.821020+00:00",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "LiveScore livescore=FT (6, event 1886621)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "livescore": "1886621"
-      },
-      "authority_status": "FINISHED",
-      "authority_remove_after": "2026-11-25T15:44:12.821020+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
-      "lifecycle_state": "END_PENDING",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "event_type": "today_match",
-      "playback_id": "ctv_1a3c8115988633bfefac0fa272ffe1c6",
+      "playback_id": "ctv_a13cfb929f9cf7f9183cc47f43ac090c",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1217,34 +1083,39 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401873558)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401873558)",
         "LiveScore livescore=FT (6, event 1885729)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401873558"
+        "espn-header": "401873558",
+        "livescore": "1885729"
       },
-      "authority_status": "LIVE",
+      "authority_status": "FINISHED",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/2bn1vw1742919168.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ejly3a1743996081.png",
       "playback_id": "ctv_e1b374270796352d4141d2e52c77467e",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401873558); LiveScore livescore=FT (6, event 1885729)",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-25T15:30:52.151102+00:00"
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_first_missed_at": "2026-11-25T15:30:52.151102+00:00",
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-25T15:44:11.151832+00:00",
+      "authority_remove_after": "2026-11-25T16:04:11.151832+00:00",
+      "contradicted_end_confirmations": 2,
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "uruguay-u17-vs-france-u17",
@@ -1354,19 +1225,20 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401873565)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401873565)",
         "LiveScore livescore=FT (6, event 1885728)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401873565"
+        "espn-header": "401873565",
+        "livescore": "1885728"
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
@@ -1380,17 +1252,19 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
       "lifecycle_protections": [
-        "authority_live",
-        "primary_playable",
-        "backup_playable"
+        "authority_live"
       ],
-      "carried_forward_misses": 6,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_misses": 8,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
       "carried_forward_first_missed_at": "2026-11-25T14:24:41.347285+00:00",
-      "authority_status": "LIVE",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401873565); LiveScore livescore=FT (6, event 1885728)"
+      "authority_status": "FINISHED",
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-25T15:44:11.151832+00:00",
+      "authority_remove_after": "2026-11-25T16:04:11.151832+00:00",
+      "contradicted_end_confirmations": 2,
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "pfc-nasaf-vs-al-khaldiya-sc",
@@ -1462,7 +1336,13 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-25T16:24:26.233827+00:00"
     },
     {
       "id": "greece-u17-vs-qatar-u17",
@@ -1565,23 +1445,34 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401873563)"
+        "ESPN espn-header=73' (STATUS_SECOND_HALF, event 401873563)",
+        "LiveScore livescore=FT (6, event 1885750)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401873563"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/miwgdf1731990409.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/m43ale1742918599.png",
-      "playback_id": "ctv_871d170c308b911868313fb9c79ccda2"
+      "playback_id": "ctv_871d170c308b911868313fb9c79ccda2",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=73' (STATUS_SECOND_HALF, event 401873563); LiveScore livescore=FT (6, event 1885750)",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-25T16:24:26.233827+00:00"
     },
     {
       "id": "panama-u17-vs-egypt-u17",
@@ -1669,8 +1560,8 @@
       ],
       "start_time": "2026-11-25T14:30:00+00:00",
       "start_at": "2026-11-25T14:30:00+00:00",
-      "end_time": "2026-11-25T17:00:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-25T17:24:13+00:00",
+      "end_time_source": "assumed",
       "competition": "U17 World Championship",
       "fixture_id": "provider:panama-u17-vs-egypt-u17|u17 world championship|2026-11-25",
       "status": "LIVE_NOW",
@@ -1684,23 +1575,144 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401873564)"
+        "ESPN espn-header=71' (STATUS_SECOND_HALF, event 401873564)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401873564"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/3wa83z1730999256.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/k135641744515121.png",
-      "playback_id": "ctv_e618b136742e120a602e73e750af8ba7"
+      "playback_id": "ctv_8045ede02e88154f2845501706b6f572"
+    },
+    {
+      "id": "australia-u17-vs-mozambique-u17",
+      "name": "Australia U17 Vs Mozambique U17",
+      "primary_stream_key": "f0eee3799416236de7251114698e1959bde86d9b33b11311c30850133ab973de",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/22578/image",
+      "category": "today_match",
+      "url": "https://live3979.zundrixmediapipeline.com/live/channel21.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "australia-u17-vs-mozambique-u17--iptv",
+          "name": "IPTV",
+          "normalized_name": "iptv",
+          "logo": "https://img.sofascore.com/api/v1/team/22578/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "australia-u17-vs-mozambique-u17--iptv--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "australia-u17-vs-mozambique-u17--iptv--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_ddd6e5ff7d8d8e86490b2e79",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_1f216a77ab91b28c9826516c6a616915",
+              "stream_type": "hls"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "australia-u17-vs-mozambique-u17--iptv",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "start_time": "2026-11-25T15:30:00+00:00",
+      "start_at": "2026-11-25T15:30:00+00:00",
+      "end_time": "2026-11-25T18:00:00+00:00",
+      "end_time_source": "sport",
+      "competition": "U17 World Championship",
+      "fixture_id": "provider:australia-u17-vs-mozambique-u17|u17 world championship|2026-11-25",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-25T15:30:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=30' (STATUS_FIRST_HALF, event 401873560)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401873560"
+      },
+      "authority_status": "LIVE",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hv2nae1781926135.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vvh30c1779560364.png",
+      "playback_id": "ctv_1f216a77ab91b28c9826516c6a616915"
     },
     {
       "id": "denmark-u17-vs-argentina-u17",
@@ -1810,21 +1822,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401873559)",
-        "LiveScore livescore=NS (1, event 1885745)"
+        "ESPN espn-header=29' (STATUS_FIRST_HALF, event 401873559)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "401873559",
-        "livescore": "1885745"
+        "espn-header": "401873559"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/j7jcdt1731988422.png",
@@ -1943,9 +1953,121 @@
         "espn-header": "401912749"
       },
       "event_type": "today_match",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "allow_without_stream": true,
-      "routing_changed_from": "upcoming"
+      "routing_changed_from": "upcoming",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-25T15:44:18.929389+00:00"
+    },
+    {
+      "id": "kuwait-sc-vs-al-wahda",
+      "name": "Kuwait SC vs Al Wahda",
+      "primary_stream_key": "",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4249018_53057_KSC_ALW_fc-web_1789025066666.jpg",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "media",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "none",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "sm-fancode",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-fancode",
+          "source_name": "SM FanCode Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
+        },
+        {
+          "source_id": "sportlive-fancode-backup",
+          "source_name": "SportLive18 FanCode Backup",
+          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
+        },
+        {
+          "source_id": "drmlive-fancode-mirror",
+          "source_name": "FanCode Live Events (drmlive)",
+          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
+        },
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        },
+        {
+          "source_id": "sayanpal-fancode-mirror",
+          "source_name": "FanCode Auto Updated (sayanpal)",
+          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
+        }
+      ],
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "start_time": "2026-11-25T16:00:00+00:00",
+      "start_at": "2026-11-25T16:00:00+00:00",
+      "end_time": "2026-11-25T18:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "AFC Champions League Two 2026-27",
+      "fixture_id": "provider:kuwait-sc-vs-al-wahda|afc champions league two 2026 27|2026-11-25",
+      "status": "LINK_UPDATING",
+      "original_status": "UPCOMING",
+      "schedule_status": "LINK_UPDATING",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "source_start_time": "2026-11-25T16:00:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912747)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401912747"
+      },
+      "allow_without_stream": true,
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "STARTING",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/qinw481583952839.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/99xc7w1578858847.png"
     }
   ]
 }
