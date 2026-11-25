@@ -1,35 +1,71 @@
 {
-  "timestamp": "2026-11-25T09:56:47.166957+00:00",
+  "timestamp": "2026-11-25T10:01:48.197336+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 2,
-  "total_global_network_checked": 2,
-  "total_proxy_selected": 0,
-  "total_proxy_checked": 0,
-  "total_processed": 2,
-  "total_publishable": 0,
+  "total_input_pool": 6,
+  "total_global_network_checked": 6,
+  "total_proxy_selected": 2,
+  "total_proxy_checked": 2,
+  "total_processed": 6,
+  "total_publishable": 1,
   "strict_player_hidden": 1,
-  "browser_unreachable_hidden": 0,
+  "browser_unreachable_hidden": 2,
   "unproven_hidden": 0,
   "status_counts": {
-    "failed": 1,
-    "metadata_only": 1
+    "failed": 2,
+    "verified_global": 1,
+    "metadata_only": 1,
+    "unreachable_from_browser": 2
   },
   "groups": {
     "failed": [
+      {
+        "id": "gamba-osaka-vs-port-fc",
+        "name": "Gamba Osaka Vs Port FC",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://in-mc-vod.fancode.com/mumbai/4248759_english_hls_8e543051a454617_1ta-di_h264/index.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "same_run_player_gate",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+        "permanent_fail_count": 0
+      },
       {
         "id": "kashima-antlers-vs-jeonbuk-hyundai-motors",
         "name": "Kashima Antlers Vs Jeonbuk Hyundai Motors",
         "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
-        "url": "",
+        "url": "https://in-mc-vod.fancode.com/mumbai/4248758_english_hls_df11de56b866843_1ta-di_h264/index.m3u8",
         "verification_status": "failed",
-        "verification_mode": "same_run_cloud_second_pass",
+        "verification_mode": "same_run_player_gate",
         "publish_allowed": false,
-        "http_status": 0,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+        "permanent_fail_count": 0
+      }
+    ],
+    "verified_global": [
+      {
+        "id": "kashima-antlers-vs-jeonbuk-hyundai-motors",
+        "name": "Kashima Antlers Vs Jeonbuk Hyundai Motors",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://sdn-global-live-streaming-packager-cache.3qsdn.com/102539/102539_264_live.m3u8",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
         "proxy_name": "",
         "proxy_http_status": 0,
-        "verification_error": "Stream URL is empty",
+        "verification_error": "",
         "verification_note": "",
         "permanent_fail_count": 0
       }
@@ -49,6 +85,40 @@
         "proxy_http_status": 0,
         "verification_error": "",
         "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "permanent_fail_count": 0
+      }
+    ],
+    "unreachable_from_browser": [
+      {
+        "id": "gamba-osaka-vs-port-fc",
+        "name": "Gamba Osaka Vs Port FC",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.50/hls/ZTTT.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.50): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "kashima-antlers-vs-jeonbuk-hyundai-motors",
+        "name": "Kashima Antlers Vs Jeonbuk Hyundai Motors",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.50/hls/ZTTTA.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.50): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
         "permanent_fail_count": 0
       }
     ]
