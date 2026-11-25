@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-25T10:01:54.548407+00:00",
-  "count": 8,
+  "updated_at": "2026-11-25T10:16:51.852239+00:00",
+  "count": 9,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -126,7 +126,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 10,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-25T06:44:44.515208+00:00"
     },
@@ -200,22 +200,28 @@
         "ESPN espn-header=Scheduled (Scheduled, event 1557572)",
         "LiveScore livescore=FT (6, event 1920811)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1557572); LiveScore livescore=FT (6, event 1920811)",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1557572); LiveScore livescore=FT (6, event 1920811)",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-25T10:04:29.772024+00:00"
     },
     {
       "id": "south-africa-vs-bangladesh",
       "name": "South Africa Vs Bangladesh",
-      "primary_stream_key": "16c7bc6417de30d424a69f23966f3b31a70d41a58d6f6ee27825b8a356ab4874",
+      "primary_stream_key": "f8a144efef11defeb7515ce4208e35ea6b43a7b487e12940177c95a42d6b19b9",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/187747/image",
       "category": "today_match",
-      "url": "https://tvsen6.aynaott.com/zv68oqPDu7MZZwmHhRxt/tracks-v1a1/mono.ts.m3u8",
+      "url": "https://bl.rutube.ru/livestream/7c13a51576b9ff2601f08f5d57dd5169/index.m3u8?s=uiXES2ePt7xTpQnbJxn7Dg&e=2074684474&scheme=https",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "hls",
@@ -236,25 +242,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "url": "https://bl.rutube.ru/livestream/7c13a51576b9ff2601f08f5d57dd5169/index.m3u8?s=uiXES2ePt7xTpQnbJxn7Dg&e=2074684474&scheme=https",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "bl.rutube.ru",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_b33a4dbcf7c11877ddef7ef9685f87a2"
-        },
-        {
-          "name": "Backup-2",
           "url": "https://live.msnetworks.net/a-sports/master.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "direct_first",
@@ -271,6 +258,35 @@
           "resolution": "HD",
           "resolution_height": 720,
           "playback_id": "ctv_2adb68167cc1e966518e24177e58d52d"
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "abfjk4haaaaaaaamkitc5445rybm6.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_9ed5c499c8fc77bac574b2eeda5e8e97",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
         },
         {
           "name": "Backup-3",
@@ -314,35 +330,6 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
-          "host": "abfjk4haaaaaaaamkitc5445rybm6.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_9ed5c499c8fc77bac574b2eeda5e8e97",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-5",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
           "host": "wbd.skandha.tv",
           "drm": {
             "type": "clearkey",
@@ -358,13 +345,42 @@
             "query_parameters": [],
             "drm": true
           }
+        },
+        {
+          "name": "Backup-5",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_ce4d09169653a3234ac0ca9e26f5a9e3",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
         }
       ],
       "channels": [
         {
-          "id": "south-africa-vs-bangladesh--a-sports",
-          "name": "A SPORTS",
-          "normalized_name": "a-sports",
+          "id": "south-africa-vs-bangladesh--sky-cricket",
+          "name": "SKY CRICKET",
+          "normalized_name": "sky-cricket",
           "logo": "https://img.sofascore.com/api/v1/team/187747/image",
           "name_confidence": "explicit",
           "name_source": "channel_name",
@@ -372,7 +388,7 @@
           "source_ids": [
             "sm-sports-data"
           ],
-          "primary_stream_id": "south-africa-vs-bangladesh--a-sports--1",
+          "primary_stream_id": "south-africa-vs-bangladesh--sky-cricket--1",
           "stream_count": 1,
           "backup_count": 0,
           "verified": true,
@@ -383,17 +399,119 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "south-africa-vs-bangladesh--a-sports--1",
+              "id": "south-africa-vs-bangladesh--sky-cricket--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_01a331ec75f6f90714490ec8",
+              "variant_key": "sv_455a87be0e0c73aceead2526",
               "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_34ce2ed389f8c71f6f4ecc8213df3bbb",
-              "resolution": "HD",
-              "resolution_height": 720,
+              "playback_id": "ctv_bcdbdb304a3bc1a3f984ce4eb197606c",
+              "resolution": "FHD",
+              "resolution_height": 1080,
               "stream_type": "hls"
+            }
+          ]
+        },
+        {
+          "id": "south-africa-vs-bangladesh--willow",
+          "name": "WILLOW",
+          "normalized_name": "willow",
+          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.97eae418-93c7-40e2-b2d6-6a81327b83bc/5/BOXART-16X9/en-US._UR1920,1080_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-willow-event",
+          "source_ids": [
+            "sm-sports-data",
+            "srhady-willow-event"
+          ],
+          "primary_stream_id": "south-africa-vs-bangladesh--willow--1",
+          "stream_count": 6,
+          "backup_count": 5,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "south-africa-vs-bangladesh--willow--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_cdc10dba6dce4e49c61f6ba1",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_87224a1d4c86674172e6ec6de82264ac",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "south-africa-vs-bangladesh--willow--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b1abecc4a6f0cb06bf6d71ed",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_bca7fb84a16c8a326aa66f7971d4f7bc",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "south-africa-vs-bangladesh--willow--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_f4feb1e53495c5befc32033b",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_9ed5c499c8fc77bac574b2eeda5e8e97",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "south-africa-vs-bangladesh--willow--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_a08bbdd5c2f98cc8f42f42d6",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_c4686eacac92f14947f7e9a1b7ed8582",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "south-africa-vs-bangladesh--willow--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_4a5eb711767609e97488ad20",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_140aa86820922ccba038eb26012df9d2",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "south-africa-vs-bangladesh--willow--6",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_33354bf98a8448927b4cb52f",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ab2f3ee7a5afcbabf9931f3d3e31a12a",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
             }
           ]
         },
@@ -435,11 +553,11 @@
               "id": "south-africa-vs-bangladesh--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_339081aca34ed129975a3181",
+              "variant_key": "sv_f1d1e486800194678d833ea4",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_1ad5d24f3167f07236c5d0362500b419",
+              "playback_id": "ctv_8c0c85213f1b67b842d3e04708586383",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -448,11 +566,11 @@
               "id": "south-africa-vs-bangladesh--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_f1d1e486800194678d833ea4",
+              "variant_key": "sv_339081aca34ed129975a3181",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_8c0c85213f1b67b842d3e04708586383",
+              "playback_id": "ctv_1ad5d24f3167f07236c5d0362500b419",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -497,19 +615,6 @@
               "id": "south-africa-vs-bangladesh--willow-2--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_13ff9eedd56a9dccd4d2dd87",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_29871db5f963a2e06acaf859c8d2f618",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "south-africa-vs-bangladesh--willow-2--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_ec8b8b49a298ee4f1775ad11",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
@@ -518,105 +623,16 @@
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "south-africa-vs-bangladesh--willow",
-          "name": "WILLOW",
-          "normalized_name": "willow",
-          "logo": "https://img.sofascore.com/api/v1/team/187747/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data",
-            "srhady-willow-event"
-          ],
-          "primary_stream_id": "south-africa-vs-bangladesh--willow--1",
-          "stream_count": 6,
-          "backup_count": 5,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "south-africa-vs-bangladesh--willow--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_a08bbdd5c2f98cc8f42f42d6",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_c4686eacac92f14947f7e9a1b7ed8582",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
             },
             {
-              "id": "south-africa-vs-bangladesh--willow--2",
+              "id": "south-africa-vs-bangladesh--willow-2--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_cdc10dba6dce4e49c61f6ba1",
+              "variant_key": "sv_13ff9eedd56a9dccd4d2dd87",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_87224a1d4c86674172e6ec6de82264ac",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "south-africa-vs-bangladesh--willow--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_b1abecc4a6f0cb06bf6d71ed",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_bca7fb84a16c8a326aa66f7971d4f7bc",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "south-africa-vs-bangladesh--willow--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_f4feb1e53495c5befc32033b",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_9ed5c499c8fc77bac574b2eeda5e8e97",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "south-africa-vs-bangladesh--willow--5",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_33354bf98a8448927b4cb52f",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ab2f3ee7a5afcbabf9931f3d3e31a12a",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "south-africa-vs-bangladesh--willow--6",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_4a5eb711767609e97488ad20",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_140aa86820922ccba038eb26012df9d2",
+              "playback_id": "ctv_29871db5f963a2e06acaf859c8d2f618",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -656,42 +672,6 @@
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "south-africa-vs-bangladesh--sky-cricket",
-          "name": "SKY CRICKET",
-          "normalized_name": "sky-cricket",
-          "logo": "https://img.sofascore.com/api/v1/team/187747/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "south-africa-vs-bangladesh--sky-cricket--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "south-africa-vs-bangladesh--sky-cricket--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_455a87be0e0c73aceead2526",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_bcdbdb304a3bc1a3f984ce4eb197606c",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "hls"
             }
           ]
         },
@@ -779,10 +759,44 @@
               "stream_type": "hls"
             }
           ]
+        },
+        {
+          "id": "south-africa-vs-bangladesh--a-sports",
+          "name": "A SPORTS",
+          "normalized_name": "a-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/187747/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "south-africa-vs-bangladesh--a-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": false,
+          "verification_status": "retryable_pending",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "south-africa-vs-bangladesh--a-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_01a331ec75f6f90714490ec8",
+              "provider": "sm-sports-data",
+              "verification_status": "retryable_pending",
+              "verified": false,
+              "playback_id": "ctv_34ce2ed389f8c71f6f4ecc8213df3bbb",
+              "stream_type": "hls"
+            }
+          ]
         }
       ],
       "channel_count": 8,
-      "default_channel_id": "south-africa-vs-bangladesh--a-sports",
+      "default_channel_id": "south-africa-vs-bangladesh--sky-cricket",
       "channel_stats": {
         "streams_in": 18,
         "unresolved_channel_streams": 0,
@@ -796,15 +810,13 @@
       "standby": [
         {
           "name": "Standby-1",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
+          "url": "https://tvsen6.aynaott.com/zv68oqPDu7MZZwmHhRxt/tracks-v1a1/mono.ts.m3u8",
+          "drm": {},
+          "header_profile": "android_tv",
+          "proxy_mode": "direct_first",
           "requires_headers": false,
-          "verification_status": "verified_global",
-          "verified": true,
+          "verification_status": "retryable_pending",
+          "verified": false,
           "source_id": "sm-sports-data",
           "source_provenance": [
             {
@@ -813,17 +825,8 @@
               "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
             }
           ],
-          "host": "otte.cache.aiv-cdn.net",
-          "resolution": "SD",
-          "resolution_height": 576,
-          "playback_id": "ctv_aab4a36d820cc48e7c8c61f237df25f4",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
+          "host": "tvsen6.aynaott.com",
+          "playback_id": "ctv_72c8af517d4e8f91224af0151c71335a"
         },
         {
           "name": "Standby-2",
@@ -845,9 +848,9 @@
             }
           ],
           "host": "otte.cache.aiv-cdn.net",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_2ad4e6d636ea16c855acf0e091a84137",
+          "resolution": "SD",
+          "resolution_height": 576,
+          "playback_id": "ctv_aab4a36d820cc48e7c8c61f237df25f4",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1192,8 +1195,8 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "start_time": "2026-11-25T08:00:00+00:00",
       "start_at": "2026-11-25T08:00:00+00:00",
       "end_time": "2026-11-25T16:00:00+00:00",
@@ -1213,7 +1216,7 @@
       "sport_class_evidence": "ICC World Test Championship",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_972bfd716fd376b7da3b8095989c12d8"
+      "playback_id": "ctv_b33a4dbcf7c11877ddef7ef9685f87a2"
     },
     {
       "id": "melbourne-renegades-women-vs-brisbane-heat-women",
@@ -1435,9 +1438,9 @@
       ],
       "authority_end_evidence": [
         "ESPN espn-header=Scheduled (Scheduled, event 1543976)",
-        "LiveScore livescore=Between innings (157, event 1813039)"
+        "LiveScore livescore=Play in progress (33, event 1813039)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543976); LiveScore livescore=Between innings (157, event 1813039)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543976); LiveScore livescore=Play in progress (33, event 1813039)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/fy0wik1492607045.png",
@@ -1526,6 +1529,97 @@
       "lifecycle_state": "STARTING"
     },
     {
+      "id": "ghubra-giants-women-vs-muscat-thunders-women",
+      "name": "Ghubra Giants Women vs Muscat Thunders Women",
+      "primary_stream_key": "",
+      "sport_type": "cricket",
+      "sport_type_derived": true,
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/IMG_7278.jpeg",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "media",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "none",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "sm-fancode",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-fancode",
+          "source_name": "SM FanCode Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
+        },
+        {
+          "source_id": "sportlive-fancode-backup",
+          "source_name": "SportLive18 FanCode Backup",
+          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
+        },
+        {
+          "source_id": "drmlive-fancode-mirror",
+          "source_name": "FanCode Live Events (drmlive)",
+          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
+        },
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        },
+        {
+          "source_id": "sayanpal-fancode-mirror",
+          "source_name": "FanCode Auto Updated (sayanpal)",
+          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
+        }
+      ],
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "start_time": "2026-11-25T10:30:00+00:00",
+      "start_at": "2026-11-25T10:30:00+00:00",
+      "end_time": "2026-11-25T15:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Oman Women's D20, 2026",
+      "fixture_id": "provider:ghubra-giants-vs-muscat-thunders-women|oman women d20 2026|2026-11-25",
+      "status": "LINK_UPDATING",
+      "original_status": "UPCOMING",
+      "schedule_status": "LINK_UPDATING",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "source_start_time": "2026-11-25T10:30:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_cricket",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "cricket",
+      "allow_without_stream": true,
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "STARTING"
+    },
+    {
       "id": "melbourne-victory-vs-the-cong-viettel-fc",
       "name": "Melbourne Victory vs The Cong Viettel FC",
       "primary_stream_key": "",
@@ -1535,21 +1629,21 @@
       "category": "today_match",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
-      "stream_type": "hls",
+      "stream_type": "media",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "none",
-      "verification_status": "verified_global",
+      "verification_status": "metadata_only",
       "verification_badge": "",
-      "verified": true,
+      "verified": false,
       "publish_allowed": true,
       "source_pipeline": "today_match",
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
       "source_id": "sm-fancode",
-      "metadata_only": false,
-      "available_link_count": 1,
+      "metadata_only": true,
+      "available_link_count": 0,
       "channel_stats": {
         "streams_in": 1,
         "unresolved_channel_streams": 0,
@@ -1597,7 +1691,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401912752)"
+        "ESPN espn-header=83' (STATUS_SECOND_HALF, event 401912752)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1609,52 +1703,6 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "LIVE",
-      "backups": [],
-      "playback_id": "ctv_077c631404dd031f0ee8196ffd095af1",
-      "promoted_from_absorbed_backup": true,
-      "channels": [
-        {
-          "id": "melbourne-victory-vs-the-cong-viettel-fc--iptv",
-          "name": "IPTV",
-          "normalized_name": "iptv",
-          "logo": "https://img.sofascore.com/api/v1/team/5970/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "melbourne-victory-vs-the-cong-viettel-fc--iptv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "melbourne-victory-vs-the-cong-viettel-fc--iptv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_bc8e23336ab70aed93e29395",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_077c631404dd031f0ee8196ffd095af1",
-              "stream_type": "hls"
-            }
-          ],
-          "absorbed_from_event_id": "melbourne-victory-vs-thể-công-viettel"
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "",
-      "absorbed_event_ids": [
-        "melbourne-victory-vs-thể-công-viettel"
-      ],
-      "reconciled_duplicate_count": 1,
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wwvsqx1473454564.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/o0fu2m1788454777.png"
     },
@@ -1763,11 +1811,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912597)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401912597"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/2s8ady1578238881.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/8jif3b1747853225.png",
-      "playback_id": "ctv_6c0277bd74c6dc2012a8a745800264f7"
+      "playback_id": "ctv_666c89c3d6b6ee8cbf226862b882d180"
     },
     {
       "id": "kashima-antlers-vs-jeonbuk-motors",
@@ -1822,22 +1882,22 @@
           "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
         },
         {
-          "source_id": "sayanpal-fancode-mirror",
-          "source_name": "FanCode Auto Updated (sayanpal)",
-          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        },
+        {
+          "source_id": "sayanpal-fancode-mirror",
+          "source_name": "FanCode Auto Updated (sayanpal)",
+          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
         }
       ],
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "start_time": "2026-11-25T10:00:00+00:00",
       "start_at": "2026-11-25T10:00:00+00:00",
