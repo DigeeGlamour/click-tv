@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-25T07:04:25.353026+00:00",
+  "generated_at": "2026-11-25T07:24:35.023050+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,7 +12,8 @@
       "requests_ok": 6,
       "fixtures": 403,
       "unknown_statuses": [
-        "133|Stumps - day 2"
+        "133|Stumps - day 2",
+        "220|Drinks"
       ],
       "attempts": [
         {
@@ -43,13 +44,13 @@
           "sport": "football",
           "date": "2026-11-25",
           "result": "ok",
-          "fixtures": 130
+          "fixtures": 128
         },
         {
           "sport": "football",
           "date": "2026-11-26",
           "result": "ok",
-          "fixtures": 87
+          "fixtures": 89
         }
       ]
     },
@@ -104,18 +105,18 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 2,
-    "upcoming": 42,
+    "today_match": 3,
+    "upcoming": 41,
     "fixtures": 44,
     "verdicts": {
-      "CONFLICT": 1,
-      "UNVERIFIED": 26,
-      "VERIFIED": 17
+      "PARTIAL_AUTHORITY": 1,
+      "VERIFIED": 17,
+      "UNVERIFIED": 26
     },
     "verified": 17,
-    "partial_authority": 0,
+    "partial_authority": 1,
     "unverified": 26,
-    "conflict": 1,
+    "conflict": 0,
     "matched_by_authority": {
       "espn-header": {
         "matched": 13,
@@ -128,11 +129,9 @@
     },
     "matched_by_two_independent_authorities": 10,
     "authority_agreements": 9,
-    "authority_disagreements": 1,
+    "authority_disagreements": 0,
     "card_status_conflicts": 0,
-    "conflict_reason_counts": {
-      "authorities disagree": 1
-    },
+    "conflict_reason_counts": {},
     "identity_near_misses": 5,
     "independent_authority_count_distribution": {
       "0": 26,
@@ -141,12 +140,21 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "133|Stumps - day 2"
+        "133|Stumps - day 2",
+        "220|Drinks"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Melbourne Victory Vs Thể Công Viettel",
+      "authority": "livescore",
+      "authority_name": "Melbourne Victory vs Viettel",
+      "agreed_side": "melbourne victory",
+      "ours": "the cong viettel",
+      "theirs": "viettel"
+    },
     {
       "fixture": "Al Muharraq SC Vs Arkadag FK",
       "authority": "livescore",
@@ -170,14 +178,6 @@
       "agreed_side": "corinthians",
       "ours": "atletico mineiro",
       "theirs": "atletico mg"
-    },
-    {
-      "fixture": "Melbourne Victory Vs Thể Công Viettel",
-      "authority": "livescore",
-      "authority_name": "Melbourne Victory vs Viettel",
-      "agreed_side": "melbourne victory",
-      "ours": "the cong viettel",
-      "theirs": "viettel"
     },
     {
       "fixture": "Nasaf Qarshi Vs Al Khaldiya",
@@ -254,9 +254,9 @@
           "competition_id": "26709",
           "kickoff": "2026-11-25T05:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Drinks",
+          "status_code": "220",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "Final",
           "format": "Womens Twenty20",
@@ -270,12 +270,91 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
-      ],
-      "authority_agreement": "DISAGREE",
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "PARTIAL_AUTHORITY",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:melbourne-victory-vs-thể-công-viettel|afc champions league two|2026-11-25",
+      "card_id": "melbourne-victory-vs-thể-công-viettel",
+      "name": "Melbourne Victory Vs Thể Công Viettel",
+      "competition": "AFC Champions League Two",
+      "kickoff": "2026-11-25T07:45:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401912752",
+          "upstream_family": "ESPN",
+          "name": "Melbourne Victory vs The Cong-Viettel FC",
+          "home": "Melbourne Victory",
+          "away": "The Cong-Viettel FC",
+          "home_team_id": "5328",
+          "away_team_id": "20863",
+          "competition": "AFC Champions League Two",
+          "competition_id": "2466",
+          "kickoff": "2026-11-25T07:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, November 24th at 2:45 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2466~e:401912752~c:401912752"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Melbourne Victory vs Viettel",
+              "event_id": "1873845",
+              "agreed_side": "melbourne victory",
+              "ours": "the cong viettel",
+              "theirs": "viettel"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -331,9 +410,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -470,9 +549,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -551,9 +630,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -859,9 +938,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -950,9 +1029,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -991,9 +1070,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1106,9 +1185,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1184,9 +1263,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1225,9 +1304,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1353,9 +1432,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1506,9 +1585,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1589,8 +1668,8 @@
       "name": "Melbourne Renegades Women Vs Brisbane Heat Women",
       "competition": "Women's Big Bash League",
       "kickoff": "2026-11-25T08:10:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1708,87 +1787,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:melbourne-victory-vs-thể-công-viettel|afc champions league two|2026-11-25",
-      "card_id": "melbourne-victory-vs-thể-công-viettel",
-      "name": "Melbourne Victory Vs Thể Công Viettel",
-      "competition": "AFC Champions League Two",
-      "kickoff": "2026-11-25T07:45:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401912752",
-          "upstream_family": "ESPN",
-          "name": "Melbourne Victory vs The Cong-Viettel FC",
-          "home": "Melbourne Victory",
-          "away": "The Cong-Viettel FC",
-          "home_team_id": "5328",
-          "away_team_id": "20863",
-          "competition": "AFC Champions League Two",
-          "competition_id": "2466",
-          "kickoff": "2026-11-25T07:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, November 24th at 2:45 AM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:2466~e:401912752~c:401912752"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Melbourne Victory vs Viettel",
-              "event_id": "1873845",
-              "agreed_side": "melbourne victory",
-              "ours": "the cong viettel",
-              "theirs": "viettel"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:muscat-thunderers-vs-majees-titans|oman d20 2026|2026-11-26",
       "card_id": "muscat-thunderers-vs-majees-titans",
       "name": "Muscat Thunderers vs Majees Titans",
@@ -1803,9 +1801,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1845,9 +1843,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1985,9 +1983,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2078,9 +2076,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2207,9 +2205,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2248,9 +2246,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2413,8 +2411,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2550,9 +2548,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2615,9 +2613,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
