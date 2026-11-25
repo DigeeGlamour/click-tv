@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-25T20:07:07.398206+00:00",
+  "updated_at": "2026-11-25T20:24:23.602084+00:00",
   "count": 14,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -180,7 +180,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_d84450865644d388e7651c113298e051",
       "protected_source": true,
       "requires_credentials": true,
@@ -189,14 +189,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-25T18:14:48.126272+00:00"
+      "carried_forward_misses": 8,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-25T18:14:48.126272+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 8,
+      "ended_seen_at": "2026-11-25T20:24:20.055077+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "oca-invincibles-women-vs-muscat-shaheens-women",
@@ -263,11 +267,11 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "END_PENDING",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
       "end_pending": true,
-      "end_pending_confirmations": 1,
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending_confirmations": 2,
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
       "carried_forward_first_missed_at": "2026-11-25T20:04:47.692460+00:00"
     },
     {
@@ -518,7 +522,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-25T17:24:24.200641+00:00"
     },
@@ -778,7 +782,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-25T19:04:25.580739+00:00",
       "authority_near_misses": [
@@ -872,24 +876,22 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=29' (STATUS_FIRST_HALF, event 401912746)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401912746)",
+        "LiveScore livescore=FT (6, event 1873868)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401912746"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401912746); LiveScore livescore=FT (6, event 1873868)",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE"
+      "lifecycle_state": "STARTING"
     },
     {
       "id": "burnley-vs-birmingham-city",
@@ -1402,6 +1404,139 @@
       ]
     },
     {
+      "id": "atlético-madrid-vs-viking-fk",
+      "name": "Atlético Madrid Vs Viking FK",
+      "primary_stream_key": "438643ff730ce78447014a176718ecacc03f46779b2e3b1ff5730ee692b72e14",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/2836/image",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "atl-tico-madrid-vs-viking-fk--paramount",
+          "name": "PARAMOUNT+",
+          "normalized_name": "paramount",
+          "logo": "https://img.sofascore.com/api/v1/team/2836/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "atl-tico-madrid-vs-viking-fk--paramount--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "atl-tico-madrid-vs-viking-fk--paramount--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_7653237b24b34471be0dae37",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_e3b12dfc942bdeb2a75803eaa97581be",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "atl-tico-madrid-vs-viking-fk--paramount",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-25T20:00:00+00:00",
+      "start_at": "2026-11-25T20:00:00+00:00",
+      "end_time": "2026-11-25T22:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "UEFA Champions League",
+      "fixture_id": "provider:atlético-madrid-vs-viking-fk|uefa champions league|2026-11-25",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-25T20:00:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915291)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401915291"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/0ulh3q1719984315.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/9mzq961590148192.png",
+      "playback_id": "ctv_e3b12dfc942bdeb2a75803eaa97581be",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
       "id": "club-brugge-kv-vs-liverpool-fc",
       "name": "Club Brugge KV Vs Liverpool FC",
       "primary_stream_key": "36ac95649f589a5ea8cfde220ce29c57924be9bce17a3ec9a38da44efd80bb6d",
@@ -1599,401 +1734,6 @@
       }
     },
     {
-      "id": "paris-saint-germain-vs-as-roma",
-      "name": "Paris Saint Germain Vs AS Roma",
-      "primary_stream_key": "df1079ffca9298f529f83fb1bcb806fc5ce162e45b2603aa5bf31755a05f7cb5",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/1644/image",
-      "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 3,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_6ce2315364dc06ab1150f51aa794f1ab",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_c905303c402dab1ebaa9584f3961cdd6",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
-      "channels": [
-        {
-          "id": "paris-saint-germain-vs-as-roma--dazn",
-          "name": "DAZN",
-          "normalized_name": "dazn",
-          "logo": "https://img.sofascore.com/api/v1/team/1644/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "paris-saint-germain-vs-as-roma--dazn--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "paris-saint-germain-vs-as-roma--dazn--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_7afc97f401c616b9aa0c0d71",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_44c60e140a58c6d3ba89c83cf0de7652",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "paris-saint-germain-vs-as-roma--tnt-sports",
-          "name": "TNT SPORTS",
-          "normalized_name": "tnt-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/1644/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "paris-saint-germain-vs-as-roma--tnt-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "paris-saint-germain-vs-as-roma--tnt-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_dae44abfc7b1627116b23c83",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_6ce2315364dc06ab1150f51aa794f1ab",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "paris-saint-germain-vs-as-roma--tnt-brasil",
-          "name": "TNT BRASIL",
-          "normalized_name": "tnt-brasil",
-          "logo": "https://img.sofascore.com/api/v1/team/1644/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "paris-saint-germain-vs-as-roma--tnt-brasil--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "paris-saint-germain-vs-as-roma--tnt-brasil--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_a8315e0b75c42b0a663a80b6",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_c905303c402dab1ebaa9584f3961cdd6",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 3,
-      "default_channel_id": "paris-saint-germain-vs-as-roma--dazn",
-      "channel_stats": {
-        "streams_in": 3,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 3,
-        "variants": 3,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-25T20:00:00+00:00",
-      "start_at": "2026-11-25T20:00:00+00:00",
-      "end_time": "2026-11-25T22:30:00+00:00",
-      "end_time_source": "sport",
-      "competition": "UEFA Champions League",
-      "fixture_id": "provider:paris-saint-germain-vs-as-roma|uefa champions league|2026-11-25",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-25T20:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915374)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401915374"
-      },
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_44c60e140a58c6d3ba89c83cf0de7652",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
-    },
-    {
-      "id": "atlético-madrid-vs-viking-fk",
-      "name": "Atlético Madrid Vs Viking FK",
-      "primary_stream_key": "438643ff730ce78447014a176718ecacc03f46779b2e3b1ff5730ee692b72e14",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/2836/image",
-      "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "atl-tico-madrid-vs-viking-fk--paramount",
-          "name": "PARAMOUNT+",
-          "normalized_name": "paramount",
-          "logo": "https://img.sofascore.com/api/v1/team/2836/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "atl-tico-madrid-vs-viking-fk--paramount--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "atl-tico-madrid-vs-viking-fk--paramount--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_7653237b24b34471be0dae37",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_e3b12dfc942bdeb2a75803eaa97581be",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "atl-tico-madrid-vs-viking-fk--paramount",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-25T20:00:00+00:00",
-      "start_at": "2026-11-25T20:00:00+00:00",
-      "end_time": "2026-11-25T22:30:00+00:00",
-      "end_time_source": "sport",
-      "competition": "UEFA Champions League",
-      "fixture_id": "provider:atlético-madrid-vs-viking-fk|uefa champions league|2026-11-25",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-25T20:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915291)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401915291"
-      },
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/0ulh3q1719984315.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/9mzq961590148192.png",
-      "playback_id": "ctv_e3b12dfc942bdeb2a75803eaa97581be",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
-    },
-    {
       "id": "inter-vs-vfb-stuttgart",
       "name": "Inter Vs VfB Stuttgart",
       "primary_stream_key": "e27fe31e13a0b47f00440b1853762c72fed7e338362b9444a97cc7cf2a557e1d",
@@ -2040,7 +1780,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_e45aeef438d559da1f9bbf0d00c06f87",
+          "playback_id": "ctv_ac6a9460ab746ef5e2d1bbe19f9855b5",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2156,7 +1896,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_ac6a9460ab746ef5e2d1bbe19f9855b5",
+          "playback_id": "ctv_e45aeef438d559da1f9bbf0d00c06f87",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2217,6 +1957,42 @@
           ]
         },
         {
+          "id": "inter-vs-vfb-stuttgart--cbs-sports",
+          "name": "CBS SPORTS",
+          "normalized_name": "cbs-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2697/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "inter-vs-vfb-stuttgart--cbs-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "inter-vs-vfb-stuttgart--cbs-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_af5224a150c3c3d1deba6ff5",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ac6a9460ab746ef5e2d1bbe19f9855b5",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
           "id": "inter-vs-vfb-stuttgart--prime-video",
           "name": "Prime Video",
           "normalized_name": "prime-video",
@@ -2254,6 +2030,19 @@
               "id": "inter-vs-vfb-stuttgart--prime-video--2",
               "role": "backup",
               "playback_type": "native",
+              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "inter-vs-vfb-stuttgart--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_b9a4754dd8779c45821c460d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -2264,7 +2053,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "inter-vs-vfb-stuttgart--prime-video--3",
+              "id": "inter-vs-vfb-stuttgart--prime-video--4",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_5458cc437e60a57ab38df02d",
@@ -2272,55 +2061,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "inter-vs-vfb-stuttgart--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "inter-vs-vfb-stuttgart--cbs-sports",
-          "name": "CBS SPORTS",
-          "normalized_name": "cbs-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/2697/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "inter-vs-vfb-stuttgart--cbs-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "inter-vs-vfb-stuttgart--cbs-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_af5224a150c3c3d1deba6ff5",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ac6a9460ab746ef5e2d1bbe19f9855b5",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2417,6 +2157,268 @@
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_69f64350c1297c4f20397eaeab724a4a"
+    },
+    {
+      "id": "paris-saint-germain-vs-as-roma",
+      "name": "Paris Saint Germain Vs AS Roma",
+      "primary_stream_key": "df1079ffca9298f529f83fb1bcb806fc5ce162e45b2603aa5bf31755a05f7cb5",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/1644/image",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 3,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_c905303c402dab1ebaa9584f3961cdd6",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_6ce2315364dc06ab1150f51aa794f1ab",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "paris-saint-germain-vs-as-roma--dazn",
+          "name": "DAZN",
+          "normalized_name": "dazn",
+          "logo": "https://img.sofascore.com/api/v1/team/1644/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "paris-saint-germain-vs-as-roma--dazn--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "paris-saint-germain-vs-as-roma--dazn--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_7afc97f401c616b9aa0c0d71",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_44c60e140a58c6d3ba89c83cf0de7652",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "paris-saint-germain-vs-as-roma--tnt-brasil",
+          "name": "TNT BRASIL",
+          "normalized_name": "tnt-brasil",
+          "logo": "https://img.sofascore.com/api/v1/team/1644/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "paris-saint-germain-vs-as-roma--tnt-brasil--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "paris-saint-germain-vs-as-roma--tnt-brasil--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_a8315e0b75c42b0a663a80b6",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_c905303c402dab1ebaa9584f3961cdd6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "paris-saint-germain-vs-as-roma--tnt-sports",
+          "name": "TNT SPORTS",
+          "normalized_name": "tnt-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/1644/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "paris-saint-germain-vs-as-roma--tnt-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "paris-saint-germain-vs-as-roma--tnt-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_dae44abfc7b1627116b23c83",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_6ce2315364dc06ab1150f51aa794f1ab",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 3,
+      "default_channel_id": "paris-saint-germain-vs-as-roma--dazn",
+      "channel_stats": {
+        "streams_in": 3,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 3,
+        "variants": 3,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-25T20:00:00+00:00",
+      "start_at": "2026-11-25T20:00:00+00:00",
+      "end_time": "2026-11-25T22:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "UEFA Champions League",
+      "fixture_id": "provider:paris-saint-germain-vs-as-roma|uefa champions league|2026-11-25",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-25T20:00:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915374)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401915374"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_44c60e140a58c6d3ba89c83cf0de7652",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
     },
     {
       "id": "shakhtar-donetsk-vs-fenerbahçe",
@@ -2552,7 +2554,7 @@
     {
       "id": "sporting-cp-vs-manchester-united",
       "name": "Sporting CP Vs Manchester United",
-      "primary_stream_key": "6b6d708c65d2c1a2eb2476e0b927d0c908bc873ffc82dde4466e236c3cd041d4",
+      "primary_stream_key": "e932cf5ed956034701ac2452a762e274cc5e59f06dacf236d93648b75f9bf418",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/3001/image",
@@ -2595,7 +2597,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_dfd3d6999cfcbcc6ab3b34a6765e3b9e",
+          "playback_id": "ctv_1ad69b0123b4c072176896030bd5c6fe",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2665,42 +2667,6 @@
       ],
       "channels": [
         {
-          "id": "sporting-cp-vs-manchester-united--tnt-sports",
-          "name": "TNT SPORTS",
-          "normalized_name": "tnt-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/3001/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "sporting-cp-vs-manchester-united--tnt-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "sporting-cp-vs-manchester-united--tnt-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_91f9815a00ecb0504bba57e8",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_1ad69b0123b4c072176896030bd5c6fe",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
           "id": "sporting-cp-vs-manchester-united--paramount",
           "name": "PARAMOUNT+",
           "normalized_name": "paramount",
@@ -2730,6 +2696,42 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_dfd3d6999cfcbcc6ab3b34a6765e3b9e",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "sporting-cp-vs-manchester-united--tnt-sports",
+          "name": "TNT SPORTS",
+          "normalized_name": "tnt-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/3001/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "sporting-cp-vs-manchester-united--tnt-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "sporting-cp-vs-manchester-united--tnt-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_91f9815a00ecb0504bba57e8",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_1ad69b0123b4c072176896030bd5c6fe",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2810,7 +2812,7 @@
         }
       ],
       "channel_count": 4,
-      "default_channel_id": "sporting-cp-vs-manchester-united--tnt-sports",
+      "default_channel_id": "sporting-cp-vs-manchester-united--paramount",
       "channel_stats": {
         "streams_in": 4,
         "unresolved_channel_streams": 0,
@@ -2867,7 +2869,7 @@
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_1ad69b0123b4c072176896030bd5c6fe",
+      "playback_id": "ctv_dfd3d6999cfcbcc6ab3b34a6765e3b9e",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
