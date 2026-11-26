@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T03:04:22.253451+00:00",
+  "generated_at": "2026-11-26T03:24:06.806030+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,8 +12,9 @@
       "requests_ok": 6,
       "fixtures": 462,
       "unknown_statuses": [
-        "10|HT",
-        "3|73'",
+        "2|11'",
+        "3|61'",
+        "3|62'",
         "3|90+3'"
       ],
       "attempts": [
@@ -110,8 +111,8 @@
     "upcoming": 42,
     "fixtures": 46,
     "verdicts": {
-      "UNVERIFIED": 25,
       "CONFLICT": 1,
+      "UNVERIFIED": 25,
       "VERIFIED": 19,
       "PARTIAL_AUTHORITY": 1
     },
@@ -121,20 +122,20 @@
     "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 26,
-        "matched": 20
+        "matched": 20,
+        "unmatched": 26
       },
       "livescore": {
-        "unmatched": 29,
-        "matched": 17
+        "matched": 17,
+        "unmatched": 29
       }
     },
     "matched_by_two_independent_authorities": 15,
-    "authority_agreements": 14,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 0,
+    "authority_agreements": 15,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "authorities disagree": 1
+      "card says LIVE, authority says FINISHED": 1
     },
     "identity_near_misses": 8,
     "independent_authority_count_distribution": {
@@ -144,8 +145,9 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
-        "3|73'",
+        "2|11'",
+        "3|61'",
+        "3|62'",
         "3|90+3'"
       ],
       "espn-header": []
@@ -219,68 +221,13 @@
   ],
   "fixtures": [
     {
-      "fixture_id": "provider:atlético-mineiro-vs-corinthians|campeonato brasileiro s rie a|2026-11-25",
-      "card_id": "atlético-mineiro-vs-corinthians",
-      "name": "Atlético Mineiro Vs Corinthians",
-      "competition": "Campeonato Brasileiro Série A",
-      "kickoff": "2026-11-25T23:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Atlético-MG vs Corinthians",
-              "event_id": "401841319",
-              "agreed_side": "corinthians",
-              "ours": "atletico mineiro",
-              "theirs": "atletico mg"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Atletico MG vs Corinthians",
-              "event_id": "1708769",
-              "agreed_side": "corinthians",
-              "ours": "atletico mineiro",
-              "theirs": "atletico mg"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:boca-juniors-vs-independiente-rivadavia|liga profesional de f tbol|2026-11-26",
       "card_id": "boca-juniors-vs-independiente-rivadavia",
       "name": "Boca Juniors Vs Independiente Rivadavia",
       "competition": "Liga Profesional de Fútbol",
       "kickoff": "2026-11-26T00:00:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -308,18 +255,18 @@
           "competition_id": "745",
           "kickoff": "2026-11-26T00:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "63'",
-          "status_code": "STATUS_IN_PROGRESS",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "63'",
-          "espn_status_description": "In Progress",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:745~e:401933757~c:401933757"
         },
@@ -355,10 +302,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+        "card says LIVE, authority says FINISHED"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -424,6 +371,61 @@
         },
         "livescore": {
           "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:atlético-mineiro-vs-corinthians|campeonato brasileiro s rie a|2026-11-25",
+      "card_id": "atlético-mineiro-vs-corinthians",
+      "name": "Atlético Mineiro Vs Corinthians",
+      "competition": "Campeonato Brasileiro Série A",
+      "kickoff": "2026-11-25T23:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Atlético-MG vs Corinthians",
+              "event_id": "401841319",
+              "agreed_side": "corinthians",
+              "ours": "atletico mineiro",
+              "theirs": "atletico mg"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Atletico MG vs Corinthians",
+              "event_id": "1708769",
+              "agreed_side": "corinthians",
+              "ours": "atletico mineiro",
+              "theirs": "atletico mg"
+            }
+          ]
         }
       },
       "authority_upstreams": [],
@@ -618,8 +620,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -709,8 +711,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -802,8 +804,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1021,8 +1023,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1113,8 +1115,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1154,8 +1156,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1381,8 +1383,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1533,8 +1535,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1624,8 +1626,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1716,8 +1718,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1825,8 +1827,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1917,8 +1919,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2134,8 +2136,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2195,8 +2197,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2287,8 +2289,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2328,8 +2330,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2370,8 +2372,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2450,8 +2452,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2529,8 +2531,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2795,8 +2797,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2923,8 +2925,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2964,8 +2966,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3038,62 +3040,6 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
-    }
-  ],
-  "retired_or_unpublished": [
-    {
-      "fixture_id": "provider:losc-lille-vs-fc-bayern-münchen|uefa champions league|2026-11-25",
-      "card_id": "losc-lille-vs-fc-bayern-münchen",
-      "name": "LOSC Lille Vs FC Bayern München",
-      "competition": "UEFA Champions League",
-      "kickoff": "2026-11-25T20:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Lille vs Bayern Munich",
-              "event_id": "401915377",
-              "agreed_side": "bayern munchen",
-              "ours": "losc lille",
-              "theirs": "lille"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Lille vs Bayern Munich",
-              "event_id": "1882810",
-              "agreed_side": "bayern munchen",
-              "ours": "losc lille",
-              "theirs": "lille"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
     }
   ]
 }
