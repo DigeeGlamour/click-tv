@@ -9467,28 +9467,6 @@
       "evidence_report": "reports/delivery-path-check.json",
       "vantage": "delivery_path_proxy"
     },
-    "dash-ott.bia-cf.live.pv-cdn.net/pdx-nitro/live/clients/dash/enc/fspu6lxxw0/out/v1/690becb9981247eda1a04ab7229753b5/cenc.mpd": {
-      "route_id": "dash-ott.bia-cf.live.pv-cdn.net/pdx-nitro/live/clients/dash/enc/fspu6lxxw0/out/v1/690becb9981247eda1a04ab7229753b5/cenc.mpd",
-      "url_public_template": "{id}.{id}.{id}.pv-cdn.net/pdx-nitro/live/clients/dash/enc/{seg}/out/v1/{seg}/{file}",
-      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
-      "sessions": 1,
-      "media_progress_seconds": [
-        0
-      ],
-      "window_seconds": 0.0,
-      "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy",
-      "superseded_by": {
-        "verdict": "proven",
-        "vantage": "delivery_path_proxy",
-        "sessions": 1,
-        "media_progress_seconds": [
-          0
-        ],
-        "window_seconds": 0.0,
-        "evidence_report": "reports/delivery-path-check.json"
-      }
-    },
     "ss-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/dpmwhamcg5/out/v1/75e085ecbcf54d8082aa137858f9260b/cenc.mpd": {
       "route_id": "ss-ott.bia-cf.live.pv-cdn.net/iad-nitro/live/clients/dash/enc/dpmwhamcg5/out/v1/75e085ecbcf54d8082aa137858f9260b/cenc.mpd",
       "url_public_template": "{id}.{id}.{id}.pv-cdn.net/iad-nitro/live/clients/dash/enc/{seg}/out/v1/{seg}/{file}",
@@ -73912,6 +73890,18 @@
         "window_seconds": 0.0,
         "evidence_report": "reports/delivery-path-check.json"
       }
+    },
+    "mumt04.tangotv.in/m18aqlK4MANORANJANTV/index.m3u8": {
+      "route_id": "mumt04.tangotv.in/m18aqlK4MANORANJANTV/index.m3u8",
+      "url_public_template": "{id}.tangotv.in/{seg}/{file}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
     }
   },
   "note": "Routes a real browser measured and could not play, each with the vantage it was measured from. Marks the card; never hides it, never changes publish_allowed, never demotes another route. Keyed by route, so a channel recovers when its route changes - or when a later measurement from any vantage passes, which supersedes the failure rather than deleting it.",
