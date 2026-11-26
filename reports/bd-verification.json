@@ -1,26 +1,60 @@
 {
-  "timestamp": "2026-11-26T17:32:04.797161+00:00",
+  "timestamp": "2026-11-26T17:37:06.104157+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 3,
-  "total_global_network_checked": 3,
+  "total_input_pool": 6,
+  "total_global_network_checked": 6,
   "total_proxy_selected": 0,
   "total_proxy_checked": 0,
-  "total_processed": 3,
-  "total_publishable": 1,
-  "strict_player_hidden": 1,
-  "browser_unreachable_hidden": 0,
+  "total_processed": 6,
+  "total_publishable": 2,
+  "strict_player_hidden": 0,
+  "browser_unreachable_hidden": 3,
   "unproven_hidden": 0,
   "status_counts": {
+    "verified_global": 2,
     "failed": 1,
-    "verified_global": 1,
-    "metadata_only": 1
+    "unreachable_from_browser": 3
   },
   "groups": {
-    "failed": [
+    "verified_global": [
       {
         "id": "al-faisaly-vs-diriyah",
         "name": "Al Faisaly Vs Diriyah",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://live3979.zundrixmediapipeline.com/live/channel25.m3u8",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "brighton-hove-albion-vs-universitatea-craiova",
+        "name": "Brighton Hove Albion Vs Universitatea Craiova",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/puehlftk5j/out/v1/f7f0da1ee112481ca0024e6d4dd97f4a/cenc.mpd",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      }
+    ],
+    "failed": [
+      {
+        "id": "beşiktaş-jk-vs-hapoel-beer-sheva",
+        "name": "Beşiktaş JK Vs Hapoel Be'er Sheva",
         "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
         "url": "",
@@ -35,39 +69,53 @@
         "permanent_fail_count": 0
       }
     ],
-    "verified_global": [
+    "unreachable_from_browser": [
       {
-        "id": "brighton-hove-albion-vs-universitatea-craiova",
-        "name": "Brighton Hove Albion Vs Universitatea Craiova",
+        "id": "celta-vigo-vs-bournemouth",
+        "name": "Celta Vigo Vs Bournemouth",
         "source_id": "sm-sports-data",
-        "source_pipeline": "upcoming",
-        "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/puehlftk5j/out/v1/f7f0da1ee112481ca0024e6d4dd97f4a/cenc.mpd",
-        "verification_status": "verified_global",
-        "verification_mode": "global",
-        "publish_allowed": true,
-        "http_status": 200,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "",
-        "permanent_fail_count": 0
-      }
-    ],
-    "metadata_only": [
-      {
-        "id": "brighton-hove-albion-vs-universitatea-craiova",
-        "name": "Brighton Hove Albion Vs Universitatea Craiova",
-        "source_id": "sm-sports-data",
-        "source_pipeline": "upcoming",
-        "url": "",
-        "verification_status": "metadata_only",
-        "verification_mode": "none",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.55/hls/KFFFA.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
         "publish_allowed": false,
         "http_status": 0,
         "proxy_name": "",
         "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.55): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "detroit-lions-vs-chicago-bears",
+        "name": "Detroit Lions Vs Chicago Bears",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.50/hls/I555A.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.50): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "al-faisaly-vs-diriyah",
+        "name": "Al Faisaly Vs Diriyah",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.50/hls/HJJJAAAA.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.50): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
         "permanent_fail_count": 0
       }
     ]
