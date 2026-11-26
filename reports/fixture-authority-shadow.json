@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T11:04:15.476818+00:00",
+  "generated_at": "2026-11-26T11:24:20.434850+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,9 +12,9 @@
       "requests_ok": 6,
       "fixtures": 462,
       "unknown_statuses": [
-        "10|HT",
         "134|Stumps - day 3",
-        "3|47'"
+        "3|65'",
+        "3|67'"
       ],
       "attempts": [
         {
@@ -111,13 +111,14 @@
     "fixtures": 48,
     "verdicts": {
       "UNVERIFIED": 28,
-      "VERIFIED": 18,
-      "PARTIAL_AUTHORITY": 2
+      "CONFLICT": 1,
+      "PARTIAL_AUTHORITY": 2,
+      "VERIFIED": 17
     },
-    "verified": 18,
+    "verified": 17,
     "partial_authority": 2,
     "unverified": 28,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 28,
@@ -129,10 +130,11 @@
       }
     },
     "matched_by_two_independent_authorities": 14,
-    "authority_agreements": 13,
-    "authority_disagreements": 0,
+    "authority_agreements": 12,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
+      "authorities disagree": 1,
       "kickoff": 2
     },
     "identity_near_misses": 6,
@@ -143,9 +145,9 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "134|Stumps - day 3",
-        "3|47'"
+        "3|65'",
+        "3|67'"
       ],
       "espn-header": []
     }
@@ -348,9 +350,9 @@
           "competition_id": "25707",
           "kickoff": "2026-11-26T08:10:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "cricket",
           "round": "Match 35",
           "format": "Womens Domestic Twenty20",
@@ -364,10 +366,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -406,7 +410,7 @@
           "competition_id": "2466",
           "kickoff": "2026-11-26T10:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "30'",
+          "status_raw": "35'",
           "status_code": "STATUS_FIRST_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -415,7 +419,7 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "30'",
+          "espn_status_detail": "35'",
           "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
@@ -436,11 +440,11 @@
           "competition_id": "690",
           "kickoff": "2026-11-26T10:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "HT",
-          "status_code": "10",
+          "status_raw": "65'",
+          "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
-          "round": "5",
+          "round": "Group Stage Group G",
           "format": "",
           "gender": ""
         }
@@ -472,10 +476,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1277,8 +1278,8 @@
       "name": "BG Pathum United Vs Lion City Sailors",
       "competition": "AFC Champions League Two",
       "kickoff": "2026-11-26T12:15:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1496,12 +1497,16 @@
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-willow-event"
+        "srhady-willow-event",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
+        "FanCode",
         "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -3088,7 +3093,7 @@
       "card_id": "sri-lanka-a-vs-india-a",
       "name": "Sri Lanka A vs India A",
       "competition": "ACC Mens Asia Cup Rising Stars 2026 - 1st Semi-Final",
-      "kickoff": "2026-11-26T11:04:15+00:00",
+      "kickoff": "2026-11-26T11:24:20+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "",
       "card_status_normalized": "LIVE",
@@ -3126,7 +3131,7 @@
       "card_id": "sydney-sixers-vs-melbourne-stars",
       "name": "Sydney Sixers vs Melbourne Stars",
       "competition": "",
-      "kickoff": "2026-11-26T11:04:15+00:00",
+      "kickoff": "2026-11-26T11:24:20+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "",
       "card_status_normalized": "LIVE",
