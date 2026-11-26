@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T04:44:20.214976+00:00",
+  "generated_at": "2026-11-26T05:04:37.007145+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,7 +13,8 @@
       "fixtures": 462,
       "unknown_statuses": [
         "173|Lunch - day 4",
-        "3|69'"
+        "182|Tea - day 3",
+        "3|89'"
       ],
       "attempts": [
         {
@@ -109,8 +110,8 @@
     "upcoming": 41,
     "fixtures": 44,
     "verdicts": {
-      "UNVERIFIED": 24,
       "CONFLICT": 1,
+      "UNVERIFIED": 24,
       "VERIFIED": 18,
       "PARTIAL_AUTHORITY": 1
     },
@@ -120,12 +121,12 @@
     "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 25,
-        "matched": 19
+        "matched": 19,
+        "unmatched": 25
       },
       "livescore": {
-        "unmatched": 28,
-        "matched": 16
+        "matched": 16,
+        "unmatched": 28
       }
     },
     "matched_by_two_independent_authorities": 14,
@@ -133,6 +134,7 @@
     "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
+      "kickoff": 2,
       "authorities disagree": 1
     },
     "identity_near_misses": 6,
@@ -144,7 +146,8 @@
     "unknown_authority_statuses": {
       "livescore": [
         "173|Lunch - day 4",
-        "3|69'"
+        "182|Tea - day 3",
+        "3|89'"
       ],
       "espn-header": []
     }
@@ -201,6 +204,99 @@
   ],
   "fixtures": [
     {
+      "fixture_id": "provider:sydney-thunder-vs-adelaide-strikers-women|women big bash league 2026 34th|2026-11-26",
+      "card_id": "sydney-thunder-women-vs-adelaide-strikers-women",
+      "name": "Sydney Thunder Women vs Adelaide Strikers Women",
+      "competition": "Womens Big Bash League 2026 - 34th Match",
+      "kickoff": "2026-11-26T05:04:37+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "PrimeVideo",
+        "Willow"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543977",
+          "upstream_family": "ESPN",
+          "name": "Sydney Thunder Women vs Adelaide Strikers Women",
+          "home": "Sydney Thunder Women",
+          "away": "Adelaide Strikers Women",
+          "home_team_id": "896401",
+          "away_team_id": "896431",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-26T04:40:00+00:00",
+          "kickoff_delta_minutes": -24.6,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "34th Match",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-26T23:59:00Z",
+          "authority_uid": "s:200~e:1543977~c:1543977"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1813040",
+          "upstream_family": "LiveScore",
+          "name": "Sydney Thunder W vs Adelaide Strikers W",
+          "home": "Sydney Thunder W",
+          "away": "Adelaide Strikers W",
+          "home_team_id": "86307",
+          "away_team_id": "86304",
+          "competition": "Women's Big Bash League",
+          "competition_id": "25707",
+          "kickoff": "2026-11-26T04:40:00+00:00",
+          "kickoff_delta_minutes": -24.6,
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
+          "sport": "cricket",
+          "round": "Match 34",
+          "format": "Womens Domestic Twenty20",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "kickoff: ours 2026-11-26T05:04, espn-header 2026-11-26T04:40 (-24.6 min)",
+        "kickoff: ours 2026-11-26T05:04, livescore 2026-11-26T04:40 (-24.6 min)",
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:western-australia-vs-tasmania|sheffield shield|2026-11-26",
       "card_id": "western-australia-vs-tasmania",
       "name": "Western Australia Vs Tasmania",
@@ -235,96 +331,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:sydney-thunder-vs-adelaide-strikers-women|women big bash league 2026|2026-11-26",
-      "card_id": "sydney-thunder-women-vs-adelaide-strikers-women",
-      "name": "Sydney Thunder Women vs Adelaide Strikers Women",
-      "competition": "Women's Big Bash League, 2026",
-      "kickoff": "2026-11-26T04:40:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1543977",
-          "upstream_family": "ESPN",
-          "name": "Sydney Thunder Women vs Adelaide Strikers Women",
-          "home": "Sydney Thunder Women",
-          "away": "Adelaide Strikers Women",
-          "home_team_id": "896401",
-          "away_team_id": "896431",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-26T04:40:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "34th Match",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-26T23:59:00Z",
-          "authority_uid": "s:200~e:1543977~c:1543977"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1813040",
-          "upstream_family": "LiveScore",
-          "name": "Sydney Thunder W vs Adelaide Strikers W",
-          "home": "Sydney Thunder W",
-          "away": "Adelaide Strikers W",
-          "home_team_id": "86307",
-          "away_team_id": "86304",
-          "competition": "Women's Big Bash League",
-          "competition_id": "25707",
-          "kickoff": "2026-11-26T04:40:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "Match 34",
-          "format": "Womens Domestic Twenty20",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -545,8 +551,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -636,8 +642,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -726,11 +732,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-willow-event",
         "sm-fancode",
+        "srhady-willow-event",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -948,8 +954,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1040,8 +1046,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1081,8 +1087,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1308,8 +1314,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1460,8 +1466,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1551,8 +1557,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1643,8 +1649,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1752,8 +1758,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1835,8 +1841,8 @@
       "name": "Muscat Thunderers vs Majees Titans",
       "competition": "Oman D20 2026",
       "kickoff": "2026-11-26T06:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -1844,8 +1850,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2061,8 +2067,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2122,8 +2128,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2214,8 +2220,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2255,8 +2261,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2297,8 +2303,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2377,8 +2383,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2456,8 +2462,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2722,8 +2728,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2850,8 +2856,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
