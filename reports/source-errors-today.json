@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-26T08:24:50.101344+00:00",
+  "timestamp": "2026-11-26T08:44:33.536986+00:00",
   "mode": "today",
   "count": 232,
   "errors": [
@@ -12,7 +12,7 @@
       "http_status": 404,
       "attempts": 1,
       "error": "HTTP Error 404: Not Found",
-      "timestamp": "2026-11-26T08:23:34.463116+00:00"
+      "timestamp": "2026-11-26T08:43:30.619417+00:00"
     },
     {
       "type": "source_fetch_error",
@@ -23,7 +23,7 @@
       "http_status": 404,
       "attempts": 1,
       "error": "HTTP Error 404: Not Found",
-      "timestamp": "2026-11-26T08:23:34.469868+00:00"
+      "timestamp": "2026-11-26T08:43:30.620273+00:00"
     },
     {
       "type": "source_fetch_error",
@@ -34,7 +34,7 @@
       "http_status": 404,
       "attempts": 1,
       "error": "HTTP Error 404: Not Found",
-      "timestamp": "2026-11-26T08:23:34.158301+00:00"
+      "timestamp": "2026-11-26T08:43:30.478911+00:00"
     },
     {
       "id": "2026-ballon-dor",
@@ -450,7 +450,7 @@
       "verification_mode": "global",
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
-      "url": "https://tencent-cdn.tapmad.com/v1/01a14ab8af8915fc600b1e3e9683f0/01a14ab953dd1ea540a81c2b41b75f/main.m3u8",
+      "url": "https://in-mc-vod.fancode.com/mumbai/4250419_english_hls_ed10a05d9311864_1ta-di_h264/index.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -737,21 +737,25 @@
       "source_pipeline": "today_match",
       "category": "today_match",
       "verification_status": "failed",
-      "verification_mode": "same_run_cloud_second_pass",
-      "verification_error": "Stream URL is empty",
-      "failure_class": "unplayable_body",
+      "verification_mode": "global",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://tencent-cdn.tapmad.com/v1/01a14ab8af8915fc600b1e3e9683f0/01a14ab953dd1ea540a81c2b41b75f/main.m3u8",
+      "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
     {
       "id": "sydney-thunder-women-vs-adelaide-strikers-women",
       "name": "Sydney Thunder Women Vs Adelaide Strikers Women",
-      "source_id": "sm-sports-data",
+      "source_id": "sm-fancode",
       "source_pipeline": "today_match",
       "category": "today_match",
       "verification_status": "failed",
-      "verification_mode": "same_run_cloud_second_pass",
-      "verification_error": "Stream URL is empty",
-      "failure_class": "unplayable_body",
+      "verification_mode": "global",
+      "http_status": 404,
+      "verification_error": "HTTP 404: Not Found",
+      "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4250420/index.m3u8",
+      "failure_class": "permanent",
       "type": "stream_verification_error"
     },
     {
@@ -920,10 +924,10 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 404,
-      "verification_error": "HTTP 404: Not Found",
+      "http_status": 500,
+      "verification_error": "HTTP 500: failed to stat file: /var/www/live/eds/Eleven_Sport_1/DHD.toml error 2",
       "url": "https://r.e.blueonline.tv/l/tvsmart/live/eds/Eleven_Sport_1/DHD/Manifest.mpd",
-      "failure_class": "permanent",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -1261,10 +1265,10 @@
       "category": "today_match",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 0,
-      "verification_error": "timeout: _ssl.c:994: The handshake operation timed out",
+      "http_status": 200,
+      "verification_error": "HLS media playlist has no playable segment",
       "url": "https://live.kinescopecdn.net/on-air/5bf2c07e-3604-42cf-959a-67ed8914ffd5/02ed768b-a9ea-483f-a11a-919d0e43d2fe/master.m3u8",
-      "failure_class": "transient",
+      "failure_class": "unplayable_body",
       "type": "stream_verification_error"
     },
     {
@@ -1349,6 +1353,21 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://sonyeventsglobal.akamaized.net/hls/live/2118670/Footlive2511/ENG/std_lrh-800300010.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "melbourne-renegades-women-vs-brisbane-heat-women",
+      "name": "Melbourne Renegades Women Vs Brisbane Heat Women",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "same_run_player_gate",
+      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "http_status": 401,
+      "verification_error": "HTTP 401: Unauthorized",
+      "url": "https://host-64-235-250-99.contentfabric.io/qlibs/ilibBFVVnZD2HsyW1Rmi5atMjddq2NQ/q/hq__2ZSbXCxaSwFFBUKQ6zJP1r1zTb6LraaFvz4JpdbGM499UGTZPdBUaC4QRMnbx4Qgff2KqxypDuiQ/rep/playout/default/hls-aes128/playlist.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -1504,10 +1523,10 @@
       "category": "today_match",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 0,
-      "verification_error": "Request timed out",
+      "http_status": 200,
+      "verification_error": "HLS media playlist has no playable segment",
       "url": "https://live.kinescopecdn.net/on-air/5bf2c07e-3604-42cf-959a-67ed8914ffd5/69462cdf-beca-459e-9aee-79d51e5cf720/master.m3u8",
-      "failure_class": "transient",
+      "failure_class": "unplayable_body",
       "type": "stream_verification_error"
     },
     {
@@ -1578,6 +1597,21 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Token required",
       "url": "https://cache01.zapitv.com/live/eds_c2/eurosport_2_hd/dash_live_ez/eurosport_2_hd.mpd",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "wta",
+      "name": "WTA",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "same_run_player_gate",
+      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://live01-stan.akamaized.net/out/v1/fdc441e85d0c410da2fbb35d2f202e68/index.mpd",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -1767,6 +1801,20 @@
       "type": "stream_verification_error"
     },
     {
+      "id": "atp",
+      "name": "ATP",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://hoast-plm.shop/playztv/links.php",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
       "id": "bangladesh-women-vs-thailand-women",
       "name": "Bangladesh Women Vs Thailand Women",
       "source_id": "sm-sports-data",
@@ -1802,10 +1850,10 @@
       "category": "today_match",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 200,
-      "verification_error": "HLS media playlist has no playable segment",
+      "http_status": 0,
+      "verification_error": "timeout: _ssl.c:994: The handshake operation timed out",
       "url": "https://live.kinescopecdn.net/on-air/5bf2c07e-3604-42cf-959a-67ed8914ffd5/15908099-1d03-4ac3-b689-f22a8a69c50a/master.m3u8",
-      "failure_class": "unplayable_body",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -1835,6 +1883,20 @@
       "verification_error": "HTTP 404: Not Found",
       "url": "https://chatgpt.hereisman.net/playlist/59449/load-playlist",
       "failure_class": "permanent",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "great-britain-vs-germany",
+      "name": "Great Britain Vs Germany",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://hoast-plm.shop/playztv/links.php",
+      "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
     {
@@ -1916,10 +1978,11 @@
       "source_pipeline": "today_match",
       "category": "today_match",
       "verification_status": "failed",
-      "verification_mode": "global",
+      "verification_mode": "same_run_player_gate",
+      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
-      "url": "https://in-mc-vod.fancode.com/mumbai/4250419_english_hls_ed10a05d9311864_1ta-di_h264/index.m3u8",
+      "url": "https://a96aivottlinear-a.akamaihd.net/OTTB/pdx-nitro/live/clients/dash/enc/8s0mwls1j6/out/v1/3af3f6a860de4f43b2867101e5a26cce/cenc.mpd",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -2023,6 +2086,21 @@
       "type": "stream_verification_error"
     },
     {
+      "id": "sydney-sixers-women-vs-melbourne-stars-women",
+      "name": "Sydney Sixers Women Vs Melbourne Stars Women",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "same_run_player_gate",
+      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://in-mc-vod.fancode.com/mumbai/4250420_english_hls_ac2784bf3e70568_1ta-di_h264/index.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
       "id": "tampa-bay-lightning-vs-carolina-hurricanes",
       "name": "Tampa Bay Lightning Vs Carolina Hurricanes",
       "source_id": "sm-sports-data",
@@ -2066,21 +2144,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "wta",
-      "name": "WTA",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://live01-stan.akamaized.net/out/v1/fdc441e85d0c410da2fbb35d2f202e68/index.mpd",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "bangladesh-a-vs-pakistan-a",
       "name": "Bangladesh A Vs Pakistan A",
       "source_id": "sm-sports-data",
@@ -2092,20 +2155,6 @@
       "verification_error": "HTTP 404: Not Found",
       "url": "https://dai.google.com/linear/hls/event/yaROyE-bScOVYZWWXQoBdQ/master.m3u8",
       "failure_class": "permanent",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "great-britain-vs-germany",
-      "name": "Great Britain Vs Germany",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "upcoming",
-      "category": "upcoming",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://hoast-plm.shop/playztv/links.php",
-      "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
     {
@@ -2194,20 +2243,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "atp",
-      "name": "ATP",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://hoast-plm.shop/playztv/links.php",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "club-brugge-kv-vs-liverpool-fc",
       "name": "Club Brugge KV Vs Liverpool FC",
       "source_id": "sm-sports-data",
@@ -2281,21 +2316,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "melbourne-renegades-women-vs-brisbane-heat-women",
-      "name": "Melbourne Renegades Women Vs Brisbane Heat Women",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
-      "http_status": 401,
-      "verification_error": "HTTP 401: Unauthorized",
-      "url": "https://host-64-235-250-99.contentfabric.io/qlibs/ilibBFVVnZD2HsyW1Rmi5atMjddq2NQ/q/hq__2ZSbXCxaSwFFBUKQ6zJP1r1zTb6LraaFvz4JpdbGM499UGTZPdBUaC4QRMnbx4Qgff2KqxypDuiQ/rep/playout/default/hls-aes128/playlist.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "pakistan-vs-sri-lanka",
       "name": "Pakistan Vs Sri Lanka",
       "source_id": "sm-sports-data",
@@ -2350,6 +2370,22 @@
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://sonyeventsglobal.akamaized.net/hls/live/2105079/Footlive2511/ENG/std_lrh-800300010.m3u8",
       "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "sydney-sixers-women-vs-melbourne-stars-women",
+      "name": "Sydney Sixers Women Vs Melbourne Stars Women",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 503,
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "verification_error": "HTTP 503: Service Unavailable",
+      "url": "https://host-64-235-250-99.contentfabric.io/qlibs/ilibBFVVnZD2HsyW1Rmi5atMjddq2NQ/q/hq__dVZgXBpQHUsLeZTQjSwnub4hdL3wREy9jdqbC7q3uSBsSFZYDiZvrMC8iX1kEHPsYAeWrJsXbLF/rep/playout/default/hls-aes128/playlist.m3u8",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -2535,21 +2571,6 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/btxthrhwoe/out/v1/b53cf2b282b04cf19496c511561b3bcc/cenc.mpd",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "melbourne-renegades-women-vs-brisbane-heat-women",
-      "name": "Melbourne Renegades Women Vs Brisbane Heat Women",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://a96aivottlinear-a.akamaihd.net/OTTB/pdx-nitro/live/clients/dash/enc/8s0mwls1j6/out/v1/3af3f6a860de4f43b2867101e5a26cce/cenc.mpd",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -2784,20 +2805,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "formula-1",
-      "name": "Formula 1",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "upcoming",
-      "category": "upcoming",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 200,
-      "verification_error": "HLS media playlist has no playable segment",
-      "url": "https://live.kinescopecdn.net/on-air/5bf2c07e-3604-42cf-959a-67ed8914ffd5/10aebb0b-9c74-4664-abd9-acc9085c27e8/master.m3u8",
-      "failure_class": "unplayable_body",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "ilt-t20",
       "name": "ILT T20",
       "source_id": "sm-sports-data",
@@ -2904,10 +2911,10 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://hoast-plm.shop/playztv/links.php",
-      "failure_class": "vantage_shaped",
+      "http_status": 200,
+      "verification_error": "HLS media playlist has no playable segment",
+      "url": "https://live.kinescopecdn.net/on-air/5bf2c07e-3604-42cf-959a-67ed8914ffd5/10aebb0b-9c74-4664-abd9-acc9085c27e8/master.m3u8",
+      "failure_class": "unplayable_body",
       "type": "stream_verification_error"
     },
     {
@@ -3011,20 +3018,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "sydney-thunder-women-vs-adelaide-strikers-women",
-      "name": "Sydney Thunder Women Vs Adelaide Strikers Women",
-      "source_id": "sm-fancode",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 404,
-      "verification_error": "HTTP 404: Not Found",
-      "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4250420/index.m3u8",
-      "failure_class": "permanent",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "formula-1",
       "name": "Formula 1",
       "source_id": "sm-sports-data",
@@ -3034,7 +3027,7 @@
       "verification_mode": "global",
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
-      "url": "https://edgestream3.pro/hls/hbfkazbkaznc49.m3u8",
+      "url": "https://hoast-plm.shop/playztv/links.php",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -3104,10 +3097,10 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 404,
-      "verification_error": "HTTP 404: Not Found",
-      "url": "https://chatgpt.hereisman.net/playlist/58439/load-playlist",
-      "failure_class": "permanent",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://edgestream3.pro/hls/hbfkazbkaznc49.m3u8",
+      "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
     {
@@ -3189,9 +3182,9 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 410,
-      "verification_error": "HTTP 410: Gone",
-      "url": "https://bl.rutube.ru/livestream/a1fd78e2a2feb33f0fef612d1e89d2fb/index.m3u8",
+      "http_status": 404,
+      "verification_error": "HTTP 404: Not Found",
+      "url": "https://chatgpt.hereisman.net/playlist/58439/load-playlist",
       "failure_class": "permanent",
       "type": "stream_verification_error"
     },
@@ -3247,9 +3240,9 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 404,
-      "verification_error": "HTTP 404: Not Found",
-      "url": "https://admin2.formaturamaxi.com.br/f1.m3u8",
+      "http_status": 410,
+      "verification_error": "HTTP 410: Gone",
+      "url": "https://bl.rutube.ru/livestream/a1fd78e2a2feb33f0fef612d1e89d2fb/index.m3u8",
       "failure_class": "permanent",
       "type": "stream_verification_error"
     },
@@ -3266,6 +3259,20 @@
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://a96aivottlinear-a.akamaihd.net/OTTB/pdx-nitro/live/clients/dash/enc/fhmmqyl8ck/out/v1/34dd0d9326ac481e816ff0573f59be3b/cenc.mpd",
       "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "formula-1",
+      "name": "Formula 1",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "upcoming",
+      "category": "upcoming",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 404,
+      "verification_error": "HTTP 404: Not Found",
+      "url": "https://admin2.formaturamaxi.com.br/f1.m3u8",
+      "failure_class": "permanent",
       "type": "stream_verification_error"
     },
     {
