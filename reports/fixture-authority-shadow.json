@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T10:24:23.974471+00:00",
+  "generated_at": "2026-11-26T10:44:33.896711+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -14,8 +14,9 @@
       "unknown_statuses": [
         "134|Stumps - day 3",
         "170|Lunch - day 1",
-        "2|24'",
-        "3|90+7'"
+        "2|42'",
+        "2|43'",
+        "2|44'"
       ],
       "attempts": [
         {
@@ -107,38 +108,40 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 8,
-    "upcoming": 39,
-    "fixtures": 47,
+    "today_match": 10,
+    "upcoming": 38,
+    "fixtures": 48,
     "verdicts": {
-      "UNVERIFIED": 27,
-      "VERIFIED": 18,
-      "PARTIAL_AUTHORITY": 2
+      "UNVERIFIED": 28,
+      "CONFLICT": 1,
+      "PARTIAL_AUTHORITY": 2,
+      "VERIFIED": 17
     },
-    "verified": 18,
+    "verified": 17,
     "partial_authority": 2,
-    "unverified": 27,
-    "conflict": 0,
+    "unverified": 28,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 27,
+        "unmatched": 28,
         "matched": 20
       },
       "livescore": {
-        "unmatched": 30,
+        "unmatched": 31,
         "matched": 17
       }
     },
     "matched_by_two_independent_authorities": 14,
-    "authority_agreements": 13,
-    "authority_disagreements": 0,
+    "authority_agreements": 12,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
+      "authorities disagree": 1,
       "kickoff": 2
     },
     "identity_near_misses": 6,
     "independent_authority_count_distribution": {
-      "0": 27,
+      "0": 28,
       "1": 6,
       "2": 14
     },
@@ -146,8 +149,9 @@
       "livescore": [
         "134|Stumps - day 3",
         "170|Lunch - day 1",
-        "2|24'",
-        "3|90+7'"
+        "2|42'",
+        "2|43'",
+        "2|44'"
       ],
       "espn-header": []
     }
@@ -218,14 +222,55 @@
       "source_ids": [
         "sm-sports-data",
         "srhady-primevideo-sports",
-        "srhady-willow-event"
+        "srhady-willow-event",
+        "drmlive-sonyliv-backup",
+        "sportlive-sonyliv-backup",
+        "sayanpal-sonyliv-backup"
       ],
       "upstream_families": [
         "PrimeVideo",
         "SM-Aggregate",
+        "SonyLIV",
         "Willow"
       ],
-      "independent_witness_count": 3,
+      "independent_witness_count": 4,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:italia-t10|italia t10 2026|2026-11-26",
+      "card_id": "italia-t10",
+      "name": "Italia T10",
+      "competition": "Italia T10 2026",
+      "kickoff": "2026-11-26T11:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -318,17 +363,17 @@
           "competition_id": "21284",
           "kickoff": "2026-11-26T08:10:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
           "sport": "cricket",
           "round": "35th Match (D/N)",
           "format": "",
           "gender": "women",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-26T23:59:00Z",
           "authority_uid": "s:200~e:1543978~c:1543978"
@@ -364,10 +409,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -384,7 +431,6 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -437,7 +483,7 @@
           "competition_id": "690",
           "kickoff": "2026-11-26T10:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "24'",
+          "status_raw": "42'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -460,6 +506,47 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:rome-gladiators-vs-napoli-knights|italia t10 2026|2026-11-26",
+      "card_id": "rome-gladiators-vs-napoli-knights",
+      "name": "Rome Gladiators vs Napoli Knights",
+      "competition": "Italia T10 2026",
+      "kickoff": "2026-11-26T11:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:royal-oman-stallions-vs-mustafa-fragrance-house-strikers|oman d20 2026|2026-11-26",
       "card_id": "royal-oman-stallions-vs-mustafa-fragrance-house-strikers",
       "name": "Royal Oman Stallions vs Mustafa Fragrance House Strikers",
@@ -473,7 +560,6 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -535,17 +621,17 @@
           "competition_id": "21284",
           "kickoff": "2026-11-26T04:40:00+00:00",
           "kickoff_delta_minutes": -224.5,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
+          "status_raw": "Innings break",
+          "status_code": "Innings break",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "34th Match",
           "format": "",
           "gender": "women",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Innings break",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-26T23:59:00Z",
           "authority_uid": "s:200~e:1543977~c:1543977"
@@ -808,8 +894,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -899,8 +985,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -989,11 +1075,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "srhady-willow-event",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1209,10 +1295,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1303,8 +1389,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1344,8 +1430,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1571,8 +1657,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1635,43 +1721,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:italia-t10|italia t10 2026|2026-11-26",
-      "card_id": "italia-t10",
-      "name": "Italia T10",
-      "competition": "Italia T10 2026",
-      "kickoff": "2026-11-26T11:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:leganes-vs-ce-sabadell|laliga hypermotion 2026 27|2026-11-27",
       "card_id": "leganes-vs-ce-sabadell",
       "name": "Leganes vs CE Sabadell",
@@ -1686,8 +1735,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1777,8 +1826,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1867,10 +1916,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1939,7 +1988,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1978,7 +2028,8 @@
       "source_ids": [
         "srhady-willow-event",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2105,8 +2156,8 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2283,10 +2334,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2344,10 +2395,10 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2438,8 +2489,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2478,10 +2529,10 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "sayanpal-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2597,8 +2648,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2849,8 +2900,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2977,8 +3028,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -3047,7 +3098,7 @@
       "card_id": "sri-lanka-a-vs-india-a",
       "name": "Sri Lanka A vs India A",
       "competition": "ACC Mens Asia Cup Rising Stars 2026 - 1st Semi-Final",
-      "kickoff": "2026-11-26T10:24:23+00:00",
+      "kickoff": "2026-11-26T10:44:33+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "",
       "card_status_normalized": "LIVE",
@@ -3081,11 +3132,49 @@
       "verdict": "UNVERIFIED"
     },
     {
+      "fixture_id": "provider:sri-lanka-a-vs-india-a-semi-final|acc men asia cup rising stars 2026|2026-11-26",
+      "card_id": "sri-lanka-a-vs-india-a-semi-final",
+      "name": "Sri Lanka A vs India A Semi Final",
+      "competition": "ACC Men's Asia Cup Rising Stars 2026",
+      "kickoff": "2026-11-26T10:44:33+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/sliv-live-events/refs/heads/main/sonyliv.json",
+      "provider_identity": "",
+      "source_ids": [
+        "drmlive-sonyliv-backup",
+        "sportlive-sonyliv-backup",
+        "sayanpal-sonyliv-backup"
+      ],
+      "upstream_families": [
+        "SonyLIV"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED"
+    },
+    {
       "fixture_id": "provider:sydney-sixers-vs-melbourne-stars|2026-11-26",
       "card_id": "sydney-sixers-vs-melbourne-stars",
       "name": "Sydney Sixers vs Melbourne Stars",
       "competition": "",
-      "kickoff": "2026-11-26T10:24:23+00:00",
+      "kickoff": "2026-11-26T10:44:33+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "",
       "card_status_normalized": "LIVE",
