@@ -1,21 +1,57 @@
 {
-  "timestamp": "2026-11-26T10:31:51.026921+00:00",
+  "timestamp": "2026-11-26T10:36:59.743264+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 1,
-  "total_global_network_checked": 1,
-  "total_proxy_selected": 0,
-  "total_proxy_checked": 0,
-  "total_processed": 1,
-  "total_publishable": 0,
-  "strict_player_hidden": 1,
+  "total_input_pool": 5,
+  "total_global_network_checked": 5,
+  "total_proxy_selected": 1,
+  "total_proxy_checked": 1,
+  "total_processed": 5,
+  "total_publishable": 1,
+  "strict_player_hidden": 2,
   "browser_unreachable_hidden": 0,
   "unproven_hidden": 0,
   "status_counts": {
-    "metadata_only": 1
+    "verified_global": 1,
+    "metadata_only": 2,
+    "failed": 2
   },
   "groups": {
+    "verified_global": [
+      {
+        "id": "italia-t10",
+        "name": "Italia T10",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/igtio3ifkx/out/v1/3e305fd8d7eb4c489e80a71513206a7d/cenc.mpd",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      }
+    ],
     "metadata_only": [
+      {
+        "id": "rome-gladiators-vs-napoli-knights",
+        "name": "Rome Gladiators vs Napoli Knights",
+        "source_id": "sm-fancode",
+        "source_pipeline": "upcoming",
+        "url": "",
+        "verification_status": "metadata_only",
+        "verification_mode": "none",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "permanent_fail_count": 0
+      },
       {
         "id": "royal-oman-stallions-vs-mustafa-fragrance-house-strikers",
         "name": "Royal Oman Stallions vs Mustafa Fragrance House Strikers",
@@ -30,6 +66,40 @@
         "proxy_http_status": 0,
         "verification_error": "",
         "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "permanent_fail_count": 0
+      }
+    ],
+    "failed": [
+      {
+        "id": "italia-t10",
+        "name": "Italia T10",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://cdn03lhr-n.tamashaweb.com:8087/appcast/t10-italia-SVOD-abr/playlist.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "global",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "italia-t10",
+        "name": "Italia T10",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://amssandbrix.sandbrix.live/sandbrix/streams/JoLpoIfXtZdMMVVJ791008995728.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "global",
+        "publish_allowed": false,
+        "http_status": 404,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "HTTP 404: Not Found",
+        "verification_note": "",
         "permanent_fail_count": 0
       }
     ]
