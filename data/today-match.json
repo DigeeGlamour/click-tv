@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-27T00:44:43.499868+00:00",
+  "updated_at": "2026-11-27T01:00:31.211815+00:00",
   "count": 12,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -213,9 +213,13 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 18,
+      "carried_forward_misses": 19,
       "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-26T19:24:35.278379+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 19,
+      "ended_seen_at": "2026-11-27T00:44:38.575897+00:00",
+      "lifecycle_end_basis": "estimate",
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -239,11 +243,7 @@
           "kickoff_delta_minutes": -274.6,
           "status": "FINISHED"
         }
-      ],
-      "end_pending": true,
-      "end_pending_confirmations": 18,
-      "ended_seen_at": "2026-11-27T00:44:38.575897+00:00",
-      "lifecycle_end_basis": "estimate"
+      ]
     },
     {
       "id": "2nd-test-day-1-27-nov-2026",
@@ -537,7 +537,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 11,
+      "carried_forward_misses": 12,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-26T21:45:07.409258+00:00"
     },
@@ -815,6 +815,19 @@
               "id": "new-zealand-vs-india--prime-video--4",
               "role": "backup",
               "playback_type": "native",
+              "variant_key": "sv_e8a793444033fde771e4967c",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_77b6ff0ce1cccfc403162f5b4b4cbc8a",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "new-zealand-vs-india--prime-video--5",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_64b1265d54d66528d0699925",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -825,7 +838,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "new-zealand-vs-india--prime-video--5",
+              "id": "new-zealand-vs-india--prime-video--6",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_ad01256d31747be2da618082",
@@ -833,19 +846,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_c355ef28eed01e0d8cbeaa766743bded",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "new-zealand-vs-india--prime-video--6",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_e8a793444033fde771e4967c",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_77b6ff0ce1cccfc403162f5b4b4cbc8a",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -904,11 +904,11 @@
               "id": "new-zealand-vs-india--willow--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_3511a080fcffde5575bd9958",
+              "variant_key": "sv_419f259eed1b660fe551403e",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_141abe10c0cfc2d93b105cc78d1d2f13",
+              "playback_id": "ctv_28a48607ebe9834f4f50df3bc64bf513",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -917,11 +917,11 @@
               "id": "new-zealand-vs-india--willow--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_419f259eed1b660fe551403e",
+              "variant_key": "sv_3511a080fcffde5575bd9958",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_28a48607ebe9834f4f50df3bc64bf513",
+              "playback_id": "ctv_141abe10c0cfc2d93b105cc78d1d2f13",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1299,7 +1299,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 29,
+      "carried_forward_misses": 30,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-26T04:24:31.605326+00:00"
     },
@@ -1478,7 +1478,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_4944f09f7f023390d99f97eab25fc03e",
       "protected_source": true,
       "requires_credentials": true,
@@ -1487,14 +1487,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00"
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 9,
+      "ended_seen_at": "2026-11-27T01:00:25.627657+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "inter-club-descaldes-vs-fc-københavn",
@@ -1671,7 +1675,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_33212d8b7361d1320f61e5a97f2f12f2",
       "protected_source": true,
       "requires_credentials": true,
@@ -1680,14 +1684,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00"
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 9,
+      "ended_seen_at": "2026-11-27T01:00:25.627657+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "kaa-gent-vs-fk-crvena-zvezda",
@@ -1798,7 +1806,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_8ccfbf852e8f4c2938a0c3b42e7d472c",
       "protected_source": true,
       "requires_credentials": true,
@@ -1807,14 +1815,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00"
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 9,
+      "ended_seen_at": "2026-11-27T01:00:25.627657+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "sporting-braga-vs-kuopion-palloseura",
@@ -1991,7 +2003,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_c5521f3747ddc037ac2baecfc69b1fdd",
       "protected_source": true,
       "requires_credentials": true,
@@ -2000,14 +2012,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00"
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 9,
+      "ended_seen_at": "2026-11-27T01:00:25.627657+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "ofi-crete-vs-rsc-anderlecht",
@@ -2184,7 +2200,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_70b176d3354b9676e524b100dae3e5c8",
       "protected_source": true,
       "requires_credentials": true,
@@ -2193,14 +2209,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00"
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 9,
+      "ended_seen_at": "2026-11-27T01:00:25.627657+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "olympique-lyonnais-vs-lillestrøm-sk",
@@ -2442,7 +2462,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_34851bb1dafbf75785beb597886ceb5d",
       "protected_source": true,
       "requires_credentials": true,
@@ -2451,14 +2471,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00"
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-26T22:44:40.684337+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 9,
+      "ended_seen_at": "2026-11-27T01:00:25.627657+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "juventus-vs-omonia-fc",
@@ -2591,11 +2615,11 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 11,
+      "carried_forward_misses": 12,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-26T21:45:07.409258+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 11,
+      "end_pending_confirmations": 12,
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -2714,7 +2738,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-26T23:00:00+00:00",
       "start_at": "2026-11-26T23:00:00+00:00",
-      "end_time": "2026-11-27T01:44:22+00:00",
+      "end_time": "2026-11-27T02:00:07+00:00",
       "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:são-paulo-vs-remo|campeonato brasileiro s rie a|2026-11-26",
@@ -2748,7 +2772,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401841329)"
+        "ESPN espn-header=61' (STATUS_SECOND_HALF, event 401841329)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
