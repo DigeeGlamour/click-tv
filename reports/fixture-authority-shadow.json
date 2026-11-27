@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T22:25:04.683768+00:00",
+  "generated_at": "2026-11-27T22:44:58.812223+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,11 +12,11 @@
       "requests_ok": 6,
       "fixtures": 1160,
       "unknown_statuses": [
-        "10|HT",
         "133|Stumps - day 2",
         "219|Start delayed",
-        "2|21'",
-        "2|23'"
+        "2|40'",
+        "2|43'",
+        "3|56'"
       ],
       "attempts": [
         {
@@ -65,7 +65,9 @@
       "requests": 6,
       "requests_ok": 6,
       "fixtures": 484,
-      "unknown_statuses": [],
+      "unknown_statuses": [
+        "STATUS_FINAL_OT|F/OT"
+      ],
       "attempts": [
         {
           "sport": "cricket",
@@ -109,50 +111,52 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 11,
-    "upcoming": 44,
-    "fixtures": 55,
+    "upcoming": 56,
+    "fixtures": 67,
     "verdicts": {
-      "UNVERIFIED": 31,
-      "CONFLICT": 6,
-      "VERIFIED": 18
+      "UNVERIFIED": 34,
+      "CONFLICT": 5,
+      "VERIFIED": 28
     },
-    "verified": 18,
+    "verified": 28,
     "partial_authority": 0,
-    "unverified": 31,
-    "conflict": 6,
+    "unverified": 34,
+    "conflict": 5,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 24,
-        "unmatched": 31
+        "matched": 32,
+        "unmatched": 35
       },
       "livescore": {
-        "matched": 23,
-        "unmatched": 32
+        "matched": 30,
+        "unmatched": 37
       }
     },
-    "matched_by_two_independent_authorities": 20,
-    "authority_agreements": 20,
+    "matched_by_two_independent_authorities": 26,
+    "authority_agreements": 26,
     "authority_disagreements": 0,
-    "card_status_conflicts": 6,
+    "card_status_conflicts": 5,
     "conflict_reason_counts": {
       "kickoff": 3,
-      "card says LIVE, authority says FINISHED": 6
+      "card says LIVE, authority says FINISHED": 5
     },
-    "identity_near_misses": 3,
+    "identity_near_misses": 6,
     "independent_authority_count_distribution": {
-      "0": 31,
-      "1": 4,
-      "2": 20
+      "0": 34,
+      "1": 7,
+      "2": 26
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "133|Stumps - day 2",
         "219|Start delayed",
-        "2|21'",
-        "2|23'"
+        "2|40'",
+        "2|43'",
+        "3|56'"
       ],
-      "espn-header": []
+      "espn-header": [
+        "STATUS_FINAL_OT|F/OT"
+      ]
     }
   },
   "identity_near_misses": [
@@ -173,12 +177,36 @@
       "theirs": "brest"
     },
     {
+      "fixture": "Académico Viseu FC Vs FC Alverca",
+      "authority": "espn-header",
+      "authority_name": "Académico de Viseu vs Alverca",
+      "agreed_side": "alverca",
+      "ours": "academico viseu",
+      "theirs": "academico de viseu"
+    },
+    {
       "fixture": "Deportivo Cali Vs Atlético Bucaramanga",
       "authority": "livescore",
       "authority_name": "Deportivo Cali vs Bucaramanga",
       "agreed_side": "deportivo cali",
       "ours": "atletico bucaramanga",
       "theirs": "bucaramanga"
+    },
+    {
+      "fixture": "Los Angeles FC Vs St Louis City",
+      "authority": "espn-header",
+      "authority_name": "LAFC vs St. Louis CITY SC",
+      "agreed_side": "st louis city",
+      "ours": "los angeles",
+      "theirs": "lafc"
+    },
+    {
+      "fixture": "Vitória SC Vs CF Estrela Amadora",
+      "authority": "livescore",
+      "authority_name": "Vitoria de Guimaraes vs CF Estrela da Amadora",
+      "agreed_side": "vitoria",
+      "ours": "estrela amadora",
+      "theirs": "estrela da amadora"
     }
   ],
   "fixtures": [
@@ -362,95 +390,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:real-racing-club-vs-levante-ud|laliga|2026-11-27",
-      "card_id": "real-racing-club-vs-levante-ud",
-      "name": "Real Racing Club Vs Levante UD",
-      "competition": "LaLiga",
-      "kickoff": "2026-11-27T20:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401882791",
-          "upstream_family": "ESPN",
-          "name": "Levante vs Racing Santander",
-          "home": "Levante",
-          "away": "Racing Santander",
-          "home_team_id": "1538",
-          "away_team_id": "87",
-          "competition": "Spanish LALIGA",
-          "competition_id": "740",
-          "kickoff": "2026-11-27T20:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:740~e:401882791~c:401882791"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1810782",
-          "upstream_family": "LiveScore",
-          "name": "Levante vs Racing Santander",
-          "home": "Levante",
-          "away": "Racing Santander",
-          "home_team_id": "4164",
-          "away_team_id": "4508",
-          "competition": "LaLiga",
-          "competition_id": "75",
-          "kickoff": "2026-11-27T20:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Regular Season",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:stade-brestois-vs-paris-fc|ligue 1|2026-11-27",
       "card_id": "stade-brestois-vs-paris-fc",
       "name": "Stade Brestois Vs Paris FC",
@@ -506,14 +445,14 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:borussia-m-gladbach-vs-sv-werder-bremen|bundesliga|2026-11-27",
-      "card_id": "borussia-mgladbach-vs-sv-werder-bremen",
-      "name": "Borussia M'gladbach Vs SV Werder Bremen",
-      "competition": "German Bundesliga",
-      "kickoff": "2026-11-27T19:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
+      "fixture_id": "provider:fluminense-vs-cruzeiro|campeonato brasileiro s rie a|2026-11-27",
+      "card_id": "fluminense-vs-cruzeiro",
+      "name": "Fluminense Vs Cruzeiro",
+      "competition": "Campeonato Brasileiro Série A",
+      "kickoff": "2026-11-27T23:00:00+00:00",
+      "schedule_status": "STARTING_SOON",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
+      "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -526,44 +465,70 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401841337",
+          "upstream_family": "ESPN",
+          "name": "Fluminense vs Cruzeiro",
+          "home": "Fluminense",
+          "away": "Cruzeiro",
+          "home_team_id": "3445",
+          "away_team_id": "2022",
+          "competition": "Brazilian Serie A",
+          "competition_id": "630",
+          "kickoff": "2026-11-27T23:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, November 27th at 6:00 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:630~e:401841337~c:401841337"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1812758",
+          "event_id": "1708750",
           "upstream_family": "LiveScore",
-          "name": "Werder Bremen vs Borussia M'gladbach",
-          "home": "Werder Bremen",
-          "away": "Borussia M'gladbach",
-          "home_team_id": "3727",
-          "away_team_id": "364",
-          "competition": "Bundesliga",
-          "competition_id": "67",
-          "kickoff": "2026-11-27T19:30:00+00:00",
+          "name": "Fluminense vs Cruzeiro",
+          "home": "Fluminense",
+          "away": "Cruzeiro",
+          "home_team_id": "4840",
+          "away_team_id": "4935",
+          "competition": "Serie A",
+          "competition_id": "155",
+          "kickoff": "2026-11-27T23:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
           "sport": "football",
-          "round": "11",
+          "round": "37",
           "format": "",
           "gender": ""
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -636,6 +601,95 @@
           "status": "FINISHED",
           "sport": "football",
           "round": "18",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:real-racing-club-vs-levante-ud|laliga|2026-11-27",
+      "card_id": "real-racing-club-vs-levante-ud",
+      "name": "Real Racing Club Vs Levante UD",
+      "competition": "LaLiga",
+      "kickoff": "2026-11-27T20:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401882791",
+          "upstream_family": "ESPN",
+          "name": "Levante vs Racing Santander",
+          "home": "Levante",
+          "away": "Racing Santander",
+          "home_team_id": "1538",
+          "away_team_id": "87",
+          "competition": "Spanish LALIGA",
+          "competition_id": "740",
+          "kickoff": "2026-11-27T20:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:740~e:401882791~c:401882791"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1810782",
+          "upstream_family": "LiveScore",
+          "name": "Levante vs Racing Santander",
+          "home": "Levante",
+          "away": "Racing Santander",
+          "home_team_id": "4164",
+          "away_team_id": "4508",
+          "competition": "LaLiga",
+          "competition_id": "75",
+          "kickoff": "2026-11-27T20:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "Regular Season",
           "format": "",
           "gender": ""
         }
@@ -740,6 +794,67 @@
         "card says LIVE, authority says FINISHED"
       ],
       "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:borussia-m-gladbach-vs-sv-werder-bremen|bundesliga|2026-11-27",
+      "card_id": "borussia-mgladbach-vs-sv-werder-bremen",
+      "name": "Borussia M'gladbach Vs SV Werder Bremen",
+      "competition": "German Bundesliga",
+      "kickoff": "2026-11-27T19:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1812758",
+          "upstream_family": "LiveScore",
+          "name": "Werder Bremen vs Borussia M'gladbach",
+          "home": "Werder Bremen",
+          "away": "Borussia M'gladbach",
+          "home_team_id": "3727",
+          "away_team_id": "364",
+          "competition": "Bundesliga",
+          "competition_id": "67",
+          "kickoff": "2026-11-27T19:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "11",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "SINGLE",
       "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
@@ -891,97 +1006,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:leganés-vs-ce-sabadell|laliga 2|2026-11-27",
-      "card_id": "leganés-vs-ce-sabadell",
-      "name": "Leganés Vs CE Sabadell",
-      "competition": "LaLiga 2",
-      "kickoff": "2026-11-27T19:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401883102",
-          "upstream_family": "ESPN",
-          "name": "Leganés vs CD Sabadell",
-          "home": "Leganés",
-          "away": "CD Sabadell",
-          "home_team_id": "17534",
-          "away_team_id": "11487",
-          "competition": "Spanish LALIGA 2",
-          "competition_id": "3921",
-          "kickoff": "2026-11-27T19:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3921~e:401883102~c:401883102"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1811200",
-          "upstream_family": "LiveScore",
-          "name": "Leganes vs Sabadell",
-          "home": "Leganes",
-          "away": "Sabadell",
-          "home_team_id": "3452",
-          "away_team_id": "3731",
-          "competition": "LaLiga 2",
-          "competition_id": "406",
-          "kickoff": "2026-11-27T19:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Regular Season",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:australia-vs-england|t20 international|2026-11-29",
       "card_id": "australia-vs-england",
       "name": "Australia Vs England",
@@ -1016,93 +1040,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:fluminense-vs-cruzeiro|campeonato brasileiro s rie a|2026-11-27",
-      "card_id": "fluminense-vs-cruzeiro",
-      "name": "Fluminense Vs Cruzeiro",
-      "competition": "Campeonato Brasileiro Série A",
-      "kickoff": "2026-11-27T23:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401841337",
-          "upstream_family": "ESPN",
-          "name": "Fluminense vs Cruzeiro",
-          "home": "Fluminense",
-          "away": "Cruzeiro",
-          "home_team_id": "3445",
-          "away_team_id": "2022",
-          "competition": "Brazilian Serie A",
-          "competition_id": "630",
-          "kickoff": "2026-11-27T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, November 27th at 6:00 PM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:630~e:401841337~c:401841337"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1708750",
-          "upstream_family": "LiveScore",
-          "name": "Fluminense vs Cruzeiro",
-          "home": "Fluminense",
-          "away": "Cruzeiro",
-          "home_team_id": "4840",
-          "away_team_id": "4935",
-          "competition": "Serie A",
-          "competition_id": "155",
-          "kickoff": "2026-11-27T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "37",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1217,6 +1154,79 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:académico-viseu-fc-vs-fc-alverca|liga portugal betclic|2026-11-28",
+      "card_id": "académico-viseu-fc-vs-fc-alverca",
+      "name": "Académico Viseu FC Vs FC Alverca",
+      "competition": "Liga Portugal Betclic",
+      "kickoff": "2026-11-28T18:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Académico de Viseu vs Alverca",
+              "event_id": "401885393",
+              "agreed_side": "alverca",
+              "ours": "academico viseu",
+              "theirs": "academico de viseu"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1816469",
+          "upstream_family": "LiveScore",
+          "name": "Academico Viseu vs Alverca",
+          "home": "Academico Viseu",
+          "away": "Alverca",
+          "home_team_id": "270",
+          "away_team_id": "4057",
+          "competition": "Primeira Liga",
+          "competition_id": "79",
+          "kickoff": "2026-11-28T18:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "12",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:adelaide-strikers-vs-hobart-hurricanes-women|women big bash league 2026 40th|2026-11-29",
       "card_id": "adelaide-strikers-women-vs-hobart-hurricanes-women",
       "name": "Adelaide Strikers Women vs Hobart Hurricanes Women",
@@ -1232,6 +1242,7 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1258,27 +1269,29 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:al-ettifaq-vs-al-hilal-sfc|roshn saudi league 2026 2027|2026-11-28",
-      "card_id": "al-ettifaq-vs-al-hilal-sfc",
-      "name": "Al Ettifaq vs Al Hilal SFC",
-      "competition": "Roshn Saudi League 2026-2027",
+      "fixture_id": "provider:al-ettifaq-vs-al-hilal|saudi pro league|2026-11-28",
+      "card_id": "al-ettifaq-vs-al-hilal",
+      "name": "Al Ettifaq Vs Al Hilal",
+      "competition": "Saudi Pro League",
       "kickoff": "2026-11-28T14:20:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
-        "FanCode"
+        "FanCode",
+        "SM-Aggregate"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -1362,8 +1375,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1454,8 +1467,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1546,8 +1559,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1661,6 +1674,164 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:blackburn-rovers-vs-charlton-athletic|championship|2026-11-28",
+      "card_id": "blackburn-rovers-vs-charlton-athletic",
+      "name": "Blackburn Rovers Vs Charlton Athletic",
+      "competition": "EFL Championship",
+      "kickoff": "2026-11-28T12:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401880135",
+          "upstream_family": "ESPN",
+          "name": "Blackburn Rovers vs Charlton Athletic",
+          "home": "Blackburn Rovers",
+          "away": "Charlton Athletic",
+          "home_team_id": "365",
+          "away_team_id": "372",
+          "competition": "English League Championship",
+          "competition_id": "3914",
+          "kickoff": "2026-11-28T12:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, November 28th at 7:30 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3914~e:401880135~c:401880135"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1802588",
+          "upstream_family": "LiveScore",
+          "name": "Blackburn Rovers vs Charlton Athletic",
+          "home": "Blackburn Rovers",
+          "away": "Charlton Athletic",
+          "home_team_id": "2770",
+          "away_team_id": "3031",
+          "competition": "Championship",
+          "competition_id": "70",
+          "kickoff": "2026-11-28T12:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "18",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:botafogo-vs-bahia|campeonato brasileiro s rie a|2026-11-29",
+      "card_id": "botafogo-vs-bahia",
+      "name": "Botafogo Vs Bahia",
+      "competition": "Campeonato Brasileiro Série A",
+      "kickoff": "2026-11-29T00:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401841336",
+          "upstream_family": "ESPN",
+          "name": "Botafogo vs Bahia",
+          "home": "Botafogo",
+          "away": "Bahia",
+          "home_team_id": "6086",
+          "away_team_id": "9967",
+          "competition": "Brazilian Serie A",
+          "competition_id": "630",
+          "kickoff": "2026-11-29T00:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, November 28th at 7:00 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:630~e:401841336~c:401841336"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:central-coast-mariners-vs-auckland-fc|a league men|2026-11-28",
       "card_id": "central-coast-mariners-vs-auckland-fc",
       "name": "Central Coast Mariners Vs Auckland FC",
@@ -1675,8 +1846,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1824,8 +1995,8 @@
       "name": "Deportivo Cali Vs Atlético Bucaramanga",
       "competition": "Primera A",
       "kickoff": "2026-11-27T23:35:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1907,6 +2078,7 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1947,6 +2119,7 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2062,6 +2235,7 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2069,6 +2243,217 @@
         "SM-Aggregate"
       ],
       "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:excelsior-vs-sc-telstar|vriendenloterij eredivisie|2026-11-28",
+      "card_id": "excelsior-vs-sc-telstar",
+      "name": "Excelsior Vs SC Telstar",
+      "competition": "VriendenLoterij Eredivisie",
+      "kickoff": "2026-11-28T15:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401875537",
+          "upstream_family": "ESPN",
+          "name": "Excelsior vs Telstar",
+          "home": "Excelsior",
+          "away": "Telstar",
+          "home_team_id": "2566",
+          "away_team_id": "3735",
+          "competition": "Dutch Eredivisie",
+          "competition_id": "725",
+          "kickoff": "2026-11-28T15:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, November 28th at 10:30 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:725~e:401875537~c:401875537"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1790272",
+          "upstream_family": "LiveScore",
+          "name": "Excelsior vs Telstar",
+          "home": "Excelsior",
+          "away": "Telstar",
+          "home_team_id": "274",
+          "away_team_id": "267",
+          "competition": "Eredivisie",
+          "competition_id": "64",
+          "kickoff": "2026-11-28T15:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "14",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:fc-cincinnati-vs-nashville-sc|mls|2026-11-28",
+      "card_id": "fc-cincinnati-vs-nashville-sc",
+      "name": "FC Cincinnati Vs Nashville SC",
+      "competition": "MLS",
+      "kickoff": "2026-11-28T23:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401933722",
+          "upstream_family": "ESPN",
+          "name": "FC Cincinnati vs Nashville SC",
+          "home": "FC Cincinnati",
+          "away": "Nashville SC",
+          "home_team_id": "18267",
+          "away_team_id": "18986",
+          "competition": "MLS",
+          "competition_id": "770",
+          "kickoff": "2026-11-28T23:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, November 28th at 6:30 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:770~e:401933722~c:401933722"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1918460",
+          "upstream_family": "LiveScore",
+          "name": "FC Cincinnati vs Nashville SC",
+          "home": "FC Cincinnati",
+          "away": "Nashville SC",
+          "home_team_id": "8948",
+          "away_team_id": "8927",
+          "competition": "MLS: Play-off 2026",
+          "competition_id": "26757",
+          "kickoff": "2026-11-28T23:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1/8",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:feyenoord-vs-afc-ajax|vriendenloterij eredivisie|2026-11-29",
+      "card_id": "feyenoord-vs-afc-ajax",
+      "name": "Feyenoord Vs AFC Ajax",
+      "competition": "VriendenLoterij Eredivisie",
+      "kickoff": "2026-11-29T13:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -2194,6 +2579,93 @@
           "status": "UPCOMING",
           "sport": "football",
           "round": "13",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:houston-dynamo-vs-san-jose-earthquakes|mls|2026-11-28",
+      "card_id": "houston-dynamo-vs-san-jose-earthquakes",
+      "name": "Houston Dynamo Vs San Jose Earthquakes",
+      "competition": "MLS",
+      "kickoff": "2026-11-28T19:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401933724",
+          "upstream_family": "ESPN",
+          "name": "Houston Dynamo FC vs San Jose Earthquakes",
+          "home": "Houston Dynamo FC",
+          "away": "San Jose Earthquakes",
+          "home_team_id": "6077",
+          "away_team_id": "191",
+          "competition": "MLS",
+          "competition_id": "770",
+          "kickoff": "2026-11-28T19:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, November 28th at 2:30 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:770~e:401933724~c:401933724"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1916738",
+          "upstream_family": "LiveScore",
+          "name": "Houston Dynamo vs San Jose Earthquakes",
+          "home": "Houston Dynamo",
+          "away": "San Jose Earthquakes",
+          "home_team_id": "8899",
+          "away_team_id": "8908",
+          "competition": "MLS: Play-off 2026",
+          "competition_id": "26757",
+          "kickoff": "2026-11-28T19:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1/8",
           "format": "",
           "gender": ""
         }
@@ -2387,8 +2859,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2479,8 +2951,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2557,6 +3029,52 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:los-angeles-fc-vs-st-louis-city|mls|2026-11-29",
+      "card_id": "los-angeles-fc-vs-st-louis-city",
+      "name": "Los Angeles FC Vs St Louis City",
+      "competition": "MLS",
+      "kickoff": "2026-11-29T01:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "LAFC vs St. Louis CITY SC",
+              "event_id": "401933726",
+              "agreed_side": "st louis city",
+              "ours": "los angeles",
+              "theirs": "lafc"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:majees-titans-vs-mustafa-fragrance-house-strikers|oman d20 2026|2026-11-28",
       "card_id": "majees-titans-vs-mustafa-fragrance-house-strikers",
       "name": "Majees Titans vs Mustafa Fragrance House Strikers",
@@ -2570,8 +3088,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2611,8 +3129,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2656,6 +3174,93 @@
       "near_miss_count": 0,
       "conflict_reasons": [],
       "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:melbourne-renegades-vs-melbourne-stars-women|women big bash league|2026-11-28",
+      "card_id": "melbourne-renegades-women-vs-melbourne-stars-women",
+      "name": "Melbourne Renegades Women Vs Melbourne Stars Women",
+      "competition": "Women's Big Bash League",
+      "kickoff": "2026-11-28T04:40:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543980",
+          "upstream_family": "ESPN",
+          "name": "Melbourne Renegades Women vs Melbourne Stars Women",
+          "home": "Melbourne Renegades Women",
+          "away": "Melbourne Stars Women",
+          "home_team_id": "896407",
+          "away_team_id": "896399",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-11-28T04:40:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "37th Match",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-28T23:59:00Z",
+          "authority_uid": "s:200~e:1543980~c:1543980"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1813017",
+          "upstream_family": "LiveScore",
+          "name": "Melbourne Renegades W vs Melbourne Stars W",
+          "home": "Melbourne Renegades W",
+          "away": "Melbourne Stars W",
+          "home_team_id": "86305",
+          "away_team_id": "86308",
+          "competition": "Women's Big Bash League",
+          "competition_id": "25707",
+          "kickoff": "2026-11-28T04:40:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Match 37",
+          "format": "Womens Domestic Twenty20",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2748,6 +3353,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:motherwell-vs-hibernian|scottish premiership|2026-11-28",
+      "card_id": "motherwell-vs-hibernian",
+      "name": "Motherwell Vs Hibernian",
+      "competition": "Scottish Premiership",
+      "kickoff": "2026-11-28T17:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401878329",
+          "upstream_family": "ESPN",
+          "name": "Motherwell vs Hibernian",
+          "home": "Motherwell",
+          "away": "Hibernian",
+          "home_team_id": "266",
+          "away_team_id": "258",
+          "competition": "Scottish Premiership",
+          "competition_id": "735",
+          "kickoff": "2026-11-28T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, November 28th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:735~e:401878329~c:401878329"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1792869",
+          "upstream_family": "LiveScore",
+          "name": "Motherwell vs Hibernian",
+          "home": "Motherwell",
+          "away": "Hibernian",
+          "home_team_id": "4676",
+          "away_team_id": "405",
+          "competition": "Premiership",
+          "competition_id": "69",
+          "kickoff": "2026-11-28T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "15",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:muscat-shaheens-vs-danube-titans-women|oman women d20 2026|2026-11-29",
       "card_id": "muscat-shaheens-women-vs-danube-titans-women",
       "name": "Muscat Shaheens Women vs Danube Titans Women",
@@ -2762,6 +3454,7 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2787,11 +3480,11 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:racing-de-montevideo-vs-liverpool-uy|liga auf uruguaya|2026-11-27",
-      "card_id": "racing-de-montevideo-vs-liverpool-uy",
-      "name": "Racing de Montevideo Vs Liverpool UY",
-      "competition": "Liga AUF Uruguaya",
-      "kickoff": "2026-11-27T23:30:00+00:00",
+      "fixture_id": "provider:philadelphia-union-vs-new-england-revolution|mls|2026-11-28",
+      "card_id": "philadelphia-union-vs-new-england-revolution",
+      "name": "Philadelphia Union Vs New England Revolution",
+      "competition": "MLS",
+      "kickoff": "2026-11-28T21:30:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
@@ -2807,20 +3500,136 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401933723",
+          "upstream_family": "ESPN",
+          "name": "Philadelphia Union vs New England Revolution",
+          "home": "Philadelphia Union",
+          "away": "New England Revolution",
+          "home_team_id": "10739",
+          "away_team_id": "189",
+          "competition": "MLS",
+          "competition_id": "770",
+          "kickoff": "2026-11-28T21:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, November 28th at 4:30 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:770~e:401933723~c:401933723"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1916742",
+          "upstream_family": "LiveScore",
+          "name": "Philadelphia Union vs New England Revolution",
+          "home": "Philadelphia Union",
+          "away": "New England Revolution",
+          "home_team_id": "8930",
+          "away_team_id": "8888",
+          "competition": "MLS: Play-off 2026",
+          "competition_id": "26757",
+          "kickoff": "2026-11-28T21:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1/8",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:portland-timbers-vs-fc-dallas|mls|2026-11-29",
+      "card_id": "portland-timbers-vs-fc-dallas",
+      "name": "Portland Timbers Vs FC Dallas",
+      "competition": "MLS",
+      "kickoff": "2026-11-29T03:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401933721",
+          "upstream_family": "ESPN",
+          "name": "Portland Timbers vs FC Dallas",
+          "home": "Portland Timbers",
+          "away": "FC Dallas",
+          "home_team_id": "9723",
+          "away_team_id": "185",
+          "competition": "MLS",
+          "competition_id": "770",
+          "kickoff": "2026-11-29T03:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, November 28th at 10:30 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:770~e:401933721~c:401933721"
         },
         "livescore": {
           "result": "unmatched"
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2838,8 +3647,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3090,8 +3899,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3205,8 +4014,8 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3283,11 +4092,11 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:tbc|italia t10 2026|2026-11-28",
+      "fixture_id": "provider:tbc|test twenty championship 2026|2026-11-29",
       "card_id": "tbc",
-      "name": "Italia T10 2026",
-      "competition": "Italia T10 2026",
-      "kickoff": "2026-11-28T12:30:00+00:00",
+      "name": "Test Twenty Championship 2026",
+      "competition": "Test Twenty Championship 2026",
+      "kickoff": "2026-11-29T09:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
@@ -3296,8 +4105,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3462,6 +4271,7 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3469,6 +4279,89 @@
         "SM-Aggregate"
       ],
       "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:vitória-sc-vs-cf-estrela-amadora|liga portugal betclic|2026-11-28",
+      "card_id": "vitória-sc-vs-cf-estrela-amadora",
+      "name": "Vitória SC Vs CF Estrela Amadora",
+      "competition": "Liga Portugal Betclic",
+      "kickoff": "2026-11-28T20:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Vitoria de Guimaraes vs CF Estrela da Amadora",
+              "event_id": "1816476",
+              "agreed_side": "vitoria",
+              "ours": "estrela amadora",
+              "theirs": "estrela da amadora"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:wellington-phoenix-vs-adelaide-united|a league men|2026-11-29",
+      "card_id": "wellington-phoenix-vs-adelaide-united",
+      "name": "Wellington Phoenix Vs Adelaide United",
+      "competition": "A-League Men",
+      "kickoff": "2026-11-29T02:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -3502,6 +4395,7 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
